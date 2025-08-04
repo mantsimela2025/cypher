@@ -40,8 +40,6 @@ test-api:
     - npm run test
     - npm run test:coverage
   artifacts:
-    reports:
-      coverage: api/coverage/cobertura-coverage.xml
     paths:
       - api/coverage/
   only:
