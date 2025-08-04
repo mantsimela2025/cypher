@@ -1,0 +1,276 @@
+# GitLab CI/CD Pipeline for CYPHER Application
+# Deploys to AWS EC2 instance with automated testing and deployment
+
+stages:
+  - test
+  - build
+  - deploy-staging
+  - deploy-production
+
+variables:
+  # Application settings
+  NODE_VERSION: "18"
+  APP_NAME: "cypher-app"
+  
+  # AWS settings
+  AWS_DEFAULT_REGION: "us-east-1"
+  EC2_INSTANCE_ID: "i-04a41343a3f51559a"
+  EC2_PUBLIC_IP: "34.230.172.229"
+  
+  # Deployment paths
+  DEPLOY_PATH: "/opt/cypher"
+  API_PATH: "/opt/cypher/api"
+  CLIENT_PATH: "/opt/cypher/client"
+
+# Cache node_modules for faster builds
+cache:
+  paths:
+    - api/node_modules/
+    - client/node_modules/
+    - node_modules/
+
+# Test Stage - Run on all branches
+test-api:
+  stage: test
+  image: node:18-alpine
+  before_script:
+    - cd api
+    - npm ci
+  script:
+    - npm run test
+    - npm run test:coverage
+  artifacts:
+    reports:
+      coverage: api/coverage/cobertura-coverage.xml
+    paths:
+      - api/coverage/
+  only:
+    - merge_requests
+    - dev
+    - staging
+    - main
+
+test-client:
+  stage: test
+  image: node:18-alpine
+  before_script:
+    - cd client
+    - npm ci
+  script:
+    - npm run test
+    - npm run build
+  artifacts:
+    paths:
+      - client/dist/
+  only:
+    - merge_requests
+    - dev
+    - staging
+    - main
+
+# Build Stage - Create production builds
+build-application:
+  stage: build
+  image: node:18-alpine
+  before_script:
+    - apk add --no-cache git
+  script:
+    # Install root dependencies
+    - npm ci
+    
+    # Build API
+    - cd api
+    - npm ci --production
+    - cd ..
+    
+    # Build Client
+    - cd client
+    - npm ci
+    - npm run build
+    - cd ..
+    
+    # Create deployment package
+    - mkdir -p deploy-package
+    - cp -r api deploy-package/
+    - cp -r client/dist deploy-package/client
+    - cp package.json deploy-package/
+    - cp start-full-stack.js deploy-package/
+    - cp -r scripts deploy-package/
+    
+    # Clean up node_modules in client (not needed for production)
+    - rm -rf deploy-package/client/node_modules
+    
+  artifacts:
+    paths:
+      - deploy-package/
+    expire_in: 1 hour
+  only:
+    - dev
+    - staging
+    - main
+
+# Deploy to Staging (from staging branch)
+deploy-staging:
+  stage: deploy-staging
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$EC2_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $EC2_PUBLIC_IP >> ~/.ssh/known_hosts
+  script:
+    # Create staging environment file
+    - |
+      cat > deploy-package/.env.staging << EOF
+      NODE_ENV=staging
+      PORT=3001
+      DATABASE_URL=$DATABASE_URL_STAGING
+      JWT_SECRET=$JWT_SECRET
+      CORS_ORIGIN=https://staging.rasdash.dev.com
+      FRONTEND_URL=https://staging.rasdash.dev.com
+      EMAIL_FROM=$EMAIL_FROM
+      OPENAI_API_KEY=$OPENAI_API_KEY
+      ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+      NVD_API_KEY=$NVD_API_KEY
+      MAILERSEND_API_KEY=$MAILERSEND_API_KEY
+      EOF
+    
+    # Deploy to staging directory
+    - rsync -avz --delete deploy-package/ ec2-user@$EC2_PUBLIC_IP:/opt/cypher-staging/
+    
+    # Restart staging services
+    - |
+      ssh ec2-user@$EC2_PUBLIC_IP << 'EOF'
+        cd /opt/cypher-staging
+        cp .env.staging api/.env
+        
+        # Install/update dependencies
+        cd api && npm ci --production && cd ..
+        
+        # Restart staging services
+        sudo systemctl restart cypher-staging-api
+        sudo systemctl restart cypher-staging-client
+        
+        # Health check
+        sleep 10
+        curl -f http://localhost:3002/health || exit 1
+      EOF
+  environment:
+    name: staging
+    url: https://staging.rasdash.dev.com
+  only:
+    - staging
+
+# Deploy to Production (from main branch)
+deploy-production:
+  stage: deploy-production
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$EC2_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $EC2_PUBLIC_IP >> ~/.ssh/known_hosts
+  script:
+    # Create production environment file
+    - |
+      cat > deploy-package/.env.production << EOF
+      NODE_ENV=production
+      PORT=3001
+      DATABASE_URL=$DATABASE_URL_PRODUCTION
+      JWT_SECRET=$JWT_SECRET
+      CORS_ORIGIN=https://rasdash.dev.com
+      FRONTEND_URL=https://rasdash.dev.com
+      EMAIL_FROM=$EMAIL_FROM
+      OPENAI_API_KEY=$OPENAI_API_KEY
+      ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+      NVD_API_KEY=$NVD_API_KEY
+      MAILERSEND_API_KEY=$MAILERSEND_API_KEY
+      EOF
+    
+    # Deploy to production directory
+    - rsync -avz --delete deploy-package/ ec2-user@$EC2_PUBLIC_IP:$DEPLOY_PATH/
+    
+    # Restart production services
+    - |
+      ssh ec2-user@$EC2_PUBLIC_IP << 'EOF'
+        cd /opt/cypher
+        cp .env.production api/.env
+        
+        # Install/update dependencies
+        cd api && npm ci --production && cd ..
+        
+        # Run database migrations if needed
+        cd api && npm run db:migrate && cd ..
+        
+        # Restart production services
+        sudo systemctl restart cypher-api
+        sudo systemctl restart cypher-client
+        
+        # Health check
+        sleep 15
+        curl -f http://localhost:3001/health || exit 1
+      EOF
+  environment:
+    name: production
+    url: https://rasdash.dev.com
+  when: manual
+  only:
+    - main
+
+# Deploy to Dev (from dev branch) - Auto deploy for development
+deploy-dev:
+  stage: deploy-staging
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$EC2_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $EC2_PUBLIC_IP >> ~/.ssh/known_hosts
+  script:
+    # Create dev environment file
+    - |
+      cat > deploy-package/.env.dev << EOF
+      NODE_ENV=development
+      PORT=3003
+      DATABASE_URL=$DATABASE_URL_DEV
+      JWT_SECRET=$JWT_SECRET
+      CORS_ORIGIN=https://dev.rasdash.dev.com
+      FRONTEND_URL=https://dev.rasdash.dev.com
+      EMAIL_FROM=$EMAIL_FROM
+      OPENAI_API_KEY=$OPENAI_API_KEY
+      ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+      NVD_API_KEY=$NVD_API_KEY
+      MAILERSEND_API_KEY=$MAILERSEND_API_KEY
+      EOF
+    
+    # Deploy to dev directory
+    - rsync -avz --delete deploy-package/ ec2-user@$EC2_PUBLIC_IP:/opt/cypher-dev/
+    
+    # Restart dev services
+    - |
+      ssh ec2-user@$EC2_PUBLIC_IP << 'EOF'
+        cd /opt/cypher-dev
+        cp .env.dev api/.env
+        
+        # Install/update dependencies
+        cd api && npm ci && cd ..
+        
+        # Restart dev services
+        sudo systemctl restart cypher-dev-api
+        sudo systemctl restart cypher-dev-client
+        
+        # Health check
+        sleep 10
+        curl -f http://localhost:3003/health || exit 1
+      EOF
+  environment:
+    name: development
+    url: https://dev.rasdash.dev.com
+  only:
+    - dev
