@@ -1,0 +1,139 @@
+================================================================================
+RAS DASHBOARD - DAILY S3 BACKUP SETUP COMMANDS
+================================================================================
+
+IMPORTANT: These commands must be run in PowerShell AS ADMINISTRATOR
+
+================================================================================
+STEP 1: Open PowerShell as Administrator
+================================================================================
+1. Press Windows + X
+2. Select "Windows PowerShell (Admin)" or "Terminal (Admin)"
+3. Click "Yes" when prompted by User Account Control
+
+================================================================================
+STEP 2: Navigate to Project Directory
+================================================================================
+cd C:\RAS_DASH_CSaaS
+
+================================================================================
+STEP 3: Create the Scheduled Task (Copy and paste all commands below)
+================================================================================
+
+# Set task name and parameters
+$taskName = "RAS Dashboard Daily S3 Backup"
+$bucketName = "ras-dashboard-daily-backup"
+$backupTime = "02:00"
+
+# Create the task action (what the task will run)
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File `"C:\RAS_DASH_CSaaS\scripts\daily-backup-to-s3.ps1`" -BucketName `"$bucketName`""
+
+# Create the trigger (when the task will run - daily at 2:00 AM)
+$trigger = New-ScheduledTaskTrigger -Daily -At $backupTime
+
+# Create task settings
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
+
+# Create principal (run as SYSTEM with highest privileges)
+$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+
+# Register the scheduled task
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description "Daily automated backup of RAS Dashboard code to S3"
+
+# Verify the task was created successfully
+Get-ScheduledTask -TaskName $taskName
+
+Write-Host "✅ Daily backup task created successfully!" -ForegroundColor Green
+Write-Host "📅 Task will run daily at $backupTime" -ForegroundColor Cyan
+Write-Host "🪣 Backups will be stored in: s3://$bucketName" -ForegroundColor Cyan
+
+================================================================================
+STEP 4: Test the Task (Optional)
+================================================================================
+
+# Test the backup task immediately
+Start-ScheduledTask -TaskName "RAS Dashboard Daily S3 Backup"
+
+# Check task status
+Get-ScheduledTask -TaskName "RAS Dashboard Daily S3 Backup" | Select-Object TaskName, State, LastRunTime, NextRunTime
+
+================================================================================
+STEP 5: View Backup Logs (After running)
+================================================================================
+
+# View the backup log file
+Get-Content "C:\RAS_DASH_CSaaS\logs\backup.log" -Tail 20
+
+# List your S3 backups
+aws s3 ls s3://ras-dashboard-daily-backup/
+
+================================================================================
+USEFUL MANAGEMENT COMMANDS
+================================================================================
+
+# View the scheduled task
+Get-ScheduledTask -TaskName "RAS Dashboard Daily S3 Backup"
+
+# Start the backup manually
+Start-ScheduledTask -TaskName "RAS Dashboard Daily S3 Backup"
+
+# Disable the task
+Disable-ScheduledTask -TaskName "RAS Dashboard Daily S3 Backup"
+
+# Enable the task
+Enable-ScheduledTask -TaskName "RAS Dashboard Daily S3 Backup"
+
+# Remove the task (if needed)
+Unregister-ScheduledTask -TaskName "RAS Dashboard Daily S3 Backup" -Confirm:$false
+
+# Check S3 bucket contents
+aws s3 ls s3://ras-dashboard-daily-backup/ --recursive --human-readable
+
+# Run manual backup anytime
+powershell -ExecutionPolicy Bypass -File "C:\RAS_DASH_CSaaS\scripts\backup-now.ps1" -BucketName "ras-dashboard-daily-backup"
+
+================================================================================
+BACKUP DETAILS
+================================================================================
+
+✅ S3 Bucket: ras-dashboard-daily-backup
+✅ Backup Time: Daily at 2:00 AM
+✅ Retention: 30 days (old backups automatically deleted)
+✅ Excludes: node_modules, .git, logs, .env files
+✅ Logs Location: C:\RAS_DASH_CSaaS\logs\backup.log
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+If you get permission errors:
+- Make sure you're running PowerShell as Administrator
+- Check that AWS CLI is configured: aws sts get-caller-identity
+
+If the task doesn't run:
+- Check Windows Event Viewer > Task Scheduler logs
+- Verify the script path exists: C:\RAS_DASH_CSaaS\scripts\daily-backup-to-s3.ps1
+
+If backup fails:
+- Check AWS credentials: aws s3 ls
+- Check the log file: C:\RAS_DASH_CSaaS\logs\backup.log
+
+================================================================================
+SUMMARY
+================================================================================
+
+Your automated daily backup system is now ready!
+
+✅ Manual backup already tested successfully (1,183 files, 15.8 MiB)
+✅ S3 bucket created: ras-dashboard-daily-backup  
+✅ Scripts are ready in the scripts/ folder
+✅ Just run the commands above as Administrator to complete setup
+
+The system will:
+- Backup your code daily at 2:00 AM
+- Store backups in S3 with timestamps
+- Keep backups for 30 days
+- Log all activities
+- Exclude unnecessary files (node_modules, etc.)
+
+================================================================================

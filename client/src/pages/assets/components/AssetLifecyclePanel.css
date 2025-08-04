@@ -1,0 +1,131 @@
+/* Asset Lifecycle Panel Content Styling */
+
+.asset-lifecycle-content {
+  background: #ffffff;
+}
+
+/* Profile UD List styling to match asset details */
+.asset-lifecycle-content .profile-ud-list {
+  margin: 0;
+}
+
+.asset-lifecycle-content .profile-ud-item {
+  border-bottom: 1px solid #f5f6fa;
+  padding: 0;
+}
+
+.asset-lifecycle-content .profile-ud-item:last-child {
+  border-bottom: none;
+}
+
+.asset-lifecycle-content .profile-ud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.asset-lifecycle-content .profile-ud-label {
+  color: #8094ae;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  min-width: 160px;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.asset-lifecycle-content .profile-ud-value {
+  color: #364a63;
+  font-weight: 400;
+  text-align: left;
+  font-size: 0.8125rem;
+  flex: 1;
+  margin-left: 1.5rem;
+  line-height: 1.4;
+}
+
+/* Form styling */
+.asset-lifecycle-content .form-group {
+  margin-bottom: 1rem;
+}
+
+.asset-lifecycle-content .form-label {
+  color: #8094ae;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  margin-bottom: 0.5rem;
+}
+
+.asset-lifecycle-content .form-control {
+  font-size: 0.8125rem;
+  border: 1px solid #e5e9f2;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.asset-lifecycle-content .form-control:focus {
+  border-color: #526dff;
+  box-shadow: 0 0 0 0.2rem rgba(82, 109, 255, 0.25);
+}
+
+/* Button styling - bigger Bootstrap buttons */
+.asset-lifecycle-content .btn {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  min-width: 80px;
+}
+
+.asset-lifecycle-content .btn-sm {
+  padding: 0.375rem 0.75rem !important;
+  font-size: 0.8125rem !important;
+  min-width: 70px;
+}
+
+/* Fix gap-2 class conflicting with button height */
+.asset-lifecycle-content .d-flex.gap-2 {
+  height: auto !important;
+}
+
+.asset-lifecycle-content .gap-2 {
+  height: auto !important;
+}
+
+/* Empty state styling */
+.asset-lifecycle-content .text-center {
+  padding: 2rem 1rem;
+}
+
+.asset-lifecycle-content .text-center .icon {
+  font-size: 3rem;
+  color: #8094ae;
+  margin-bottom: 1rem;
+}
+
+/* Alert styling */
+.asset-lifecycle-content .alert {
+  font-size: 0.8125rem;
+  border-radius: 0.375rem;
+}
+
+/* Loading state */
+.asset-lifecycle-content .spinner-border {
+  color: #526dff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .asset-lifecycle-content .profile-ud {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem 0;
+  }
+  
+  .asset-lifecycle-content .profile-ud-label {
+    min-width: auto;
+    margin-bottom: 0.25rem;
+  }
+  
+  .asset-lifecycle-content .profile-ud-value {
+    margin-left: 0;
+  }
+}

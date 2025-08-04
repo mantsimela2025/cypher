@@ -1,0 +1,142 @@
+/* Categories DataTable Consistency Styles */
+
+/* Export button styling */
+.export-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.export-section .export-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #526484;
+  margin-right: 0.25rem;
+}
+
+.export-section .btn-icon {
+  margin-right: 0.25rem;
+  border: none;
+  background: transparent;
+  padding: 0.375rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+/* Export button colors - REQUIRED */
+.export-excel { color: #28a745 !important; }
+.export-pdf { color: #dc3545 !important; }
+.export-csv { color: #007bff !important; }
+
+/* Hover effects */
+.btn-icon.export-excel:hover { background-color: rgba(40, 167, 69, 0.1) !important; }
+.btn-icon.export-pdf:hover { background-color: rgba(220, 53, 69, 0.1) !important; }
+.btn-icon.export-csv:hover { background-color: rgba(0, 123, 255, 0.1) !important; }
+
+/* Show entries styling */
+.show-entries {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.show-entries .show-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #526484;
+}
+
+/* Sortable column headers */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.sortable-header:hover {
+  color: #007bff;
+}
+
+/* Custom cursor for sortable columns */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Category hierarchy indentation */
+.category-hierarchy {
+  padding-left: 0;
+}
+
+.category-hierarchy.level-1 {
+  padding-left: 1rem;
+}
+
+.category-hierarchy.level-2 {
+  padding-left: 2rem;
+}
+
+.category-hierarchy.level-3 {
+  padding-left: 3rem;
+}
+
+/* Category tree styling */
+.category-tree-item {
+  position: relative;
+}
+
+.category-tree-item::before {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.75rem;
+  height: 1px;
+  background-color: #e3ebf6;
+}
+
+.category-tree-item.has-children::after {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 0;
+  bottom: 50%;
+  width: 1px;
+  background-color: #e3ebf6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .export-section .export-label,
+  .show-entries .show-label {
+    display: none;
+  }
+}
+
+/* Category status indicators */
+.category-status-active {
+  color: #28a745;
+}
+
+.category-status-inactive {
+  color: #6c757d;
+}
+
+.category-status-draft {
+  color: #ffc107;
+}
+
+/* Document count styling */
+.document-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+}
+
+.document-count.zero {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}

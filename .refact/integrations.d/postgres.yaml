@@ -1,0 +1,12 @@
+psql_binary_path: ''
+host: rasdash-dev-public.cexgrlslydeh.us-east-1.rds.amazonaws.com
+port: '5432'
+user: rasdashadmin
+password: RasDash2025$
+database: rasdashdev01
+available:
+  on_your_laptop: false
+  when_isolated: false
+confirmation:
+  ask_user: []
+  deny: []

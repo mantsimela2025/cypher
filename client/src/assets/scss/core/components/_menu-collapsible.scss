@@ -1,0 +1,140 @@
+// Collapsible Menu Header Styles
+.nk-menu-heading {
+  .nk-menu-heading-toggle {
+    padding: 12px 8px; // Reduced left padding to move headers more to the left
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    user-select: none;
+    color: #6c757d;
+    background: transparent; // No background color
+    
+    &:hover {
+      background-color: rgba(116, 103, 239, 0.05);
+      transform: translateX(2px);
+    }
+    
+    // When expanded, change only text/icon/chevron color (no background)
+    &.expanded {
+      background: transparent; // Keep background transparent
+      color: #1abc9c;
+      
+      .overline-title {
+        color: #1abc9c;
+      }
+      
+      .icon {
+        color: #1abc9c;
+      }
+    }
+    
+    .overline-title {
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      text-transform: none;
+      color: inherit;
+    }
+    
+    .icon {
+      transition: all 0.3s ease;
+      color: inherit;
+      
+      &:last-child {
+        font-size: 16px !important;
+        font-weight: bold;
+      }
+    }
+  }
+
+  // Smooth animation for section expand/collapse
+  + .nk-menu-item {
+    animation: slideIn 0.3s ease-out;
+  }
+}
+
+// Styling for sub-menu items (indented items under collapsible headers)
+.nk-menu-sub-item {
+  margin-left: 0;
+  
+  .nk-menu-link {
+    padding: 4px 16px 4px 48px; // Increased left padding to indent more to the right
+    color: #6c757d;
+    font-size: 14px;
+    border-radius: 6px;
+    margin: 1px 0; // Reduced margin to bring items closer together
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(116, 103, 239, 0.05);
+      transform: translateX(2px);
+      color: #495057;
+    }
+    
+    &.active {
+      background-color: rgba(116, 103, 239, 0.1);
+      color: #7467ef;
+    }
+    
+    .nk-menu-text {
+      font-weight: 400;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Dark mode adjustments
+.is-dark .nk-menu-heading {
+  .nk-menu-heading-toggle {
+    color: #adb5bd;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    &.expanded {
+      background: transparent; // Keep background transparent in dark mode too
+      color: #20c997;
+      
+      .overline-title,
+      .icon {
+        color: #20c997;
+      }
+    }
+  }
+}
+
+.is-dark .nk-menu-sub-item {
+  .nk-menu-link {
+    color: #adb5bd;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #f8f9fa;
+    }
+    
+    &.active {
+      background-color: rgba(116, 103, 239, 0.1);
+      color: #8a7fff;
+    }
+  }
+}
+
+// Light mode adjustments  
+.is-light .nk-menu-heading {
+  .nk-menu-heading-toggle {
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+  }
+}

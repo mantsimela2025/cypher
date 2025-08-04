@@ -1,0 +1,36 @@
+{
+  "scan_info": {
+    "title": "Internal Security Scan",
+    "scan_id": "internal-1743616764907",
+    "timestamp": "2025-04-02T17:59:25.037Z",
+    "scan_date": "2025-04-02",
+    "environment": "secure",
+    "scan_types": [
+      "configuration",
+      "patch-detection"
+    ]
+  },
+  "summary": {
+    "total_findings": 0,
+    "risk_levels": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "compliance": null
+  },
+  "findings": [],
+  "compliance_results": {},
+  "metadata": {
+    "timestamp": "2025-04-02T17:59:24.911Z",
+    "scanId": "internal-1743616764907",
+    "scanTypes": [
+      "configuration",
+      "patch-detection"
+    ],
+    "environment": "secure",
+    "offline": true
+  }
+}

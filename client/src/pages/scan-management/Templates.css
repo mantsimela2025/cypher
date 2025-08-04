@@ -1,0 +1,325 @@
+/* Scan Templates Page Styles */
+
+.template-card {
+  border: 1px solid #e5e9f2;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.template-card:hover {
+  border-color: #526484;
+  box-shadow: 0 4px 12px rgba(82, 100, 132, 0.15);
+  transform: translateY(-2px);
+}
+
+.template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.template-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.template-actions {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.template-card:hover .template-actions {
+  opacity: 1;
+}
+
+.template-content {
+  flex: 1;
+  min-height: 120px;
+}
+
+.template-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #364a63;
+  line-height: 1.3;
+}
+
+.template-description {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.template-meta {
+  margin-top: auto;
+}
+
+.template-time {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.template-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.template-stats {
+  font-size: 0.75rem;
+}
+
+.template-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f5f6fa;
+}
+
+/* Category specific colors */
+.bg-success-dim {
+  background-color: rgba(46, 204, 113, 0.1);
+}
+
+.bg-primary-dim {
+  background-color: rgba(116, 103, 239, 0.1);
+}
+
+.bg-info-dim {
+  background-color: rgba(26, 188, 156, 0.1);
+}
+
+.bg-danger-dim {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+.bg-warning-dim {
+  background-color: rgba(241, 196, 15, 0.1);
+}
+
+.bg-secondary-dim {
+  background-color: rgba(108, 117, 125, 0.1);
+}
+
+/* Badge styles */
+.badge-dim {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--bs-primary);
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.badge-dim.bg-success {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+  border-color: rgba(46, 204, 113, 0.2);
+}
+
+.badge-dim.bg-primary {
+  background-color: rgba(116, 103, 239, 0.1);
+  color: #7467ef;
+  border-color: rgba(116, 103, 239, 0.2);
+}
+
+.badge-dim.bg-info {
+  background-color: rgba(26, 188, 156, 0.1);
+  color: #1abc9c;
+  border-color: rgba(26, 188, 156, 0.2);
+}
+
+.badge-dim.bg-danger {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  border-color: rgba(231, 76, 60, 0.2);
+}
+
+.badge-dim.bg-warning {
+  background-color: rgba(241, 196, 15, 0.1);
+  color: #f1c40f;
+  border-color: rgba(241, 196, 15, 0.2);
+}
+
+/* Search and filter bar */
+.form-control-outlined {
+  border: 1px solid #e5e9f2;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.form-control-outlined:focus {
+  border-color: #7467ef;
+  box-shadow: 0 0 0 0.2rem rgba(116, 103, 239, 0.25);
+}
+
+.form-control-lg {
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+}
+
+.form-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: #8094ae;
+}
+
+.form-icon-left {
+  left: 1rem;
+}
+
+.form-control-wrap {
+  position: relative;
+}
+
+.form-control-wrap .form-control {
+  padding-left: 2.5rem;
+}
+
+/* Loading and empty states */
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .template-card {
+    margin-bottom: 1rem;
+  }
+  
+  .template-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .template-actions {
+    opacity: 1;
+    align-self: flex-end;
+  }
+  
+  .template-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+  
+  .template-title {
+    font-size: 1rem;
+  }
+  
+  .template-description {
+    font-size: 0.8rem;
+  }
+}
+
+/* Modal improvements */
+.modal-lg {
+  max-width: 800px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #e5e9f2;
+  padding: 1.5rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #364a63;
+  margin-bottom: 0.5rem;
+}
+
+/* Button improvements */
+.btn-block {
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Dropdown improvements */
+.dropdown-menu {
+  border: 1px solid #e5e9f2;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f6fa;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+/* Animation improvements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.template-card {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .template-card {
+    border-color: #3a4a5c;
+    background-color: #2a3441;
+  }
+  
+  .template-card:hover {
+    border-color: #526484;
+  }
+  
+  .template-title {
+    color: #ffffff;
+  }
+  
+  .template-description {
+    color: #8094ae;
+  }
+  
+  .template-footer {
+    border-top-color: #3a4a5c;
+  }
+}

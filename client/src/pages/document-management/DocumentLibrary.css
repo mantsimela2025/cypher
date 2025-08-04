@@ -1,0 +1,204 @@
+/* Document Library Styles */
+
+/* Export button styling */
+.export-buttons .btn-icon {
+  margin-right: 0.25rem;
+  border: none;
+  background: transparent;
+  padding: 0.375rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.export-buttons .btn-icon:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Sortable column header styling */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.sortable-header:hover {
+  color: #007bff;
+}
+
+.sortable-header:hover .sort-arrows {
+  opacity: 1;
+}
+
+.sort-arrows {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  margin-left: 0.25rem;
+}
+
+.sort-arrows .sort-arrow {
+  display: block;
+  line-height: 0.5;
+  font-size: 0.6rem;
+  color: #8094ae;
+  transition: color 0.2s ease;
+}
+
+.sort-arrows .sort-arrow.active {
+  color: #007bff;
+}
+
+/* Export section styling */
+.export-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.export-section .export-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #526484;
+  margin-right: 0.25rem;
+}
+
+/* Show entries styling */
+.show-entries {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.show-entries .show-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #526484;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .export-section {
+    flex-wrap: wrap;
+  }
+  
+  .export-section .export-label,
+  .show-entries .show-label {
+    display: none;
+  }
+}
+
+/* Table header improvements */
+.nk-tb-list .nk-tb-head .nk-tb-col {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e9f2;
+}
+
+/* Improved column header alignment */
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.column-header .column-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #364a63;
+}
+
+.column-header .sort-indicator {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.5rem;
+}
+
+.sort-indicator .chevron {
+  font-size: 0.6rem;
+  color: #8094ae;
+  line-height: 0.5;
+  transition: color 0.2s ease;
+}
+
+.sort-indicator .chevron.active-asc {
+  color: #007bff;
+}
+
+.sort-indicator .chevron.active-desc {
+  color: #007bff;
+}
+
+/* Export button colors */
+.export-excel {
+  color: #28a745 !important;
+}
+
+.export-pdf {
+  color: #dc3545 !important;
+}
+
+.export-csv {
+  color: #007bff !important;
+}
+
+/* Hover effects for export buttons */
+.btn-icon.export-excel:hover {
+  background-color: rgba(40, 167, 69, 0.1) !important;
+}
+
+.btn-icon.export-pdf:hover {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.btn-icon.export-csv:hover {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+/* Document specific styling */
+.document-icon {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+}
+
+.document-status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+}
+
+/* File type specific colors */
+.file-pdf {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.file-doc {
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+}
+
+.file-img {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.file-xls {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.file-ppt {
+  background-color: rgba(255, 87, 34, 0.1);
+  color: #ff5722;
+}
+
+.file-default {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
