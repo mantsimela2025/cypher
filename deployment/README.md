@@ -239,8 +239,8 @@ ps aux | grep node
 2. Push to the appropriate branch (`dev`, `staging`, or `main`)
 3. GitLab CI/CD will automatically deploy
 
-### Database Migrations:
-Database migrations run automatically during production deployments.
+### Database Configuration:
+The application uses your existing AWS RDS PostgreSQL database. No migrations are needed as the database is already set up and configured.
 
 ### Backup Strategy:
 - Database: AWS RDS automated backups

@@ -199,17 +199,14 @@ deploy-production:
       ssh ec2-user@$EC2_PUBLIC_IP << 'EOF'
         cd /opt/cypher
         cp .env.production api/.env
-        
+
         # Install/update dependencies
         cd api && npm ci --production && cd ..
-        
-        # Run database migrations if needed
-        cd api && npm run db:migrate && cd ..
-        
+
         # Restart production services
         sudo systemctl restart cypher-api
         sudo systemctl restart cypher-client
-        
+
         # Health check
         sleep 15
         curl -f http://localhost:3001/health || exit 1

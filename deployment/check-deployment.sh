@@ -167,6 +167,7 @@ echo "View logs:           sudo journalctl -u cypher-api -f"
 echo "Restart service:     sudo systemctl restart cypher-api"
 echo "Check service:       sudo systemctl status cypher-api"
 echo "Test database:       cd /opt/cypher/api && node -e \"require('./src/db').testConnection()\""
+echo "Note: Using existing AWS RDS database - no migrations needed"
 
 echo ""
 echo "✅ Status check completed!"

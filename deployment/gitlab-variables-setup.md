@@ -29,7 +29,7 @@ DATABASE_URL_STAGING
 Type: Variable
 Protected: Yes
 Masked: Yes
-Value: postgresql://rasdashadmin:RasDash2025%24@rasdash-dev-public.cexgrlslydeh.us-east-1.rds.amazonaws.com:5432/rasdashstaging
+Value: postgresql://rasdashadmin:RasDash2025%24@rasdash-dev-public.cexgrlslydeh.us-east-1.rds.amazonaws.com:5432/rasdashdev01
 
 DATABASE_URL_DEV
 Type: Variable
@@ -37,6 +37,8 @@ Protected: Yes
 Masked: Yes
 Value: postgresql://rasdashadmin:RasDash2025%24@rasdash-dev-public.cexgrlslydeh.us-east-1.rds.amazonaws.com:5432/rasdashdev01
 ```
+
+**Note**: All environments use the same existing AWS RDS database. You can create separate databases for staging/dev if needed, but for now they all point to your current database.
 
 #### 🔑 JWT & Security
 ```
