@@ -11,12 +11,12 @@ variables:
   # Application settings
   NODE_VERSION: "18"
   APP_NAME: "cypher-app"
-  
+
   # AWS settings
   AWS_DEFAULT_REGION: "us-east-1"
   EC2_INSTANCE_ID: "i-04a41343a3f51559a"
-  EC2_PUBLIC_IP: "34.230.172.229"
-  
+  EC2_PUBLIC_IP: "18.207.177.239"
+
   # Deployment paths
   DEPLOY_PATH: "/opt/cypher"
   API_PATH: "/opt/cypher/api"
@@ -125,11 +125,15 @@ deploy-staging:
     - |
       cat > deploy-package/.env.staging << EOF
       NODE_ENV=staging
-      PORT=3001
-      DATABASE_URL=$DATABASE_URL_STAGING
+      PORT=3002
+      DB_HOST=$DB_HOST
+      DB_PORT=$DB_PORT
+      DB_NAME=$DB_NAME
+      DB_USER=$DB_USER
+      DB_PASSWORD=$(echo $DB_PASSWORD | sed 's/DOLLAR/$/g')
       JWT_SECRET=$JWT_SECRET
-      CORS_ORIGIN=https://staging.rasdash.dev.com
-      FRONTEND_URL=https://staging.rasdash.dev.com
+      CORS_ORIGIN=http://staging.rasdash.dev.com
+      FRONTEND_URL=http://staging.rasdash.dev.com
       EMAIL_FROM=$EMAIL_FROM
       OPENAI_API_KEY=$OPENAI_API_KEY
       ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
@@ -180,10 +184,14 @@ deploy-production:
       cat > deploy-package/.env.production << EOF
       NODE_ENV=production
       PORT=3001
-      DATABASE_URL=$DATABASE_URL_PRODUCTION
+      DB_HOST=$DB_HOST
+      DB_PORT=$DB_PORT
+      DB_NAME=$DB_NAME
+      DB_USER=$DB_USER
+      DB_PASSWORD=$(echo $DB_PASSWORD | sed 's/DOLLAR/$/g')
       JWT_SECRET=$JWT_SECRET
-      CORS_ORIGIN=https://rasdash.dev.com
-      FRONTEND_URL=https://rasdash.dev.com
+      CORS_ORIGIN=http://rasdash.dev.com
+      FRONTEND_URL=http://rasdash.dev.com
       EMAIL_FROM=$EMAIL_FROM
       OPENAI_API_KEY=$OPENAI_API_KEY
       ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
@@ -235,10 +243,14 @@ deploy-dev:
       cat > deploy-package/.env.dev << EOF
       NODE_ENV=development
       PORT=3003
-      DATABASE_URL=$DATABASE_URL_DEV
+      DB_HOST=$DB_HOST
+      DB_PORT=$DB_PORT
+      DB_NAME=$DB_NAME
+      DB_USER=$DB_USER
+      DB_PASSWORD=$(echo $DB_PASSWORD | sed 's/DOLLAR/$/g')
       JWT_SECRET=$JWT_SECRET
-      CORS_ORIGIN=https://dev.rasdash.dev.com
-      FRONTEND_URL=https://dev.rasdash.dev.com
+      CORS_ORIGIN=http://dev.rasdash.dev.com
+      FRONTEND_URL=http://dev.rasdash.dev.com
       EMAIL_FROM=$EMAIL_FROM
       OPENAI_API_KEY=$OPENAI_API_KEY
       ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY

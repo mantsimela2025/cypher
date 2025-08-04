@@ -2,11 +2,19 @@ const { drizzle } = require('drizzle-orm/postgres-js');
 const postgres = require('postgres');
 const config = require('../config');
 
-// Create the connection
-const connectionString = config.DATABASE_URL;
+// Create the connection string
+let connectionString = config.DATABASE_URL;
 
+// If DATABASE_URL is not provided, build it from components
 if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is required');
+  const { DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD } = config;
+
+  if (!DB_HOST || !DB_NAME || !DB_USER || !DB_PASSWORD) {
+    throw new Error('Either DATABASE_URL or all DB component variables (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) are required');
+  }
+
+  connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+  console.log(`📊 Built connection string from components: postgresql://${DB_USER}:***@${DB_HOST}:${DB_PORT}/${DB_NAME}`);
 }
 
 // Create postgres client using connection string approach

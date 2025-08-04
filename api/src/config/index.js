@@ -35,7 +35,12 @@ const config = {
 };
 
 // Validate required environment variables
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
+const requiredEnvVars = ['JWT_SECRET'];
+
+// Check database configuration
+if (!config.DATABASE_URL && (!config.DB_HOST || !config.DB_NAME || !config.DB_USER || !config.DB_PASSWORD)) {
+  console.warn('Warning: Either DATABASE_URL or all DB component variables (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) must be set');
+}
 
 requiredEnvVars.forEach((envVar) => {
   if (!config[envVar]) {
