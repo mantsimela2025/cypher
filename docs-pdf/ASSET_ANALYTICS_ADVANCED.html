@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ASSET_ANALYTICS_ADVANCED</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="advanced-asset-analytics-documentation">Advanced Asset Analytics
+Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>The Advanced Asset Analytics system provides sophisticated financial
+analysis, forecasting, and planning capabilities for enterprise asset
+management. This includes cost forecasting, lifecycle planning, ROI
+calculations, and depreciation analysis.</p>
+<h2 id="base-url">Base URL</h2>
+<pre><code>http://localhost:3000/api/v1/asset-analytics</code></pre>
+<h2 id="authentication-permissions">Authentication &amp;
+Permissions</h2>
+<ul>
+<li><strong>Authentication</strong>: JWT token required</li>
+<li><strong>Permission</strong>: <code>asset_analytics:read</code> for
+all analytics endpoints</li>
+</ul>
+<h2 id="features">Features</h2>
+<h3 id="cost-forecasting-budgeting">📈 Cost Forecasting &amp;
+Budgeting</h3>
+<h4 id="cost-forecasting">Cost Forecasting</h4>
+<p>Generate predictive cost models based on historical data with
+confidence intervals.</p>
+<p><strong>Endpoint:</strong> <code>GET /forecast/{assetUuid}</code></p>
+<p><strong>Parameters:</strong> - <code>forecastMonths</code> (1-60):
+Forecast horizon in months - <code>includeInflation</code> (boolean):
+Include inflation adjustments - <code>inflationRate</code> (0-0.20):
+Annual inflation rate - <code>confidenceLevel</code> (0.90, 0.95, 0.99):
+Statistical confidence level</p>
+<p><strong>Response Example:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;forecastPeriod&quot;</span><span class="fu">:</span> <span class="st">&quot;12 months&quot;</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;historicalDataPoints&quot;</span><span class="fu">:</span> <span class="dv">24</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;trends&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;averageMonthlyCost&quot;</span><span class="fu">:</span> <span class="fl">1250.50</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;monthlyGrowthRate&quot;</span><span class="fu">:</span> <span class="fl">0.02</span><span class="fu">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;volatility&quot;</span><span class="fu">:</span> <span class="fl">0.15</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;forecasts&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;month&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-08&quot;</span><span class="fu">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;forecastedCost&quot;</span><span class="fu">:</span> <span class="fl">1275.25</span><span class="fu">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;lowerBound&quot;</span><span class="fu">:</span> <span class="fl">1150.00</span><span class="fu">,</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;upperBound&quot;</span><span class="fu">:</span> <span class="fl">1400.50</span><span class="fu">,</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;confidence&quot;</span><span class="fu">:</span> <span class="fl">0.95</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;budgetRecommendations&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;recommendedMonthlyBudget&quot;</span><span class="fu">:</span> <span class="fl">1402.55</span><span class="fu">,</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;recommendedAnnualBudget&quot;</span><span class="fu">:</span> <span class="fl">16830.60</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="budget-planning">Budget Planning</h4>
+<p>Generate comprehensive budget plans with CAPEX/OPEX breakdown.</p>
+<p><strong>Endpoint:</strong> <code>GET /budget-plan</code></p>
+<p><strong>Parameters:</strong> - <code>costCenter</code> (string):
+Filter by cost center - <code>budgetYear</code> (2020-2050): Target
+budget year - <code>includeCapex/includeOpex</code> (boolean): Include
+capital/operational expenses - <code>riskBuffer</code> (0-0.50): Risk
+adjustment percentage</p>
+<p><strong>Key Features:</strong> - ✅ <strong>CAPEX/OPEX
+Categorization</strong> - Automatic expense classification - ✅
+<strong>Risk-Adjusted Budgets</strong> - Configurable risk buffers - ✅
+<strong>Multi-Year Planning</strong> - Forward-looking budget
+projections - ✅ <strong>Cost Center Analysis</strong> -
+Department-specific budgeting</p>
+<h3 id="lifecycle-planning-replacement-scheduling">🔄 Lifecycle Planning
+&amp; Replacement Scheduling</h3>
+<h4 id="lifecycle-planning">Lifecycle Planning</h4>
+<p>Comprehensive asset lifecycle analysis with risk assessment.</p>
+<p><strong>Endpoint:</strong> <code>GET /lifecycle-plan</code></p>
+<p><strong>Parameters:</strong> - <code>planningHorizon</code> (12-120):
+Planning period in months - <code>replacementThreshold</code> (0.5-1.0):
+Lifecycle percentage for replacement -
+<code>includeRiskAssessment</code> (boolean): Include risk analysis</p>
+<p><strong>Response Features:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;summary&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;totalAssets&quot;</span><span class="fu">:</span> <span class="dv">150</span><span class="fu">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;assetsRequiringReplacement&quot;</span><span class="fu">:</span> <span class="dv">23</span><span class="fu">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;totalReplacementCost&quot;</span><span class="fu">:</span> <span class="fl">450000.00</span><span class="fu">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;averageAssetAge&quot;</span><span class="fu">:</span> <span class="fl">28.5</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;lifecycleCategories&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;new&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span>      <span class="er">//</span> <span class="er">&lt;</span> <span class="er">25%</span> <span class="er">of</span> <span class="er">lifecycle</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;mature&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span>   <span class="er">//</span> <span class="er">25-75%</span> <span class="er">of</span> <span class="er">lifecycle</span>  </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;aging&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span>    <span class="er">//</span> <span class="er">75-90%</span> <span class="er">of</span> <span class="er">lifecycle</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;critical&quot;</span><span class="fu">:</span> <span class="ot">[]</span>  <span class="er">//</span> <span class="er">&gt;</span> <span class="dv">90</span><span class="er">%</span> <span class="er">of</span> <span class="er">lifecycle</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;replacementSchedule&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;assetUuid&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;hostname&quot;</span><span class="fu">:</span> <span class="st">&quot;server-01&quot;</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;replacementDate&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-09&quot;</span><span class="fu">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;estimatedCost&quot;</span><span class="fu">:</span> <span class="fl">15000.00</span><span class="fu">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;priority&quot;</span><span class="fu">:</span> <span class="st">&quot;Critical&quot;</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;riskAssessments&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;assetUuid&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;riskLevel&quot;</span><span class="fu">:</span> <span class="st">&quot;High&quot;</span><span class="fu">,</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;riskFactors&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;High failure risk due to age&quot;</span><span class="ot">,</span> <span class="st">&quot;No warranty coverage&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;mitigationRecommendations&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Prioritize immediate replacement&quot;</span><span class="ot">]</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="replacement-schedule-optimization">Replacement Schedule
+Optimization</h4>
+<p>Optimize replacement timing with budget constraints.</p>
+<p><strong>Endpoint:</strong> <code>GET /replacement-schedule</code></p>
+<p><strong>Parameters:</strong> - <code>budgetConstraint</code>
+(number): Maximum budget available - <code>prioritizeBy</code>
+(risk/cost/age): Optimization criteria -
+<code>allowBudgetReallocation</code> (boolean): Enable budget
+flexibility</p>
+<p><strong>Optimization Methods:</strong> - <strong>Risk-Based</strong>:
+Prioritize high-risk assets - <strong>Cost-Based</strong>: Optimize for
+lowest total cost - <strong>Age-Based</strong>: Replace oldest assets
+first</p>
+<h3 id="roi-depreciation-calculations">💼 ROI &amp; Depreciation
+Calculations</h3>
+<h4 id="roi-analysis">ROI Analysis</h4>
+<p>Multi-method Return on Investment calculations.</p>
+<p><strong>Endpoint:</strong> <code>GET /roi/{assetUuid}</code></p>
+<p><strong>Analysis Methods:</strong> 1. <strong>Simple ROI</strong>:
+Basic return calculation 2. <strong>Comprehensive ROI</strong>: Includes
+all cost categories 3. <strong>NPV ROI</strong>: Net Present Value with
+discount rates</p>
+<p><strong>Parameters:</strong> - <code>analysisMethod</code>
+(simple/comprehensive/npv): Calculation method -
+<code>discountRate</code> (0-0.30): Discount rate for NPV analysis -
+<code>timeHorizon</code> (12-120): Analysis period in months</p>
+<p><strong>Response Example:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;roiMetrics&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;method&quot;</span><span class="fu">:</span> <span class="st">&quot;Comprehensive ROI&quot;</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;roi&quot;</span><span class="fu">:</span> <span class="fl">15.75</span><span class="fu">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;monthlyROI&quot;</span><span class="fu">:</span> <span class="fl">0.26</span><span class="fu">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;totalCosts&quot;</span><span class="fu">:</span> <span class="fl">125000.00</span><span class="fu">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;netBenefit&quot;</span><span class="fu">:</span> <span class="fl">19687.50</span><span class="fu">,</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;paybackPeriod&quot;</span><span class="fu">:</span> <span class="fl">42.3</span><span class="fu">,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;interpretation&quot;</span><span class="fu">:</span> <span class="st">&quot;Good ROI&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;investment&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;initialInvestment&quot;</span><span class="fu">:</span> <span class="fl">100000.00</span><span class="fu">,</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;ongoingCosts&quot;</span><span class="fu">:</span> <span class="fl">15000.00</span><span class="fu">,</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;totalOperationalCosts&quot;</span><span class="fu">:</span> <span class="fl">10000.00</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;benefits&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;totalBenefits&quot;</span><span class="fu">:</span> <span class="fl">144687.50</span><span class="fu">,</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;benefitCategories&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;productivity&quot;</span><span class="fu">:</span> <span class="fl">57875.00</span><span class="fu">,</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;costSavings&quot;</span><span class="fu">:</span> <span class="fl">43406.25</span><span class="fu">,</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;riskReduction&quot;</span><span class="fu">:</span> <span class="fl">28937.50</span><span class="fu">,</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;other&quot;</span><span class="fu">:</span> <span class="fl">14468.75</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="depreciation-analysis">Depreciation Analysis</h4>
+<p>Multiple depreciation methods with tax implications.</p>
+<p><strong>Endpoint:</strong>
+<code>GET /depreciation/{assetUuid}</code></p>
+<p><strong>Depreciation Methods:</strong> 1. <strong>Straight
+Line</strong>: Equal annual depreciation 2. <strong>Declining
+Balance</strong>: Accelerated depreciation 3. <strong>Sum of
+Years</strong>: Front-loaded depreciation 4. <strong>Units of
+Production</strong>: Usage-based depreciation</p>
+<p><strong>Parameters:</strong> - <code>methods</code> (array):
+Depreciation methods to calculate - <code>decliningBalanceRate</code>
+(0.05-0.50): Rate for declining balance -
+<code>salvageValuePercent</code> (0-0.50): Expected salvage value</p>
+<p><strong>Response Features:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;assetDetails&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;purchaseCost&quot;</span><span class="fu">:</span> <span class="fl">50000.00</span><span class="fu">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;usefulLifeMonths&quot;</span><span class="fu">:</span> <span class="dv">60</span><span class="fu">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;salvageValue&quot;</span><span class="fu">:</span> <span class="fl">5000.00</span><span class="fu">,</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;monthsElapsed&quot;</span><span class="fu">:</span> <span class="dv">24</span><span class="fu">,</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;remainingLife&quot;</span><span class="fu">:</span> <span class="dv">36</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;depreciationMethods&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;straightLine&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;monthlyDepreciation&quot;</span><span class="fu">:</span> <span class="fl">750.00</span><span class="fu">,</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;accumulatedDepreciation&quot;</span><span class="fu">:</span> <span class="fl">18000.00</span><span class="fu">,</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;bookValue&quot;</span><span class="fu">:</span> <span class="fl">32000.00</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;decliningBalance&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;annualRate&quot;</span><span class="fu">:</span> <span class="dv">20</span><span class="fu">,</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;accumulatedDepreciation&quot;</span><span class="fu">:</span> <span class="fl">19200.00</span><span class="fu">,</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;bookValue&quot;</span><span class="fu">:</span> <span class="fl">30800.00</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;depreciationSchedule&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;month&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-08&quot;</span><span class="fu">,</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;depreciation&quot;</span><span class="fu">:</span> <span class="fl">750.00</span><span class="fu">,</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;bookValue&quot;</span><span class="fu">:</span> <span class="fl">31250.00</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;taxImplications&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;method&quot;</span><span class="fu">:</span> <span class="st">&quot;Straight Line&quot;</span><span class="fu">,</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;taxDeduction&quot;</span><span class="fu">:</span> <span class="fl">18000.00</span><span class="fu">,</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;note&quot;</span><span class="fu">:</span> <span class="st">&quot;Depreciation may be deductible for tax purposes&quot;</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="comprehensive-financial-analysis">Comprehensive Financial
+Analysis</h4>
+<p>Combined ROI, depreciation, and TCO analysis.</p>
+<p><strong>Endpoint:</strong>
+<code>GET /financial-analysis/{assetUuid}</code></p>
+<p><strong>Includes:</strong> - ✅ <strong>ROI Analysis</strong> -
+Multiple calculation methods - ✅ <strong>Depreciation Analysis</strong>
+- All depreciation methods - ✅ <strong>Total Cost of Ownership</strong>
+- Complete cost breakdown - ✅ <strong>Financial Health Score</strong> -
+0-100 scoring system - ✅ <strong>Strategic Recommendations</strong> -
+Actionable insights</p>
+<h3 id="dashboard-portfolio-analytics">📊 Dashboard &amp; Portfolio
+Analytics</h3>
+<h4 id="analytics-dashboard">Analytics Dashboard</h4>
+<p>Consolidated view of key metrics and forecasts.</p>
+<p><strong>Endpoint:</strong> <code>GET /dashboard</code></p>
+<p><strong>Features:</strong> - <strong>Time-based Analysis</strong>
+(30d, 90d, 1y, 2y) - <strong>Cost Center Filtering</strong> -
+<strong>Integrated Forecasts</strong> - <strong>Lifecycle
+Summaries</strong></p>
+<h4 id="portfolio-summary">Portfolio Summary</h4>
+<p>Enterprise-wide analytics aggregation.</p>
+<p><strong>Endpoint:</strong> <code>GET /portfolio-summary</code></p>
+<p><strong>Capabilities:</strong> - <strong>Multi-Asset
+Analysis</strong> - <strong>Portfolio-wide ROI</strong> - <strong>Risk
+Aggregation</strong> - <strong>Budget Consolidation</strong></p>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="predictive-analytics">🔍 Predictive Analytics</h3>
+<ul>
+<li><strong>Trend Analysis</strong>: Historical pattern recognition</li>
+<li><strong>Seasonal Adjustments</strong>: Account for cyclical
+variations</li>
+<li><strong>Confidence Intervals</strong>: Statistical uncertainty
+quantification</li>
+<li><strong>Inflation Modeling</strong>: Economic factor
+integration</li>
+</ul>
+<h3 id="financial-modeling">📈 Financial Modeling</h3>
+<ul>
+<li><strong>Multi-Method ROI</strong>: Simple, comprehensive, and NPV
+calculations</li>
+<li><strong>Depreciation Compliance</strong>: Multiple accounting
+standards</li>
+<li><strong>Tax Optimization</strong>: Depreciation tax
+implications</li>
+<li><strong>Risk Assessment</strong>: Financial risk quantification</li>
+</ul>
+<h3 id="optimization-algorithms">🎯 Optimization Algorithms</h3>
+<ul>
+<li><strong>Budget Constraint Optimization</strong>: Maximize value
+within limits</li>
+<li><strong>Multi-Criteria Decision Making</strong>: Balance risk, cost,
+and age</li>
+<li><strong>Resource Allocation</strong>: Optimal replacement
+scheduling</li>
+<li><strong>Scenario Planning</strong>: What-if analysis
+capabilities</li>
+</ul>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="generate-12-month-cost-forecast">Generate 12-Month Cost
+Forecast</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/asset-analytics/forecast/550e8400-e29b-41d4-a716-446655440000?forecastMonths=12&amp;includeInflation=true&amp;confidenceLevel=0.95&quot;</span> <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Authorization: Bearer YOUR_TOKEN&quot;</span></span></code></pre></div>
+<h3 id="create-annual-budget-plan">Create Annual Budget Plan</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/asset-analytics/budget-plan?budgetYear=2026&amp;includeCapex=true&amp;riskBuffer=0.15&quot;</span> <span class="dt">\</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Authorization: Bearer YOUR_TOKEN&quot;</span></span></code></pre></div>
+<h3 id="analyze-asset-roi">Analyze Asset ROI</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/asset-analytics/roi/550e8400-e29b-41d4-a716-446655440000?analysisMethod=npv&amp;discountRate=0.08&quot;</span> <span class="dt">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Authorization: Bearer YOUR_TOKEN&quot;</span></span></code></pre></div>
+<h3 id="calculate-depreciation">Calculate Depreciation</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/asset-analytics/depreciation/550e8400-e29b-41d4-a716-446655440000?methods=straight_line,declining_balance&quot;</span> <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Authorization: Bearer YOUR_TOKEN&quot;</span></span></code></pre></div>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="data-quality">📊 Data Quality</h3>
+<ol type="1">
+<li><strong>Historical Data</strong>: Ensure 12+ months of operational
+cost data</li>
+<li><strong>Accurate Lifecycle Info</strong>: Maintain current purchase
+dates and EOL data</li>
+<li><strong>Cost Categorization</strong>: Use consistent cost types and
+billing cycles</li>
+<li><strong>Regular Updates</strong>: Keep asset and cost data
+current</li>
+</ol>
+<h3 id="analysis-configuration">🎯 Analysis Configuration</h3>
+<ol type="1">
+<li><strong>Appropriate Time Horizons</strong>: Match analysis period to
+business cycles</li>
+<li><strong>Realistic Assumptions</strong>: Use market-appropriate
+inflation and discount rates</li>
+<li><strong>Risk Buffers</strong>: Include appropriate contingency
+factors</li>
+<li><strong>Confidence Levels</strong>: Choose statistical confidence
+appropriate for decisions</li>
+</ol>
+<h3 id="strategic-application">💡 Strategic Application</h3>
+<ol type="1">
+<li><strong>Budget Planning</strong>: Use forecasts for annual budget
+development</li>
+<li><strong>Replacement Timing</strong>: Optimize replacement schedules
+for cost efficiency</li>
+<li><strong>Investment Decisions</strong>: Apply ROI analysis for
+capital allocation</li>
+<li><strong>Risk Management</strong>: Use lifecycle analysis for
+proactive planning</li>
+</ol>
+<h2 id="integration-points">Integration Points</h2>
+<h3 id="financial-systems">Financial Systems</h3>
+<ul>
+<li><strong>ERP Integration</strong>: Budget and cost data
+synchronization</li>
+<li><strong>Accounting Systems</strong>: Depreciation schedule
+export</li>
+<li><strong>Procurement</strong>: Replacement cost estimation</li>
+<li><strong>Treasury</strong>: Cash flow planning</li>
+</ul>
+<h3 id="business-intelligence">Business Intelligence</h3>
+<ul>
+<li><strong>Dashboard Integration</strong>: Embed analytics in BI
+tools</li>
+<li><strong>Report Automation</strong>: Scheduled analytics reports</li>
+<li><strong>Alert Systems</strong>: Threshold-based notifications</li>
+<li><strong>Data Warehousing</strong>: Historical analytics data
+storage</li>
+</ul>
+</body>
+</html>

@@ -335,8 +335,10 @@ const AWSIntegration = () => {
           {/* Tabs navigation */}
           <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
           <div className="mt-3">
-            {activeTab === 'dashboard' && <AwsDashboardTab /> /* Dynamic dashboard with requirements form, recommendation, deploy */
-          <div className="row g-3 mb-4">
+            {activeTab === 'dashboard' && (
+              <>
+                <AwsDashboardTab /> {/* Dynamic dashboard with requirements form, recommendation, deploy */}
+                <div className="row g-3 mb-4">
             <div className="col-md-3">
               <div className="card text-center">
                 <div className="card-body">
@@ -576,8 +578,9 @@ const AWSIntegration = () => {
               <i className="bi bi-lightbulb me-2"></i>
               Recommendation: Enable S3 lifecycle policies to reduce storage costs.
             </div>
-          </div>
-          </>)}
+                </div>
+              </>
+            )}
             {activeTab === 'settings' && <AWSCredentialsForm />}
             {activeTab === 'terminal' && <AWSTerminalTab />}
           </div>

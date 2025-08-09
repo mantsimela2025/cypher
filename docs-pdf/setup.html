@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>setup</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="api-setup-guide">API Setup Guide</h1>
+<p>Complete guide to setting up the RAS Dashboard API from scratch,
+including database configuration, environment setup, and initial data
+seeding.</p>
+<h2 id="quick-setup">🚀 Quick Setup</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Install dependencies</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> api</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Configure environment</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> .env.example .env</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Edit .env with your database credentials</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Test database connection</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query tables</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Seed database with default data</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:seed all <span class="at">--verbose</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Start development server</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
+<h2 id="prerequisites">📋 Prerequisites</h2>
+<h3 id="required-software">Required Software</h3>
+<ul>
+<li><strong>Node.js</strong> (v16 or higher)</li>
+<li><strong>PostgreSQL</strong> (v12 or higher)</li>
+<li><strong>npm</strong> or <strong>yarn</strong></li>
+</ul>
+<h3 id="database-requirements">Database Requirements</h3>
+<ul>
+<li>PostgreSQL database (local or cloud)</li>
+<li>Database user with CREATE, INSERT, UPDATE, DELETE permissions</li>
+<li>SSL support (for cloud databases like AWS RDS)</li>
+</ul>
+<h2 id="detailed-setup">🔧 Detailed Setup</h2>
+<h3 id="step-1-install-dependencies">Step 1: Install Dependencies</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> api</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span></code></pre></div>
+<p><strong>Key Dependencies Installed:</strong> - <code>express</code> -
+Web framework - <code>drizzle-orm</code> - Database ORM -
+<code>postgres</code> - PostgreSQL client - <code>bcryptjs</code> -
+Password hashing - <code>jsonwebtoken</code> - JWT authentication -
+<code>swagger-jsdoc</code> &amp; <code>swagger-ui-express</code> - API
+documentation</p>
+<h3 id="step-2-environment-configuration">Step 2: Environment
+Configuration</h3>
+<p>Create your environment file:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> .env.example .env</span></code></pre></div>
+<p>Edit <code>.env</code> with your configuration:</p>
+<pre class="env"><code># Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# Database Configuration (Example for AWS RDS)
+DATABASE_URL=postgresql://username:password@host:5432/database
+PGHOST=your-db-host.amazonaws.com
+PGPORT=5432
+PGUSER=your_username
+PGPASSWORD=your_password
+PGDATABASE=your_database_name
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=24h
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:3000
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# File Upload
+MAX_FILE_SIZE=10485760</code></pre>
+<h3 id="step-3-database-connection">Step 3: Database Connection</h3>
+<p>Test your database connection:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query tables</span></code></pre></div>
+<p><strong>Expected Output:</strong></p>
+<pre><code>🔍 Running query: tables
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Database Tables:
+┌─────────┬─────────────────┬────────────┐
+│ (index) │   table_name    │ table_type │
+├─────────┼─────────────────┼────────────┤
+│    0    │    &#39;users&#39;      │   &#39;BASE&#39;   │
+│    1    │    &#39;roles&#39;      │   &#39;BASE&#39;   │
+│    2    │ &#39;permissions&#39;   │   &#39;BASE&#39;   │
+└─────────┴─────────────────┴────────────┘
+✅ Query completed successfully</code></pre>
+<h3 id="step-4-database-schema-verification">Step 4: Database Schema
+Verification</h3>
+<p>Check your database schema matches expectations:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query schema</span></code></pre></div>
+<p><strong>Required Tables:</strong> - <code>users</code> - User
+accounts - <code>roles</code> - User roles (admin, user, moderator,
+etc.) - <code>permissions</code> - System permissions -
+<code>role_permissions</code> - Role-permission assignments -
+<code>user_roles</code> - User-role assignments -
+<code>user_preferences</code> - User preferences (optional)</p>
+<h3 id="step-5-seed-default-data">Step 5: Seed Default Data</h3>
+<p>Populate your database with default data:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:seed all <span class="at">--verbose</span></span></code></pre></div>
+<p><strong>What Gets Created:</strong> - <strong>12 Permissions</strong>
+across 5 categories (users, roles, admin, system, reports) - <strong>4
+Roles</strong> (admin, user, moderator, viewer) -
+<strong>Role-Permission Assignments</strong> (admin gets all, user gets
+basic, etc.) - <strong>2 Default Users</strong> (admin and test
+user)</p>
+<h3 id="step-6-verify-setup">Step 6: Verify Setup</h3>
+<p>Check that everything was created correctly:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check users</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check role assignments</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query role-permissions</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check user-role assignments</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query user-roles</span></code></pre></div>
+<h3 id="step-7-start-development-server">Step 7: Start Development
+Server</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
+<p><strong>Expected Output:</strong></p>
+<pre><code>🔄 Testing database connection...
+✅ Database connection established successfully
+🚀 Server is running on port 3001
+📊 Environment: development
+🔗 Health check: http://localhost:3001/health
+📚 API Base URL: http://localhost:3001/api/v1</code></pre>
+<h2 id="api-endpoints">🌐 API Endpoints</h2>
+<h3 id="health-check">Health Check</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:3001/health</span></code></pre></div>
+<h3 id="api-documentation">API Documentation</h3>
+<p>Visit: <code>http://localhost:3001/api-docs</code></p>
+<h3 id="authentication-endpoints">Authentication Endpoints</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Register new user</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">POST</span> /api/v1/auth/register</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Login</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">POST</span> /api/v1/auth/login</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Get profile (requires auth)</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">GET</span> /api/v1/auth/profile</span></code></pre></div>
+<h3 id="user-management">User Management</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get all users (requires auth)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">GET</span> /api/v1/users</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get user by ID</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="ex">GET</span> /api/v1/users/:id</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create user</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="ex">POST</span> /api/v1/users</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Update user</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="ex">PUT</span> /api/v1/users/:id</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete user</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="ex">DELETE</span> /api/v1/users/:id</span></code></pre></div>
+<h2 id="testing-the-setup">🧪 Testing the Setup</h2>
+<h3 id="test-authentication">Test Authentication</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Register a new user</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:3001/api/v1/auth/register <span class="dt">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;email&quot;: &quot;test@example.com&quot;,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;username&quot;: &quot;testuser&quot;,</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;password&quot;: &quot;TestPass123!&quot;,</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;firstName&quot;: &quot;Test&quot;,</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;lastName&quot;: &quot;User&quot;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Login with seeded admin user</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:3001/api/v1/auth/login <span class="dt">\</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;email&quot;: &quot;admin@rasdash.com&quot;,</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;password&quot;: &quot;Admin123!&quot;</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="st">  }&#39;</span></span></code></pre></div>
+<h3 id="test-protected-endpoints">Test Protected Endpoints</h3>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get access token from login response, then:</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> GET http://localhost:3001/api/v1/users <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Authorization: Bearer YOUR_ACCESS_TOKEN&quot;</span></span></code></pre></div>
+<h2 id="troubleshooting">🔧 Troubleshooting</h2>
+<h3 id="database-connection-issues">Database Connection Issues</h3>
+<p><strong>Error:</strong>
+<code>Connection failed: password authentication failed</code></p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check your credentials in .env</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query tables</span></code></pre></div>
+<p><strong>Error:</strong>
+<code>Connection failed: SSL required</code></p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For cloud databases, ensure SSL is configured</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Check DATABASE_URL includes SSL parameters</span></span></code></pre></div>
+<h3 id="port-already-in-use">Port Already in Use</h3>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Change port in .env</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="va">PORT</span><span class="op">=</span>3002</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Or kill process using port 3001</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="ex">lsof</span> <span class="at">-ti:3001</span> <span class="kw">|</span> <span class="fu">xargs</span> kill <span class="at">-9</span></span></code></pre></div>
+<h3 id="permission-errors">Permission Errors</h3>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure database user has proper permissions</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">GRANT</span> ALL PRIVILEGES ON DATABASE your_db TO your_user<span class="kw">;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">GRANT</span> ALL ON ALL TABLES IN SCHEMA public TO your_user<span class="kw">;</span></span></code></pre></div>
+<h3 id="seeding-failures">Seeding Failures</h3>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for existing data conflicts</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force recreate role permissions</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:seed role-permissions <span class="at">--force</span></span></code></pre></div>
+<h2 id="security-configuration">🔒 Security Configuration</h2>
+<h3 id="jwt-secret">JWT Secret</h3>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a secure JWT secret</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> <span class="at">-e</span> <span class="st">&quot;console.log(require(&#39;crypto&#39;).randomBytes(64).toString(&#39;hex&#39;))&quot;</span></span></code></pre></div>
+<h3 id="password-requirements">Password Requirements</h3>
+<p>Default validation requires: - Minimum 8 characters - At least one
+uppercase letter - At least one lowercase letter<br />
+- At least one number - At least one special character</p>
+<h3 id="rate-limiting">Rate Limiting</h3>
+<p>Default configuration: - 100 requests per 15 minutes per IP -
+Configurable via <code>RATE_LIMIT_*</code> environment variables</p>
+<h2 id="project-structure">📁 Project Structure</h2>
+<pre><code>api/
+├── src/
+│   ├── config/           # Configuration files
+│   ├── db/              # Database connection and schemas
+│   ├── controllers/     # Request handlers
+│   ├── routes/          # API route definitions
+│   ├── services/        # Business logic
+│   ├── middleware/      # Express middleware
+│   └── utils/           # Utility functions
+├── scripts/             # Database management scripts
+├── tests/               # Test files
+├── docs/                # Documentation
+├── .env                 # Environment variables
+├── package.json         # Dependencies and scripts
+└── server.js           # Application entry point</code></pre>
+<h2 id="production-deployment">🚀 Production Deployment</h2>
+<h3 id="environment-variables">Environment Variables</h3>
+<pre class="env"><code>NODE_ENV=production
+PORT=3001
+DATABASE_URL=your_production_database_url
+JWT_SECRET=your_production_jwt_secret
+CORS_ORIGIN=https://your-frontend-domain.com</code></pre>
+<h3 id="database-setup">Database Setup</h3>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run migrations in production</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:seed permissions roles role-permissions</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Don&#39;t seed test users in production</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create admin user manually or through secure process</span></span></code></pre></div>
+<h3 id="process-management">Process Management</h3>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using PM2</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> pm2</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pm2</span> start server.js <span class="at">--name</span> <span class="st">&quot;ras-api&quot;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Using Docker</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> ras-api .</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-p</span> 3001:3001 ras-api</span></code></pre></div>
+<h2 id="next-steps">📚 Next Steps</h2>
+<ol type="1">
+<li><strong>Customize Permissions</strong> - Edit
+<code>/api/scripts/db-seed.js</code> to add your specific
+permissions</li>
+<li><strong>Add Business Logic</strong> - Create new controllers and
+services for your domain</li>
+<li><strong>Implement Frontend</strong> - Connect your React/Vue/Angular
+frontend to the API</li>
+<li><strong>Add Tests</strong> - Expand the test suite in
+<code>/api/tests/</code></li>
+<li><strong>Monitor Performance</strong> - Add logging and monitoring
+tools</li>
+</ol>
+<h2 id="related-documentation">🔗 Related Documentation</h2>
+<ul>
+<li><a href="./database-query-tool.md">Database Query Tool</a> - Query
+and inspect your database</li>
+<li><a href="./database-seeder.md">Database Seeder</a> - Manage default
+data</li>
+<li><a href="./duplicate-removal.md">Duplicate Removal</a> - Clean up
+duplicate records</li>
+<li><a href="./rbac.md">RBAC Implementation</a> - Role-based access
+control details</li>
+</ul>
+<p>Your API is now ready for development! 🎉</p>
+</body>
+</html>

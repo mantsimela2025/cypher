@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>database-query-tool</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="database-query-tool-documentation">Database Query Tool
+Documentation</h1>
+<p>The Database Query Tool provides a convenient command-line interface
+for querying your PostgreSQL database using pre-built queries and raw
+SQL capabilities.</p>
+<h2 id="quick-start">🚀 Quick Start</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show available queries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query help</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># List all users</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Show database schema</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query schema</span></code></pre></div>
+<h2 id="available-queries">📋 Available Queries</h2>
+<h3 id="user-queries">👥 User Queries</h3>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 34%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Example Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>users</code></td>
+<td>List all users with basic info</td>
+<td>Table with id, username, email, role, status</td>
+</tr>
+<tr>
+<td><code>users:count</code></td>
+<td>Count total users</td>
+<td><code>Total users: 15</code></td>
+</tr>
+<tr>
+<td><code>users:active</code></td>
+<td>List only active users</td>
+<td>Table filtered by status=‘active’</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users:count</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users:active</span></code></pre></div>
+<h3 id="role-queries">🎭 Role Queries</h3>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 34%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Example Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>roles</code></td>
+<td>List all roles</td>
+<td>Table with id, name, description, is_system</td>
+</tr>
+<tr>
+<td><code>roles:system</code></td>
+<td>List only system roles</td>
+<td>Table filtered by is_system=true</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query roles</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query roles:system</span></code></pre></div>
+<h3 id="permission-queries">🔐 Permission Queries</h3>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 34%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Example Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>permissions</code></td>
+<td>List all permissions</td>
+<td>Table with id, name, category, description</td>
+</tr>
+<tr>
+<td><code>permissions:by-category</code></td>
+<td>Group permissions by category</td>
+<td>Separate tables for each category</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query permissions</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query permissions:by-category</span></code></pre></div>
+<h3 id="relationship-queries">🔗 Relationship Queries</h3>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 34%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Example Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user-roles</code></td>
+<td>Show user-role assignments</td>
+<td>Table with username, role name, assigned date</td>
+</tr>
+<tr>
+<td><code>role-permissions</code></td>
+<td>Show role-permission assignments</td>
+<td>Table with role name, permission name, category</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query user-roles</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query role-permissions</span></code></pre></div>
+<h3 id="database-information">📊 Database Information</h3>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 34%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Example Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tables</code></td>
+<td>List all database tables</td>
+<td>Table with table names and types</td>
+</tr>
+<tr>
+<td><code>schema</code></td>
+<td>Show detailed table schemas</td>
+<td>Column info for all tables</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query tables</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query schema</span></code></pre></div>
+<h2 id="detailed-examples">📖 Detailed Examples</h2>
+<h3 id="example-1-check-user-data">Example 1: Check User Data</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See all users</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users</span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>📋 All Users:
+┌─────────┬────┬──────────┬─────────────────┬───────┬────────┐
+│ (index) │ id │ username │      email      │ role  │ status │
+├─────────┼────┼──────────┼─────────────────┼───────┼────────┤
+│    0    │ 1  │ &#39;admin&#39;  │ &#39;admin@test.com&#39;│&#39;admin&#39;│&#39;active&#39;│
+│    1    │ 2  │ &#39;user1&#39;  │ &#39;user@test.com&#39; │&#39;user&#39; │&#39;active&#39;│
+└─────────┴────┴──────────┴─────────────────┴───────┴────────┘</code></pre>
+<h3 id="example-2-analyze-permissions-by-category">Example 2: Analyze
+Permissions by Category</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query permissions:by-category</span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>📂 Permissions by Category:
+
+📁 USERS:
+┌─────────┬────┬─────────────┬─────────┬──────────────────────────┐
+│ (index) │ id │    name     │category │       description        │
+├─────────┼────┼─────────────┼─────────┼──────────────────────────┤
+│    0    │ 1  │&#39;users:read&#39; │ &#39;users&#39; │&#39;View user information&#39;   │
+│    1    │ 2  │&#39;users:write&#39;│ &#39;users&#39; │&#39;Create and update users&#39; │
+└─────────┴────┴─────────────┴─────────┴──────────────────────────┘
+
+📁 ADMIN:
+┌─────────┬────┬──────────────────┬─────────┬─────────────────────────┐
+│ (index) │ id │      name        │category │       description       │
+├─────────┼────┼──────────────────┼─────────┼─────────────────────────┤
+│    0    │ 9  │&#39;admin:dashboard&#39; │ &#39;admin&#39; │&#39;Access admin dashboard&#39; │
+└─────────┴────┴──────────────────┴─────────┴─────────────────────────┘</code></pre>
+<h3 id="example-3-check-role-permission-assignments">Example 3: Check
+Role-Permission Assignments</h3>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query role-permissions</span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>🔗 Role-Permission Assignments:
+┌─────────┬────────┬──────────────┬──────────────────┬─────────┐
+│ (index) │ roleId │   roleName   │ permissionName   │category │
+├─────────┼────────┼──────────────┼──────────────────┼─────────┤
+│    0    │   1    │   &#39;admin&#39;    │   &#39;users:read&#39;   │ &#39;users&#39; │
+│    1    │   1    │   &#39;admin&#39;    │   &#39;users:write&#39;  │ &#39;users&#39; │
+│    2    │   2    │   &#39;user&#39;     │   &#39;users:read&#39;   │ &#39;users&#39; │
+└─────────┴────────┴──────────────┴──────────────────┴─────────┘</code></pre>
+<h3 id="example-4-database-schema-inspection">Example 4: Database Schema
+Inspection</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query schema</span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>🏗️ Table Schemas:
+
+📋 USERS:
+┌─────────┬─────────────────┬─────────────────┬─────────────┬──────────────────┐
+│ (index) │   column_name   │   data_type     │ is_nullable │ column_default   │
+├─────────┼─────────────────┼─────────────────┼─────────────┼──────────────────┤
+│    0    │      &#39;id&#39;       │    &#39;integer&#39;    │    &#39;NO&#39;     │   &#39;nextval(...&#39;  │
+│    1    │   &#39;username&#39;    │&#39;character varying&#39;│   &#39;NO&#39;     │      null        │
+│    2    │    &#39;email&#39;      │&#39;character varying&#39;│   &#39;YES&#39;    │      null        │
+└─────────┴─────────────────┴─────────────────┴─────────────┴──────────────────┘</code></pre>
+<h2 id="advanced-usage">🛠️ Advanced Usage</h2>
+<h3 id="raw-sql-queries">Raw SQL Queries</h3>
+<p>The tool uses the postgres client internally, so you can extend it
+with custom queries by modifying
+<code>/api/scripts/db-query.js</code>.</p>
+<h3 id="adding-custom-queries">Adding Custom Queries</h3>
+<p>To add your own queries, edit the <code>queries</code> object in
+<code>/api/scripts/db-query.js</code>:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> queries <span class="op">=</span> {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ... existing queries ...</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;my-custom-query&#39;</span><span class="op">:</span> <span class="kw">async</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;🔍 My Custom Query:&#39;</span>)<span class="op">;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> result <span class="op">=</span> <span class="cf">await</span> db<span class="op">.</span><span class="fu">select</span>()<span class="op">.</span><span class="fu">from</span>(users)<span class="op">.</span><span class="fu">where</span>(<span class="fu">eq</span>(users<span class="op">.</span><span class="at">status</span><span class="op">,</span> <span class="st">&#39;inactive&#39;</span>))<span class="op">;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">table</span>(result)<span class="op">;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Then use it:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query my-custom-query</span></code></pre></div>
+<h2 id="troubleshooting">🔧 Troubleshooting</h2>
+<h3 id="connection-issues">Connection Issues</h3>
+<p>If you get connection errors: 1. Check your <code>.env</code> file
+has correct database credentials 2. Ensure your database is running 3.
+Verify SSL settings match your database configuration</p>
+<h3 id="query-errors">Query Errors</h3>
+<p>If a specific query fails: 1. Check the error message for details 2.
+Verify the table/column names exist in your database 3. Ensure you have
+proper permissions</p>
+<h3 id="performance">Performance</h3>
+<p>For large datasets: - Use specific queries instead of
+<code>users</code> (which gets all users) - Consider adding LIMIT
+clauses for very large tables - Use <code>users:count</code> instead of
+<code>users</code> if you just need the count</p>
+<h2 id="related-tools">📚 Related Tools</h2>
+<ul>
+<li><strong>Database Seeder</strong>: <code>npm run db:seed</code> -
+Populate database with default data</li>
+<li><strong>Duplicate Remover</strong>:
+<code>npm run db:remove-duplicates</code> - Clean up duplicate
+records</li>
+<li><strong>Drizzle Studio</strong>: <code>npm run db:studio</code> -
+Visual database browser</li>
+</ul>
+<h2 id="best-practices">🎯 Best Practices</h2>
+<ol type="1">
+<li><strong>Start with <code>help</code></strong> - Always check
+available queries first</li>
+<li><strong>Use specific queries</strong> - Prefer
+<code>users:active</code> over <code>users</code> when you only need
+active users</li>
+<li><strong>Check schema first</strong> - Use <code>schema</code> or
+<code>tables</code> to understand your database structure</li>
+<li><strong>Combine with other tools</strong> - Use with seeder and
+duplicate remover for complete database management</li>
+</ol>
+<h2 id="examples-by-use-case">📝 Examples by Use Case</h2>
+<h3 id="database-health-check">Database Health Check</h3>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query tables          <span class="co"># See what tables exist</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users:count     <span class="co"># Check user count</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query roles           <span class="co"># Verify roles are set up</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query permissions     <span class="co"># Check permissions exist</span></span></code></pre></div>
+<h3 id="rbac-verification">RBAC Verification</h3>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query user-roles      <span class="co"># See who has what roles</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query role-permissions <span class="co"># See what permissions each role has</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query permissions:by-category <span class="co"># Organize permissions by category</span></span></code></pre></div>
+<h3 id="data-analysis">Data Analysis</h3>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users:active    <span class="co"># See active users</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query roles:system    <span class="co"># Check system roles</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query schema          <span class="co"># Understand table structure</span></span></code></pre></div>
+<p>This tool provides a powerful way to inspect and understand your
+database without needing to connect to PostgreSQL directly or write
+custom SQL queries.</p>
+</body>
+</html>

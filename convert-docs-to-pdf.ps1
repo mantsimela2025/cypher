@@ -1,0 +1,99 @@
+# PowerShell script to convert all .md files in /docs to .pdf using Pandoc
+# Author: Generated for CYPHER project
+
+$PandocPath = "C:\Program Files\Pandoc\pandoc.exe"
+$DocsPath = ".\docs"
+$OutputPath = ".\docs-pdf"
+
+# Create output directory if it doesn't exist
+if (!(Test-Path $OutputPath)) {
+    New-Item -ItemType Directory -Path $OutputPath -Force
+    Write-Host "Created output directory: $OutputPath" -ForegroundColor Green
+}
+
+# Function to convert a single markdown file to PDF
+function Convert-MarkdownToPdf {
+    param(
+        [string]$InputFile,
+        [string]$OutputFile
+    )
+    
+    try {
+        # Create output directory if needed
+        $outputDir = Split-Path $OutputFile -Parent
+        if (!(Test-Path $outputDir)) {
+            New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+        }
+        
+        # Run Pandoc conversion with PDF engine
+        & $PandocPath -f markdown -t pdf --pdf-engine=xelatex -o $OutputFile $InputFile
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Successfully converted: $InputFile -> $OutputFile" -ForegroundColor Green
+            return $true
+        } else {
+            Write-Host "Failed to convert: $InputFile" -ForegroundColor Red
+            return $false
+        }
+    }
+    catch {
+        Write-Host "Error converting $InputFile : $($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
+}
+
+# Check if Pandoc exists
+if (!(Test-Path $PandocPath)) {
+    Write-Host "Error: Pandoc not found at $PandocPath" -ForegroundColor Red
+    exit 1
+}
+
+# Check if docs directory exists
+if (!(Test-Path $DocsPath)) {
+    Write-Host "Error: Docs directory not found at $DocsPath" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Starting conversion of markdown files to PDF documents..." -ForegroundColor Cyan
+Write-Host "Source: $DocsPath" -ForegroundColor Yellow
+Write-Host "Output: $OutputPath" -ForegroundColor Yellow
+Write-Host "Pandoc: $PandocPath" -ForegroundColor Yellow
+Write-Host "PDF Engine: XeLaTeX" -ForegroundColor Yellow
+Write-Host ""
+
+# Get all .md files recursively
+$markdownFiles = Get-ChildItem -Path $DocsPath -Filter "*.md" -Recurse
+
+Write-Host "Found $($markdownFiles.Count) markdown files to convert" -ForegroundColor Cyan
+Write-Host ""
+
+$successCount = 0
+$failureCount = 0
+
+# Convert each file
+foreach ($file in $markdownFiles) {
+    # Calculate relative path from docs directory
+    $relativePath = $file.FullName.Substring((Resolve-Path $DocsPath).Path.Length + 1)
+    $outputFile = Join-Path $OutputPath ($relativePath -replace '\.md$', '.pdf')
+    
+    Write-Host "Converting: $relativePath"
+    
+    if (Convert-MarkdownToPdf -InputFile $file.FullName -OutputFile $outputFile) {
+        $successCount++
+    } else {
+        $failureCount++
+    }
+}
+
+Write-Host ""
+Write-Host "Conversion Summary:" -ForegroundColor Cyan
+Write-Host "Successfully converted: $successCount files" -ForegroundColor Green
+if ($failureCount -gt 0) {
+    Write-Host "Failed to convert: $failureCount files" -ForegroundColor Red
+    Write-Host "Note: PDF conversion requires a LaTeX installation (MiKTeX or TeX Live)" -ForegroundColor Yellow
+} else {
+    Write-Host "All files converted successfully!" -ForegroundColor Green
+}
+
+Write-Host ""
+Write-Host "PDF documents saved to: $OutputPath" -ForegroundColor Yellow

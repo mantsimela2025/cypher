@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>testing-strategy</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="api-testing-strategy-coverage">API Testing Strategy &amp;
+Coverage</h1>
+<p>Comprehensive testing strategy for the RAS Dashboard API with
+prioritized test suites covering critical security, compliance, and
+business logic functionality.</p>
+<h2 id="testing-overview">🎯 Testing Overview</h2>
+<h3 id="current-test-coverage-status">Current Test Coverage Status</h3>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Category</th>
+<th>APIs Tested</th>
+<th>APIs Missing</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Priority 1</strong></td>
+<td>Critical APIs</td>
+<td>5/5</td>
+<td>0</td>
+<td>✅ 100%</td>
+</tr>
+<tr>
+<td><strong>Priority 2</strong></td>
+<td>Business Logic</td>
+<td>4/15</td>
+<td>11</td>
+<td>🟡 27%</td>
+</tr>
+<tr>
+<td><strong>Priority 3</strong></td>
+<td>Integration</td>
+<td>0/4</td>
+<td>4</td>
+<td>❌ 0%</td>
+</tr>
+<tr>
+<td><strong>Priority 4</strong></td>
+<td>AI/Analytics</td>
+<td>0/7</td>
+<td>7</td>
+<td>❌ 0%</td>
+</tr>
+<tr>
+<td><strong>Overall</strong></td>
+<td>All APIs</td>
+<td>9/31</td>
+<td>22</td>
+<td>🟡 29%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="test-suites-by-priority">📋 Test Suites by Priority</h2>
+<h3 id="priority-1-critical-apis-security-compliance">✅ Priority 1:
+Critical APIs (Security &amp; Compliance)</h3>
+<p><strong>Status: COMPLETE</strong> - All critical APIs have
+comprehensive test coverage</p>
+<ol type="1">
+<li><strong>RBAC Service Tests</strong> (<code>rbac.test.js</code>)
+<ul>
+<li>✅ Role management CRUD operations</li>
+<li>✅ Permission management</li>
+<li>✅ Role-permission assignments</li>
+<li>✅ User permission checking</li>
+<li>✅ Security validation &amp; access control</li>
+<li>✅ Edge cases &amp; error handling</li>
+</ul></li>
+<li><strong>Audit Log Service Tests</strong>
+(<code>auditLog.test.js</code>)
+<ul>
+<li>✅ Audit log creation &amp; retrieval</li>
+<li>✅ Filtering &amp; search functionality</li>
+<li>✅ Statistics &amp; analytics</li>
+<li>✅ Compliance features</li>
+<li>✅ Data integrity &amp; immutability</li>
+<li>✅ High-volume logging performance</li>
+</ul></li>
+<li><strong>Notification Service Tests</strong>
+(<code>notifications.test.js</code>)
+<ul>
+<li>✅ Notification CRUD operations</li>
+<li>✅ Real-time notification delivery</li>
+<li>✅ Bulk operations</li>
+<li>✅ User-specific filtering</li>
+<li>✅ Statistics &amp; analytics</li>
+<li>✅ Performance under load</li>
+</ul></li>
+<li><strong>Authentication Tests</strong> (<code>auth.test.js</code>) -
+<em>Existing</em>
+<ul>
+<li>✅ Login/logout functionality</li>
+<li>✅ JWT token management</li>
+<li>✅ Password validation</li>
+<li>✅ Session management</li>
+</ul></li>
+<li><strong>User Management Tests</strong> (<code>users.test.js</code>)
+- <em>Existing</em>
+<ul>
+<li>✅ User CRUD operations</li>
+<li>✅ Profile management</li>
+<li>✅ Role assignments</li>
+<li>✅ Access control</li>
+</ul></li>
+</ol>
+<h3 id="priority-2-business-logic-apis-partially-complete">🟡 Priority
+2: Business Logic APIs (Partially Complete)</h3>
+<p><strong>Status: 4/15 COMPLETE</strong> - Core business
+functionality</p>
+<h4 id="completed">✅ Completed:</h4>
+<ol type="1">
+<li><strong>Asset Management Tests</strong>
+(<code>assetManagement.test.js</code>)
+<ul>
+<li>✅ Asset CRUD operations</li>
+<li>✅ Cost management</li>
+<li>✅ Lifecycle tracking</li>
+<li>✅ Analytics &amp; reporting</li>
+<li>✅ Search &amp; filtering</li>
+</ul></li>
+<li><strong>STIG Service Tests</strong> (<code>stig.test.js</code>)
+<ul>
+<li>✅ STIG library management</li>
+<li>✅ Assessment creation &amp; execution</li>
+<li>✅ Finding management</li>
+<li>✅ Compliance analytics</li>
+<li>✅ Security validation</li>
+</ul></li>
+<li><strong>Scanner Integration Tests</strong>
+(<code>scanner-integration.test.js</code>) - <em>Existing</em>
+<ul>
+<li>✅ Scan execution (internal, vulnerability, compliance)</li>
+<li>✅ Results management</li>
+<li>✅ Job status tracking</li>
+</ul></li>
+<li><strong>Settings Management Tests</strong>
+(<code>settings.test.js</code>) - <em>Existing</em>
+<ul>
+<li>✅ Settings CRUD operations</li>
+<li>✅ Data type handling</li>
+<li>✅ Public/private settings</li>
+<li>✅ Bulk operations</li>
+</ul></li>
+</ol>
+<h4 id="missing-tests-11-apis">❌ Missing Tests (11 APIs):</h4>
+<ul>
+<li><code>dashboardService.js</code> - Dashboard metrics &amp;
+widgets</li>
+<li><code>reportService.js</code> - Report generation &amp;
+management</li>
+<li><code>policyService.js</code> - Policy management</li>
+<li><code>procedureService.js</code> - Procedure management</li>
+<li><code>artifactService.js</code> - Artifact management</li>
+<li><code>atoService.js</code> - Authorization to Operate</li>
+<li><code>emailService.js</code> - Email functionality</li>
+<li><code>emailTemplateService.js</code> - Email templates</li>
+<li><code>metricsService.js</code> - System metrics</li>
+<li><code>moduleService.js</code> - Module management</li>
+<li><code>siemService.js</code> - SIEM integration</li>
+</ul>
+<h3 id="priority-3-integration-apis-not-started">❌ Priority 3:
+Integration APIs (Not Started)</h3>
+<p><strong>Status: 0/4 COMPLETE</strong> - External system
+integrations</p>
+<ol type="1">
+<li><strong>Tenable Service</strong> (<code>tenableService.js</code>)
+<ul>
+<li>Vulnerability data integration</li>
+<li>Asset synchronization</li>
+<li>Scan management</li>
+</ul></li>
+<li><strong>Xacta Service</strong> (<code>xactaService.js</code>)
+<ul>
+<li>System data integration</li>
+<li>Control mapping</li>
+<li>Compliance tracking</li>
+</ul></li>
+<li><strong>NVD Service</strong> (<code>nvdService.js</code>)
+<ul>
+<li>CVE data integration</li>
+<li>Vulnerability enrichment</li>
+<li>Database synchronization</li>
+</ul></li>
+<li><strong>Email Service</strong> (<code>emailService.js</code>)
+<ul>
+<li>SMTP integration</li>
+<li>Template processing</li>
+<li>Delivery tracking</li>
+</ul></li>
+</ol>
+<h3 id="priority-4-aianalytics-apis-not-started">❌ Priority 4:
+AI/Analytics APIs (Not Started)</h3>
+<p><strong>Status: 0/7 COMPLETE</strong> - Advanced AI features</p>
+<ol type="1">
+<li><strong>AI Assistance Service</strong>
+(<code>aiAssistanceService.js</code>)</li>
+<li><strong>AI Compliance Service</strong>
+(<code>aiComplianceService.js</code>)</li>
+<li><strong>AI Cost Optimization</strong>
+(<code>aiCostOptimizationService.js</code>)</li>
+<li><strong>AI Generation Service</strong>
+(<code>aiGenerationService.js</code>)</li>
+<li><strong>AI Security Training</strong>
+(<code>aiSecurityTrainingService.js</code>)</li>
+<li><strong>AI Threat Hunting</strong>
+(<code>aiThreatHuntingService.js</code>)</li>
+<li><strong>Natural Language Query</strong>
+(<code>naturalLanguageQueryService.js</code>)</li>
+</ol>
+<h2 id="running-tests">🚀 Running Tests</h2>
+<h3 id="quick-test-execution">Quick Test Execution</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run all priority tests with summary</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> scripts/run-priority-tests.js</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with coverage report</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> scripts/run-priority-tests.js <span class="at">--coverage</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with verbose output</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> scripts/run-priority-tests.js <span class="at">--verbose</span> <span class="at">--coverage</span></span></code></pre></div>
+<h3 id="individual-test-suites">Individual Test Suites</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run specific test suite</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> tests/rbac.test.js</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> tests/auditLog.test.js</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> tests/notifications.test.js</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> tests/assetManagement.test.js</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> tests/stig.test.js</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Run all tests</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with coverage</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run test:coverage</span></code></pre></div>
+<h3 id="test-categories">Test Categories</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Critical APIs only</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> <span class="at">--testPathPattern</span><span class="op">=</span><span class="st">&quot;(rbac|auditLog|notifications|auth|users).test.js&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Business Logic APIs</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> <span class="at">--testPathPattern</span><span class="op">=</span><span class="st">&quot;(assetManagement|stig|scanner|settings).test.js&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># All priority tests</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> <span class="at">--testPathPattern</span><span class="op">=</span><span class="st">&quot;(rbac|auditLog|notifications|assetManagement|stig|auth|users|scanner|settings).test.js&quot;</span></span></code></pre></div>
+<h2 id="test-quality-standards">📊 Test Quality Standards</h2>
+<h3 id="test-coverage-requirements">Test Coverage Requirements</h3>
+<ul>
+<li><strong>Critical APIs (Priority 1)</strong>: 95%+ coverage
+required</li>
+<li><strong>Business Logic (Priority 2)</strong>: 85%+ coverage
+required</li>
+<li><strong>Integration APIs (Priority 3)</strong>: 75%+ coverage
+required</li>
+<li><strong>AI/Analytics (Priority 4)</strong>: 70%+ coverage
+required</li>
+</ul>
+<h3 id="test-types-included">Test Types Included</h3>
+<ol type="1">
+<li><strong>Unit Tests</strong> - Individual function testing</li>
+<li><strong>Integration Tests</strong> - API endpoint testing</li>
+<li><strong>Security Tests</strong> - Authentication &amp;
+authorization</li>
+<li><strong>Performance Tests</strong> - Load &amp; stress testing</li>
+<li><strong>Error Handling</strong> - Edge cases &amp; failure
+scenarios</li>
+<li><strong>Data Validation</strong> - Input validation &amp;
+sanitization</li>
+</ol>
+<h3 id="test-patterns">Test Patterns</h3>
+<p>Each test suite follows consistent patterns: - ✅
+<strong>Setup/Teardown</strong> - Clean test environment - ✅
+<strong>Authentication</strong> - Token-based testing - ✅ <strong>CRUD
+Operations</strong> - Complete lifecycle testing - ✅
+<strong>Validation</strong> - Input/output validation - ✅
+<strong>Permissions</strong> - Role-based access control - ✅
+<strong>Error Handling</strong> - Comprehensive error scenarios - ✅
+<strong>Edge Cases</strong> - Boundary conditions - ✅
+<strong>Performance</strong> - Load testing where applicable</p>
+<h2 id="next-steps-recommendations">🎯 Next Steps &amp;
+Recommendations</h2>
+<h3 id="immediate-actions-priority-2-completion">Immediate Actions
+(Priority 2 Completion)</h3>
+<ol type="1">
+<li><strong>Dashboard Service Tests</strong> - Core UI
+functionality</li>
+<li><strong>Report Service Tests</strong> - Critical for compliance</li>
+<li><strong>Policy/Procedure Tests</strong> - Governance
+requirements</li>
+<li><strong>Email Service Tests</strong> - System notifications</li>
+</ol>
+<h3 id="medium-term-priority-3">Medium Term (Priority 3)</h3>
+<ol type="1">
+<li><strong>Integration Testing</strong> - External system
+connectivity</li>
+<li><strong>End-to-End Testing</strong> - Complete workflow
+validation</li>
+<li><strong>Performance Testing</strong> - Load &amp; stress
+testing</li>
+<li><strong>Security Testing</strong> - Penetration testing
+scenarios</li>
+</ol>
+<h3 id="long-term-priority-4">Long Term (Priority 4)</h3>
+<ol type="1">
+<li><strong>AI Service Testing</strong> - Machine learning
+validation</li>
+<li><strong>Analytics Testing</strong> - Data processing validation</li>
+<li><strong>Natural Language Testing</strong> - Query processing</li>
+<li><strong>Advanced Features</strong> - Cutting-edge functionality</li>
+</ol>
+<h2 id="test-metrics-monitoring">📈 Test Metrics &amp; Monitoring</h2>
+<h3 id="key-performance-indicators">Key Performance Indicators</h3>
+<ul>
+<li><strong>Test Coverage</strong>: Target 85%+ overall</li>
+<li><strong>Test Success Rate</strong>: Target 95%+ pass rate</li>
+<li><strong>Test Execution Time</strong>: Target &lt;5 minutes for full
+suite</li>
+<li><strong>Test Reliability</strong>: Target &lt;1% flaky tests</li>
+</ul>
+<h3 id="continuous-integration">Continuous Integration</h3>
+<ul>
+<li><strong>Pre-commit Hooks</strong>: Run critical tests before
+commit</li>
+<li><strong>Pull Request Validation</strong>: Full test suite on PR</li>
+<li><strong>Deployment Gates</strong>: 100% critical test pass
+required</li>
+<li><strong>Nightly Builds</strong>: Full regression testing</li>
+</ul>
+<h3 id="quality-gates">Quality Gates</h3>
+<ol type="1">
+<li><strong>Code Coverage</strong> - Minimum thresholds enforced</li>
+<li><strong>Test Pass Rate</strong> - No failing tests in main
+branch</li>
+<li><strong>Performance</strong> - Response time thresholds</li>
+<li><strong>Security</strong> - Vulnerability scanning integration</li>
+</ol>
+<h2 id="test-infrastructure">🛠️ Test Infrastructure</h2>
+<h3 id="test-environment">Test Environment</h3>
+<ul>
+<li><strong>Database</strong>: Isolated test database with clean
+state</li>
+<li><strong>Authentication</strong>: Mock JWT tokens for testing</li>
+<li><strong>External APIs</strong>: Mocked services for integration
+tests</li>
+<li><strong>File System</strong>: Temporary directories for file
+operations</li>
+</ul>
+<h3 id="test-data-management">Test Data Management</h3>
+<ul>
+<li><strong>Fixtures</strong>: Predefined test data sets</li>
+<li><strong>Factories</strong>: Dynamic test data generation</li>
+<li><strong>Cleanup</strong>: Automatic test data cleanup</li>
+<li><strong>Isolation</strong>: Each test runs in isolation</li>
+</ul>
+<h3 id="reporting-analytics">Reporting &amp; Analytics</h3>
+<ul>
+<li><strong>Coverage Reports</strong>: HTML &amp; JSON coverage
+reports</li>
+<li><strong>Test Results</strong>: JUnit XML for CI integration</li>
+<li><strong>Performance Metrics</strong>: Test execution timing</li>
+<li><strong>Trend Analysis</strong>: Historical test performance</li>
+</ul>
+<p>The testing strategy ensures comprehensive coverage of critical
+functionality while maintaining high quality standards and supporting
+continuous integration workflows.</p>
+</body>
+</html>

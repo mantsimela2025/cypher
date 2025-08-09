@@ -1,0 +1,30 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.8.4",
+    "chalk": "^4.1.2",
+    "cheerio": "^1.0.0",
+    "commander": "^13.1.0",
+    "csv-writer": "^1.6.0",
+    "express": "^5.1.0",
+    "ipaddr.js": "^2.2.0",
+    "mysql2": "^3.14.0",
+    "pg": "^8.14.1",
+    "semver": "^7.7.1",
+    "ssh2": "^1.16.0",
+    "winston": "^3.17.0"
+  }
+}

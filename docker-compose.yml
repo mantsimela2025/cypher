@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # API Service
+  api:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cypher-api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=postgresql://rasdashadmin:RasDash2025%24@rasdash-dev-public.cexgrlslydeh.us-east-1.rds.amazonaws.com:5432/rasdashdev01
+      - JWT_SECRET=${JWT_SECRET:-your-jwt-secret-key}
+      - CORS_ORIGIN=https://rasdash.dev.com,http://rasdash.dev.com,http://localhost:3000
+      - DB_HOST=rasdash-dev-public.cexgrlslydeh.us-east-1.rds.amazonaws.com
+      - DB_PORT=5432
+      - DB_NAME=rasdashdev01
+      - DB_USER=rasdashadmin
+      - DB_PASSWORD=RasDash2025$$
+      - DB_SSL=true
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Client Service (Nginx serving built React app)
+  client:
+    image: nginx:alpine
+    container_name: cypher-client
+    ports:
+      - "3000:80"
+    volumes:
+      - ./client/dist:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # Optional: Database backup service
+  backup:
+    image: alpine:latest
+    container_name: cypher-backup
+    volumes:
+      - ./data:/data
+      - ./backups:/backups
+    command: >
+      sh -c "
+        while true; do
+          sleep 86400
+          cp /data/database.sqlite /backups/database-backup-$$(date +%Y%m%d-%H%M%S).sqlite
+          find /backups -name '*.sqlite' -mtime +7 -delete
+        done
+      "
+    restart: unless-stopped
+
+networks:
+  default:
+    name: cypher-network

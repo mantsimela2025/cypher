@@ -13,7 +13,17 @@ const TooltipComponent = ({ iconClass, icon, id, direction, text, containerClass
       ) : (
         <Icon className={`${iconClass ? iconClass : ""}`} name={icon} id={id}></Icon>
       )}
-      <UncontrolledTooltip autohide={false} placement={direction} target={id}>
+      <UncontrolledTooltip
+        autohide={false}
+        placement={direction}
+        target={id}
+        transition={{
+          timeout: {
+            enter: 150,
+            exit: 150
+          }
+        }}
+      >
         {text}
       </UncontrolledTooltip>
     </React.Fragment>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>WINDOWS-SERVER-DEPLOYMENT</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="cypher-deployment-from-windows-server">🪟 CYPHER Deployment from
+Windows Server</h1>
+<h2 id="prerequisites">📋 <strong>Prerequisites</strong></h2>
+<h3 id="required-software-on-windows-server"><strong>Required Software
+on Windows Server:</strong></h3>
+<ul>
+<li>✅ <strong>PowerShell 5.1+</strong> (built-in on Windows Server
+2016+)</li>
+<li>✅ <strong>AWS CLI v2</strong> - <a
+href="https://awscli.amazonaws.com/AWSCLIV2.msi">Download here</a></li>
+<li>✅ <strong>Git for Windows</strong> - <a
+href="https://git-scm.com/download/win">Download here</a></li>
+<li>✅ <strong>OpenSSH Client</strong> (Windows 10/Server 2019+
+built-in)</li>
+</ul>
+<h3 id="optional-but-recommended"><strong>Optional but
+Recommended:</strong></h3>
+<ul>
+<li>✅ <strong>Windows Terminal</strong> - Better terminal
+experience</li>
+<li>✅ <strong>VS Code</strong> - For file editing and remote SSH</li>
+<li>✅ <strong>PuTTY</strong> - Alternative SSH client</li>
+</ul>
+<hr />
+<h2 id="method-1-powershell-with-aws-systems-manager-recommended">🚀
+<strong>Method 1: PowerShell with AWS Systems Manager
+(Recommended)</strong></h2>
+<h3 id="step-1-configure-aws-cli"><strong>Step 1: Configure AWS
+CLI</strong></h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Open PowerShell as Administrator</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>aws configure</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter your credentials:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># AWS Access Key ID: [Your Access Key]</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># AWS Secret Access Key: [Your Secret Key]</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Default region name: us-east-1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Default output format: json</span></span></code></pre></div>
+<h3 id="step-2-deploy-setup-script-via-ssm"><strong>Step 2: Deploy Setup
+Script via SSM</strong></h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Send the setup script to your EC2 instance</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="va">$instanceId</span> <span class="op">=</span> <span class="st">&quot;i-04a41343a3f51559a&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">$commandId</span> <span class="op">=</span> aws ssm send-command `</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>instance-ids <span class="va">$instanceId</span> `</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>document-name <span class="st">&quot;AWS-RunShellScript&quot;</span> `</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>parameters <span class="st">&#39;commands=[&quot;curl -s https://cypher-deployment.s3.amazonaws.com/complete-cypher-setup.sh | bash&quot;]&#39;</span> `</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>query <span class="st">&#39;Command.CommandId&#39;</span> `</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>output text</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">Write-Host</span> <span class="st">&quot;Command ID: </span><span class="va">$commandId</span><span class="st">&quot;</span></span></code></pre></div>
+<h3 id="step-3-monitor-execution"><strong>Step 3: Monitor
+Execution</strong></h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check command status</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>aws ssm get-command-invocation <span class="op">--</span>command-id <span class="va">$commandId</span> <span class="op">--</span>instance-id <span class="va">$instanceId</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get detailed output</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>aws ssm get-command-invocation <span class="op">--</span>command-id <span class="va">$commandId</span> <span class="op">--</span>instance-id <span class="va">$instanceId</span> <span class="op">--</span>query <span class="st">&#39;StandardOutputContent&#39;</span> <span class="op">--</span>output text</span></code></pre></div>
+<hr />
+<h2 id="method-2-powershell-with-ssh">🔧 <strong>Method 2: PowerShell
+with SSH</strong></h2>
+<h3 id="step-1-set-up-ssh-connection"><strong>Step 1: Set Up SSH
+Connection</strong></h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create SSH directory if it doesn&#39;t exist</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">New-Item</span> <span class="op">-</span>ItemType Directory <span class="op">-</span>Force <span class="op">-</span>Path <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">USERPROFILE</span><span class="st">\.ssh&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy your EC2 key pair to the SSH directory</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Place your .pem file in: C:\Users\YourUsername\.ssh\your-key.pem</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Set proper permissions on the key file</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">USERPROFILE</span><span class="st">\.ssh\your-key.pem&quot;</span> <span class="op">/</span>inheritance<span class="op">:</span>r</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">USERPROFILE</span><span class="st">\.ssh\your-key.pem&quot;</span> <span class="op">/</span>grant<span class="op">:</span>r <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">USERNAME:R</span><span class="st">&quot;</span></span></code></pre></div>
+<h3 id="step-2-connect-and-deploy"><strong>Step 2: Connect and
+Deploy</strong></h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get your EC2 public IP</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="va">$publicIp</span> <span class="op">=</span> aws ec2 describe-instances <span class="op">--</span>instance-ids i-04a41343a3f51559a <span class="op">--</span>query <span class="st">&#39;Reservations[0].Instances[0].PublicIpAddress&#39;</span> <span class="op">--</span>output text</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Connect via SSH and run setup</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>ssh <span class="op">-</span>i <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">USERPROFILE</span><span class="st">\.ssh\your-key.pem&quot;</span> ec2-user@<span class="va">$publicIp</span> <span class="st">&quot;curl -s https://cypher-deployment.s3.amazonaws.com/complete-cypher-setup.sh | bash&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="method-3-powershell-web-based-deployment">🌐 <strong>Method 3:
+PowerShell Web-Based Deployment</strong></h2>
+<h3 id="step-1-create-deployment-script"><strong>Step 1: Create
+Deployment Script</strong></h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a PowerShell deployment script</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="vs">@&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="vs"># CYPHER Windows Server Deployment Script</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="vs">Write-Host &quot;🚀 Starting CYPHER Deployment from Windows Server...&quot; -ForegroundColor Green</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="vs"># Configuration</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span><span class="va">$instanceId</span><span class="vs"> = &quot;i-04a41343a3f51559a&quot;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span><span class="va">$region</span><span class="vs"> = &quot;us-east-1&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="vs"># Function to check AWS CLI</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="vs">function Test-AWSCli {</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="vs">    try {</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="vs">        aws --version | Out-Null</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="vs">        return `</span><span class="va">$true</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="vs">    } catch {</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="vs">        Write-Host &quot;❌ AWS CLI not found. Please install AWS CLI v2&quot; -ForegroundColor Red</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="vs">        return `</span><span class="va">$false</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="vs"># Function to deploy via SSM</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="vs">function Deploy-ViaSSM {</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="vs">    Write-Host &quot;📡 Deploying via AWS Systems Manager...&quot; -ForegroundColor Yellow</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="vs">    `</span><span class="va">$command</span><span class="vs"> = &#39;curl -s https://cypher-deployment.s3.amazonaws.com/complete-cypher-setup.sh | bash&#39;</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="vs">    `</span><span class="va">$commandId</span><span class="vs"> = aws ssm send-command ``</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="vs">        --instance-ids `</span><span class="va">$instanceId</span><span class="vs"> ``</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="vs">        --document-name &quot;AWS-RunShellScript&quot; ``</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="vs">        --parameters &quot;commands=[`&quot;`</span><span class="va">$command</span><span class="vs">`&quot;]&quot; ``</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="vs">        --query &#39;Command.CommandId&#39; ``</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="vs">        --output text</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="vs">    if (`</span><span class="va">$commandId</span><span class="vs">) {</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="vs">        Write-Host &quot;✅ Command sent successfully. Command ID: `</span><span class="va">$commandId</span><span class="vs">&quot; -ForegroundColor Green</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="vs">        </span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="vs">        # Monitor execution</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="vs">        do {</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="vs">            Start-Sleep -Seconds 10</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="vs">            `</span><span class="va">$status</span><span class="vs"> = aws ssm get-command-invocation --command-id `</span><span class="va">$commandId</span><span class="vs"> --instance-id `</span><span class="va">$instanceId</span><span class="vs"> --query &#39;Status&#39; --output text</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="vs">            Write-Host &quot;📊 Status: `</span><span class="va">$status</span><span class="vs">&quot; -ForegroundColor Cyan</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="vs">        } while (`</span><span class="va">$status</span><span class="vs"> -eq &quot;InProgress&quot;)</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="vs">        </span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="vs">        # Get output</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="vs">        `</span><span class="va">$output</span><span class="vs"> = aws ssm get-command-invocation --command-id `</span><span class="va">$commandId</span><span class="vs"> --instance-id `</span><span class="va">$instanceId</span><span class="vs"> --query &#39;StandardOutputContent&#39; --output text</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="vs">        Write-Host &quot;📄 Output:&quot; -ForegroundColor Yellow</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="vs">        Write-Host `</span><span class="va">$output</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="vs">        </span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="vs">        if (`</span><span class="va">$status</span><span class="vs"> -eq &quot;Success&quot;) {</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="vs">            Write-Host &quot;🎉 Deployment completed successfully!&quot; -ForegroundColor Green</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="vs">        } else {</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="vs">            Write-Host &quot;❌ Deployment failed. Check the output above.&quot; -ForegroundColor Red</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="vs">        }</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="vs">    } else {</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="vs">        Write-Host &quot;❌ Failed to send command&quot; -ForegroundColor Red</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="vs"># Main execution</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="vs">if (Test-AWSCli) {</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="vs">    Deploy-ViaSSM</span></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a><span class="vs">} else {</span></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a><span class="vs">    Write-Host &quot;Please install AWS CLI and run &#39;aws configure&#39; first.&quot; -ForegroundColor Red</span></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a><span class="vs">&quot;@</span> <span class="op">|</span> <span class="fu">Out-File</span> <span class="op">-</span>FilePath <span class="st">&quot;Deploy-CYPHER.ps1&quot;</span> <span class="op">-</span>Encoding UTF8</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a><span class="fu">Write-Host</span> <span class="st">&quot;✅ Created Deploy-CYPHER.ps1 script&quot;</span> <span class="op">-</span>ForegroundColor Green</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a><span class="fu">Write-Host</span> <span class="st">&quot;Run: .\Deploy-CYPHER.ps1&quot;</span> <span class="op">-</span>ForegroundColor Yellow</span></code></pre></div>
+<h3 id="step-2-execute-deployment"><strong>Step 2: Execute
+Deployment</strong></h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the deployment script</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\Deploy-CYPHER<span class="op">.</span><span class="fu">ps1</span></span></code></pre></div>
+<hr />
+<h2 id="method-4-windows-server-with-putty">🔐 <strong>Method 4: Windows
+Server with PuTTY</strong></h2>
+<h3 id="step-1-install-putty"><strong>Step 1: Install
+PuTTY</strong></h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download and install PuTTY</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Invoke-WebRequest</span> <span class="op">-</span>Uri <span class="st">&quot;https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.78-installer.msi&quot;</span> <span class="op">-</span>OutFile <span class="st">&quot;putty-installer.msi&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-Process</span> <span class="op">-</span>FilePath <span class="st">&quot;putty-installer.msi&quot;</span> <span class="op">-</span>Wait</span></code></pre></div>
+<h3 id="step-2-convert-pem-to-ppk"><strong>Step 2: Convert PEM to
+PPK</strong></h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use PuTTYgen to convert .pem to .ppk format</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Open PuTTYgen</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Load your .pem file</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Save private key as .ppk file</span></span></code></pre></div>
+<h3 id="step-3-connect-and-deploy"><strong>Step 3: Connect and
+Deploy</strong></h3>
+<ol type="1">
+<li><strong>Open PuTTY</strong></li>
+<li><strong>Host Name</strong>:
+<code>ec2-user@your-ec2-public-ip</code></li>
+<li><strong>Port</strong>: <code>22</code></li>
+<li><strong>Connection → SSH → Auth</strong>: Browse to your .ppk
+file</li>
+<li><strong>Open connection</strong></li>
+<li><strong>Run</strong>:
+<code>curl -s https://cypher-deployment.s3.amazonaws.com/complete-cypher-setup.sh | bash</code></li>
+</ol>
+<hr />
+<h2 id="monitoring-and-management-from-windows">📊 <strong>Monitoring
+and Management from Windows</strong></h2>
+<h3 id="powershell-monitoring-script"><strong>PowerShell Monitoring
+Script</strong></h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create monitoring script</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="vs">@&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="vs"># CYPHER Monitoring Script for Windows Server</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="vs">param(</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="vs">    [string]`</span><span class="va">$InstanceId</span><span class="vs"> = &quot;i-04a41343a3f51559a&quot;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="vs">)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="vs">function Get-CypherStatus {</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="vs">    Write-Host &quot;🔍 Checking CYPHER Application Status...&quot; -ForegroundColor Cyan</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="vs">    # Get instance status</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="vs">    `</span><span class="va">$instanceStatus</span><span class="vs"> = aws ec2 describe-instances --instance-ids `</span><span class="va">$InstanceId</span><span class="vs"> --query &#39;Reservations[0].Instances[0].State.Name&#39; --output text</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="vs">    Write-Host &quot;EC2 Instance Status: `</span><span class="va">$instanceStatus</span><span class="vs">&quot; -ForegroundColor Yellow</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="vs">    # Get public IP</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="vs">    `</span><span class="va">$publicIp</span><span class="vs"> = aws ec2 describe-instances --instance-ids `</span><span class="va">$InstanceId</span><span class="vs"> --query &#39;Reservations[0].Instances[0].PublicIpAddress&#39; --output text</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="vs">    Write-Host &quot;Public IP: `</span><span class="va">$publicIp</span><span class="vs">&quot; -ForegroundColor Yellow</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="vs">    # Test application health</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="vs">    try {</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="vs">        `</span><span class="va">$response</span><span class="vs"> = Invoke-WebRequest -Uri &quot;http://`</span><span class="va">$publicIp</span><span class="vs">/health&quot; -TimeoutSec 10</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="vs">        if (`</span><span class="va">$response</span><span class="vs">.StatusCode -eq 200) {</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="vs">            Write-Host &quot;✅ Application is healthy!&quot; -ForegroundColor Green</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="vs">        }</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="vs">    } catch {</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="vs">        Write-Host &quot;❌ Application health check failed&quot; -ForegroundColor Red</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="vs">    </span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="vs">    # Test main application</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="vs">    try {</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="vs">        `</span><span class="va">$response</span><span class="vs"> = Invoke-WebRequest -Uri &quot;http://`</span><span class="va">$publicIp</span><span class="vs">&quot; -TimeoutSec 10</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="vs">        if (`</span><span class="va">$response</span><span class="vs">.StatusCode -eq 200) {</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="vs">            Write-Host &quot;✅ Main application is accessible!&quot; -ForegroundColor Green</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="vs">            Write-Host &quot;🌐 Application URL: http://`</span><span class="va">$publicIp</span><span class="vs">&quot; -ForegroundColor Cyan</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="vs">        }</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="vs">    } catch {</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="vs">        Write-Host &quot;❌ Main application not accessible&quot; -ForegroundColor Red</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="vs">Get-CypherStatus</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="vs">&quot;@</span> <span class="op">|</span> <span class="fu">Out-File</span> <span class="op">-</span>FilePath <span class="st">&quot;Monitor-CYPHER.ps1&quot;</span> <span class="op">-</span>Encoding UTF8</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="fu">Write-Host</span> <span class="st">&quot;✅ Created Monitor-CYPHER.ps1 script&quot;</span> <span class="op">-</span>ForegroundColor Green</span></code></pre></div>
+<h3 id="automated-deployment-check"><strong>Automated Deployment
+Check</strong></h3>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if deployment completed successfully</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> Test-DeploymentComplete <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">$instanceId</span> <span class="op">=</span> <span class="st">&quot;i-04a41343a3f51559a&quot;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if PM2 is running</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">$command</span> <span class="op">=</span> <span class="st">&quot;pm2 status&quot;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">$commandId</span> <span class="op">=</span> aws ssm send-command <span class="op">--</span>instance-ids <span class="va">$instanceId</span> <span class="op">--</span>document-name <span class="st">&quot;AWS-RunShellScript&quot;</span> <span class="op">--</span>parameters <span class="st">&quot;commands=[</span><span class="ch">`&quot;</span><span class="va">$command</span><span class="ch">`&quot;</span><span class="st">]&quot;</span> <span class="op">--</span>query <span class="st">&#39;Command.CommandId&#39;</span> <span class="op">--</span>output text</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Start-Sleep</span> <span class="op">-</span>Seconds <span class="dv">5</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="va">$output</span> <span class="op">=</span> aws ssm get-command-invocation <span class="op">--</span>command-id <span class="va">$commandId</span> <span class="op">--</span>instance-id <span class="va">$instanceId</span> <span class="op">--</span>query <span class="st">&#39;StandardOutputContent&#39;</span> <span class="op">--</span>output text</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span><span class="va">$output</span> <span class="op">-match</span> <span class="st">&quot;cypher-api&quot;</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Write-Host</span> <span class="st">&quot;✅ CYPHER application is running!&quot;</span> <span class="op">-</span>ForegroundColor Green</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">$true</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Write-Host</span> <span class="st">&quot;❌ CYPHER application not detected&quot;</span> <span class="op">-</span>ForegroundColor Red</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">$false</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="post-deployment-steps">🎯 <strong>Post-Deployment
+Steps</strong></h2>
+<h3 id="step-1-configure-application"><strong>Step 1: Configure
+Application</strong></h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Send AWS credentials configuration to EC2</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="va">$instanceId</span> <span class="op">=</span> <span class="st">&quot;i-04a41343a3f51559a&quot;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="va">$configCommand</span> <span class="op">=</span> <span class="vs">@&quot;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="vs">aws configure set aws_access_key_id YOUR_ACCESS_KEY</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="vs">aws configure set aws_secret_access_key YOUR_SECRET_KEY</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="vs">aws configure set default.region us-east-1</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="vs">aws configure set default.output json</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="vs">&quot;@</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>aws ssm send-command <span class="op">--</span>instance-ids <span class="va">$instanceId</span> <span class="op">--</span>document-name <span class="st">&quot;AWS-RunShellScript&quot;</span> <span class="op">--</span>parameters <span class="st">&quot;commands=[</span><span class="ch">`&quot;</span><span class="va">$configCommand</span><span class="ch">`&quot;</span><span class="st">]&quot;</span></span></code></pre></div>
+<h3 id="step-2-deploy-application"><strong>Step 2: Deploy
+Application</strong></h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Deploy the CYPHER application</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="va">$deployCommand</span> <span class="op">=</span> <span class="st">&quot;./deploy-cypher.sh&quot;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>aws ssm send-command <span class="op">--</span>instance-ids <span class="va">$instanceId</span> <span class="op">--</span>document-name <span class="st">&quot;AWS-RunShellScript&quot;</span> <span class="op">--</span>parameters <span class="st">&quot;commands=[</span><span class="ch">`&quot;</span><span class="va">$deployCommand</span><span class="ch">`&quot;</span><span class="st">]&quot;</span></span></code></pre></div>
+<h3 id="step-3-verify-deployment"><strong>Step 3: Verify
+Deployment</strong></h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run monitoring script</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\Monitor-CYPHER<span class="op">.</span><span class="fu">ps1</span></span></code></pre></div>
+<hr />
+<h2 id="troubleshooting-from-windows">🚨 <strong>Troubleshooting from
+Windows</strong></h2>
+<h3 id="common-issues-and-solutions"><strong>Common Issues and
+Solutions</strong></h3>
+<h4 id="aws-cli-not-found"><strong>AWS CLI Not Found</strong></h4>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install AWS CLI v2</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Invoke-WebRequest</span> <span class="op">-</span>Uri <span class="st">&quot;https://awscli.amazonaws.com/AWSCLIV2.msi&quot;</span> <span class="op">-</span>OutFile <span class="st">&quot;AWSCLIV2.msi&quot;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-Process</span> <span class="op">-</span>FilePath <span class="st">&quot;AWSCLIV2.msi&quot;</span> <span class="op">-</span>Wait</span></code></pre></div>
+<h4 id="ssh-connection-issues"><strong>SSH Connection
+Issues</strong></h4>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test SSH connectivity</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>Test-NetConnection <span class="op">-</span>ComputerName <span class="va">$publicIp</span> <span class="op">-</span>Port <span class="dv">22</span></span></code></pre></div>
+<h4 id="ssm-not-working"><strong>SSM Not Working</strong></h4>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if instance is SSM-managed</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>aws ssm describe-instance-information <span class="op">--</span>filters <span class="st">&quot;Key=InstanceIds,Values=i-04a41343a3f51559a&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="quick-start-summary">🎉 <strong>Quick Start
+Summary</strong></h2>
+<p><strong>For immediate deployment from Windows Server:</strong></p>
+<ol type="1">
+<li><strong>Install AWS CLI</strong>: Download and install AWS CLI
+v2</li>
+<li><strong>Configure credentials</strong>: Run
+<code>aws configure</code></li>
+<li><strong>Deploy</strong>: Run the PowerShell deployment script</li>
+<li><strong>Monitor</strong>: Use the monitoring script to check
+status</li>
+<li><strong>Access</strong>: Open browser to
+<code>http://your-ec2-ip</code></li>
+</ol>
+<p><strong>Total deployment time: ~15-20 minutes</strong> 🚀</p>
+</body>
+</html>

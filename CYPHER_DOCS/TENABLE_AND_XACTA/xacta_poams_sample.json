@@ -1,0 +1,377 @@
+{
+  "poams": [
+    {
+      "id": "POAM-2024-001",
+      "system_id": "SYS-ENT-001",
+      "weakness_description": "Apache HTTP Server Critical Vulnerabilities - Remote Code Execution",
+      "source": "Tenable Vulnerability Scan Finding FIND-SI2-001",
+      "security_control": "SI-2",
+      "resources": "1 System Administrator, 4 hours maintenance window",
+      "scheduled_completion": "2024-07-15",
+      "poc": "sysadmin@enterprise.com",
+      "status": "ongoing",
+      "risk_rating": "critical",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-06-13",
+      "weakness_severity": "Critical",
+      "residual_risk": "High",
+      "threat_relevance": "Confirmed",
+      "likelihood": "High",
+      "impact": "High",
+      "mitigation_strategy": "Apply vendor security patches",
+      "milestones": [
+        {
+          "description": "Download and test Apache 2.4.51 updates in staging environment",
+          "target_date": "2024-07-01",
+          "status": "pending"
+        },
+        {
+          "description": "Schedule maintenance window for production web servers",
+          "target_date": "2024-07-10",
+          "status": "pending"
+        },
+        {
+          "description": "Apply security patches to production web infrastructure",
+          "target_date": "2024-07-15",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789002",
+        "12345678-1234-1234-1234-123456789014"
+      ],
+      "cve_references": ["CVE-2021-44790", "CVE-2021-44224"],
+      "cost_estimate": "$2,500"
+    },
+    {
+      "id": "POAM-2024-002", 
+      "system_id": "SYS-ENT-002",
+      "weakness_description": "Windows SMB Server Critical Vulnerabilities - EternalBlue Exploitation Risk",
+      "source": "Tenable Vulnerability Scan Finding FIND-SI2-003",
+      "security_control": "SI-2",
+      "resources": "1 Domain Administrator, 1 Security Analyst, 8 hours",
+      "scheduled_completion": "2024-06-20",
+      "poc": "domainadmin@enterprise.com",
+      "status": "critical",
+      "risk_rating": "critical",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-06-13",
+      "weakness_severity": "Critical",
+      "residual_risk": "Critical",
+      "threat_relevance": "Confirmed",
+      "likelihood": "Very High",
+      "impact": "Very High",
+      "mitigation_strategy": "Emergency security patching with immediate implementation",
+      "milestones": [
+        {
+          "description": "Emergency change approval for domain controller patching",
+          "target_date": "2024-06-15",
+          "status": "completed"
+        },
+        {
+          "description": "Apply MS17-010 and MS16-075 patches to domain controller",
+          "target_date": "2024-06-18",
+          "status": "in_progress"
+        },
+        {
+          "description": "Verify patch installation and system functionality",
+          "target_date": "2024-06-20",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789001"
+      ],
+      "cve_references": ["CVE-2017-0143", "CVE-2017-0144", "CVE-2017-0145", "CVE-2017-0146", "CVE-2017-0147", "CVE-2017-0148", "CVE-2016-3225"],
+      "cost_estimate": "$5,000"
+    },
+    {
+      "id": "POAM-2024-003",
+      "system_id": "SYS-ENT-002", 
+      "weakness_description": "DNS Server Remote Code Execution Vulnerability",
+      "source": "Tenable Vulnerability Scan Finding FIND-SI2-004",
+      "security_control": "SI-2",
+      "resources": "1 Domain Administrator, 4 hours",
+      "scheduled_completion": "2024-06-25",
+      "poc": "domainadmin@enterprise.com",
+      "status": "ongoing",
+      "risk_rating": "critical",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-06-13",
+      "weakness_severity": "Critical",
+      "residual_risk": "High",
+      "threat_relevance": "Confirmed",
+      "likelihood": "High",
+      "impact": "High",
+      "mitigation_strategy": "Apply Microsoft DNS Server security updates",
+      "milestones": [
+        {
+          "description": "Review MS21-024 security update compatibility",
+          "target_date": "2024-06-17",
+          "status": "pending"
+        },
+        {
+          "description": "Apply DNS server security updates",
+          "target_date": "2024-06-23",
+          "status": "pending"
+        },
+        {
+          "description": "Validate DNS service functionality post-patch",
+          "target_date": "2024-06-25",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789012"
+      ],
+      "cve_references": ["CVE-2021-26897"],
+      "cost_estimate": "$1,500"
+    },
+    {
+      "id": "POAM-2024-004",
+      "system_id": "SYS-ENT-003",
+      "weakness_description": "Red Hat Enterprise Linux Kernel Use-After-Free Vulnerabilities",
+      "source": "Tenable Vulnerability Scan Finding FIND-SI2-005, FIND-SI2-006",
+      "security_control": "SI-2", 
+      "resources": "1 Database Administrator, 1 System Administrator, 6 hours",
+      "scheduled_completion": "2024-07-10",
+      "poc": "dba@enterprise.com",
+      "status": "ongoing",
+      "risk_rating": "critical",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-06-13",
+      "weakness_severity": "Critical",
+      "residual_risk": "High",
+      "threat_relevance": "Confirmed",
+      "likelihood": "High",
+      "impact": "High",
+      "mitigation_strategy": "Apply RHEL kernel security updates with database coordination",
+      "milestones": [
+        {
+          "description": "Coordinate database maintenance window with business stakeholders",
+          "target_date": "2024-06-25",
+          "status": "pending"
+        },
+        {
+          "description": "Apply RHSA-2022:1975 updates to RHEL 8 database server",
+          "target_date": "2024-07-05",
+          "status": "pending"
+        },
+        {
+          "description": "Apply RHSA-2023:2458 updates to RHEL 9 finance server",
+          "target_date": "2024-07-08",
+          "status": "pending"
+        },
+        {
+          "description": "Verify database services and perform functionality testing",
+          "target_date": "2024-07-10",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789003",
+        "12345678-1234-1234-1234-123456789027"
+      ],
+      "cve_references": ["CVE-2022-1015", "CVE-2022-1016", "CVE-2023-1513", "CVE-2023-2002"],
+      "cost_estimate": "$8,500"
+    },
+    {
+      "id": "POAM-2024-005",
+      "system_id": "SYS-ENT-004",
+      "weakness_description": "Cisco Network Infrastructure Critical Vulnerabilities",
+      "source": "Tenable Vulnerability Scan Finding FIND-SI2-007, FIND-SI2-008",
+      "security_control": "SI-2",
+      "resources": "1 Network Administrator, 1 Security Engineer, 12 hours",
+      "scheduled_completion": "2024-07-15",
+      "poc": "netadmin@enterprise.com",
+      "status": "ongoing",
+      "risk_rating": "critical",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-06-13",
+      "weakness_severity": "Critical",
+      "residual_risk": "Critical",
+      "threat_relevance": "Confirmed",
+      "likelihood": "Very High",
+      "impact": "Very High",
+      "mitigation_strategy": "Firmware updates for network infrastructure devices",
+      "milestones": [
+        {
+          "description": "Obtain latest firmware for Cisco ASA and IOS XE devices",
+          "target_date": "2024-06-20",
+          "status": "pending"
+        },
+        {
+          "description": "Test firmware updates in lab environment",
+          "target_date": "2024-06-30",
+          "status": "pending"
+        },
+        {
+          "description": "Apply firewall firmware updates during maintenance window",
+          "target_date": "2024-07-08",
+          "status": "pending"
+        },
+        {
+          "description": "Apply switch firmware updates and validate network connectivity",
+          "target_date": "2024-07-15",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789004",
+        "12345678-1234-1234-1234-123456789008"
+      ],
+      "cve_references": ["CVE-2019-1863", "CVE-2023-20198", "CVE-2023-20273"],
+      "cost_estimate": "$15,000"
+    },
+    {
+      "id": "POAM-2024-006",
+      "system_id": "SYS-ENT-005",
+      "weakness_description": "Business Application Server Security Vulnerabilities",
+      "source": "Tenable Vulnerability Scan Finding FIND-SI2-009, FIND-SI2-010",
+      "security_control": "SI-2",
+      "resources": "1 Application Administrator, 1 Business Analyst, 8 hours",
+      "scheduled_completion": "2024-07-25",
+      "poc": "appteam@enterprise.com",
+      "status": "ongoing", 
+      "risk_rating": "high",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-06-13",
+      "weakness_severity": "High",
+      "residual_risk": "Medium",
+      "threat_relevance": "Confirmed",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation_strategy": "Coordinated patching of business-critical applications",
+      "milestones": [
+        {
+          "description": "Business impact assessment for ERP and HR system downtime",
+          "target_date": "2024-07-01",
+          "status": "pending"
+        },
+        {
+          "description": "Apply MS22-037 updates to ERP server during scheduled maintenance",
+          "target_date": "2024-07-20",
+          "status": "pending"
+        },
+        {
+          "description": "Apply MS21-011 .NET Framework updates to HR server",
+          "target_date": "2024-07-22",
+          "status": "pending"
+        },
+        {
+          "description": "Conduct business application functionality testing",
+          "target_date": "2024-07-25",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789024",
+        "12345678-1234-1234-1234-123456789026"
+      ],
+      "cve_references": ["CVE-2022-26904", "CVE-2021-26701"],
+      "cost_estimate": "$6,000"
+    },
+    {
+      "id": "POAM-2024-007",
+      "system_id": "SYS-ENT-001",
+      "weakness_description": "Account Management Process Inconsistencies",
+      "source": "Assessment Finding FIND-AC2-001",
+      "security_control": "AC-2",
+      "resources": "1 Security Analyst, 0.5 FTE for 3 months",
+      "scheduled_completion": "2024-09-30",
+      "poc": "security@enterprise.com",
+      "status": "ongoing",
+      "risk_rating": "moderate",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-03-15",
+      "weakness_severity": "Moderate",
+      "residual_risk": "Low",
+      "threat_relevance": "Anticipated",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "mitigation_strategy": "Implement automated account review and management system",
+      "milestones": [
+        {
+          "description": "Requirements gathering for automated account review system",
+          "target_date": "2024-07-15",
+          "status": "pending"
+        },
+        {
+          "description": "Procure and configure account management automation tools",
+          "target_date": "2024-08-31",
+          "status": "pending"
+        },
+        {
+          "description": "Implement automated quarterly account reviews",
+          "target_date": "2024-09-15",
+          "status": "pending"
+        },
+        {
+          "description": "Train staff and validate automated processes",
+          "target_date": "2024-09-30",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789002",
+        "12345678-1234-1234-1234-123456789014",
+        "12345678-1234-1234-1234-123456789029"
+      ],
+      "cve_references": [],
+      "cost_estimate": "$12,000"
+    },
+    {
+      "id": "POAM-2024-008",
+      "system_id": "SYS-ENT-003",
+      "weakness_description": "SSH Server Cryptographic Weakness - CBC Mode Ciphers",
+      "source": "Tenable Vulnerability Scan Finding - SSH Configuration Review",
+      "security_control": "SC-13",
+      "resources": "1 System Administrator, 2 hours per server",
+      "scheduled_completion": "2024-08-15",
+      "poc": "dba@enterprise.com",
+      "status": "ongoing",
+      "risk_rating": "medium",
+      "deviation_rationale": null,
+      "original_detection_date": "2024-05-15",
+      "weakness_severity": "Medium",
+      "residual_risk": "Low",
+      "threat_relevance": "Anticipated",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "mitigation_strategy": "Reconfigure SSH servers to use stronger cipher modes",
+      "milestones": [
+        {
+          "description": "Review current SSH configurations across database servers",
+          "target_date": "2024-07-15",
+          "status": "pending"
+        },
+        {
+          "description": "Update SSH configuration to disable CBC ciphers",
+          "target_date": "2024-08-01",
+          "status": "pending"
+        },
+        {
+          "description": "Validate SSH connectivity and cipher enforcement",
+          "target_date": "2024-08-15",
+          "status": "pending"
+        }
+      ],
+      "affected_assets": [
+        "12345678-1234-1234-1234-123456789003",
+        "12345678-1234-1234-1234-123456789015",
+        "12345678-1234-1234-1234-123456789027"
+      ],
+      "cve_references": [],
+      "cost_estimate": "$1,000"
+    }
+  ],
+  "total": 8,
+  "summary": {
+    "critical": 5,
+    "high": 1,
+    "moderate": 1,
+    "medium": 1,
+    "total_estimated_cost": "$51,500",
+    "average_completion_time": "45 days"
+  }
+}

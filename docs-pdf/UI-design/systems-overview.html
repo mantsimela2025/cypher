@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>systems-overview</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="systems-ui-design-overview">Systems UI Design Overview</h1>
+<p>Modern, enterprise-grade user interface design for the Systems
+management module in the RAS Dashboard, optimized for cybersecurity
+professionals and government environments.</p>
+<h2 id="design-philosophy">🎯 Design Philosophy</h2>
+<h3 id="core-principles">Core Principles</h3>
+<ul>
+<li><strong>Security-First Design</strong> - Clear visual hierarchy for
+risk levels and security status</li>
+<li><strong>Information Density</strong> - Efficient use of screen real
+estate for data-rich environments</li>
+<li><strong>Accessibility</strong> - WCAG 2.1 AA compliance for
+government accessibility requirements</li>
+<li><strong>Responsive Design</strong> - Seamless experience across
+desktop, tablet, and mobile devices</li>
+<li><strong>Dark/Light Theme</strong> - Support for both themes with
+high contrast options</li>
+</ul>
+<h3 id="visual-language">Visual Language</h3>
+<ul>
+<li><strong>Clean &amp; Professional</strong> - Minimalist design with
+purposeful use of color</li>
+<li><strong>Government-Appropriate</strong> - Conservative color palette
+with security-focused iconography</li>
+<li><strong>Data-Driven</strong> - Charts, graphs, and visual indicators
+for quick decision making</li>
+<li><strong>Consistent</strong> - Unified design system across all
+modules</li>
+</ul>
+<h2 id="navigation-structure">🏗️ Navigation Structure</h2>
+<h3 id="left-navigation-panel">Left Navigation Panel</h3>
+<pre><code>📊 Dashboard
+🖥️ Systems                    ← Primary Focus
+   ├── 📋 System Inventory
+   ├── 🔍 System Discovery
+   ├── 📊 System Analytics
+   ├── 🛡️ Security Posture
+   └── 📈 Compliance Status
+🔒 Assets
+🛡️ Vulnerabilities
+📋 Compliance
+⚙️ Settings</code></pre>
+<h3 id="navigation-behavior">Navigation Behavior</h3>
+<ul>
+<li><strong>Collapsible Sidebar</strong> - Can be collapsed to icon-only
+view for more screen space</li>
+<li><strong>Active State Indicators</strong> - Clear visual indication
+of current page/section</li>
+<li><strong>Breadcrumb Navigation</strong> - Secondary navigation
+showing current location</li>
+<li><strong>Quick Actions</strong> - Contextual actions available in
+navigation header</li>
+</ul>
+<h2 id="systems-main-page-layout">📱 Systems Main Page Layout</h2>
+<h3 id="page-structure">Page Structure</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│ Header: Systems Management                    [+ Add] [⚙️] [👤] │
+├─────────────────────────────────────────────────────────────────┤
+│ 📊 Quick Stats Cards                                            │
+│ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐    │
+│ │Total    │ │Active   │ │Critical │ │Pending  │ │Compliant│    │
+│ │Systems  │ │Systems  │ │Alerts   │ │Updates  │ │Systems  │    │
+│ │  1,247  │ │  1,198  │ │   23    │ │   156   │ │   89%   │    │
+│ └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘    │
+├─────────────────────────────────────────────────────────────────┤
+│ 🔍 Search &amp; Filter Bar                                          │
+│ [🔍 Search systems...] [🏷️ Tags] [📊 Status] [🔒 Risk] [📅]    │
+├─────────────────────────────────────────────────────────────────┤
+│ 📋 Systems Data Grid                                            │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ ☑️ │ System Name    │ Type │ Status │ Risk │ Last Scan │ ⚙️ │ │
+│ │────┼────────────────┼──────┼────────┼──────┼───────────┼────│ │
+│ │ ☑️ │ WEB-PROD-01   │ Web  │ 🟢 Up  │ 🟡 M │ 2h ago   │ ⋯  │ │
+│ │ ☑️ │ DB-PROD-02    │ DB   │ 🟢 Up  │ 🔴 H │ 1h ago   │ ⋯  │ │
+│ │ ☑️ │ APP-STAGE-03  │ App  │ 🟡 Warn│ 🟡 M │ 30m ago  │ ⋯  │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│ [📄 1-50 of 1,247] [← Previous] [Next →]                       │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="key-components">Key Components</h3>
+<h4 id="quick-stats-dashboard-cards">1. <strong>Quick Stats Dashboard
+Cards</strong></h4>
+<ul>
+<li><strong>Real-time Metrics</strong> - Live updating system counts and
+health indicators</li>
+<li><strong>Color-coded Status</strong> - Green (healthy), Yellow
+(warning), Red (critical)</li>
+<li><strong>Clickable Cards</strong> - Each card filters the main grid
+when clicked</li>
+<li><strong>Trend Indicators</strong> - Small arrows showing
+increase/decrease from previous period</li>
+</ul>
+<h4 id="advanced-search-filter-bar">2. <strong>Advanced Search &amp;
+Filter Bar</strong></h4>
+<ul>
+<li><strong>Global Search</strong> - Full-text search across system
+names, descriptions, and metadata</li>
+<li><strong>Multi-select Filters</strong> - Tags, status, risk level,
+system type, location</li>
+<li><strong>Date Range Picker</strong> - Filter by last scan date,
+creation date, or update date</li>
+<li><strong>Saved Filters</strong> - Users can save and share common
+filter combinations</li>
+<li><strong>Clear All</strong> - Quick reset of all filters</li>
+</ul>
+<h4 id="enterprise-data-grid">3. <strong>Enterprise Data
+Grid</strong></h4>
+<ul>
+<li><strong>Sortable Columns</strong> - Click column headers to sort
+ascending/descending</li>
+<li><strong>Resizable Columns</strong> - Drag column borders to adjust
+width</li>
+<li><strong>Column Visibility</strong> - Show/hide columns based on user
+preference</li>
+<li><strong>Row Selection</strong> - Bulk operations on selected
+systems</li>
+<li><strong>Infinite Scroll</strong> - Smooth loading of large
+datasets</li>
+<li><strong>Export Options</strong> - CSV, Excel, PDF export of filtered
+data</li>
+</ul>
+<h2 id="crud-operations-interactions">🔧 CRUD Operations &amp;
+Interactions</h2>
+<h3 id="create-system-flow">Create System Flow</h3>
+<pre><code>[+ Add System] Button
+    ↓
+Slide-out Panel (Right Side)
+    ├── Basic Information Tab
+    │   ├── System Name *
+    │   ├── Description
+    │   ├── System Type (Dropdown)
+    │   ├── Environment (Prod/Stage/Dev)
+    │   └── Owner/Contact
+    ├── Technical Details Tab
+    │   ├── IP Address/Hostname
+    │   ├── Operating System
+    │   ├── Software/Services
+    │   └── Network Location
+    ├── Security Classification Tab
+    │   ├── Classification Level
+    │   ├── Impact Level (FIPS 199)
+    │   ├── ATO Status
+    │   └── Compliance Requirements
+    └── [Cancel] [Save Draft] [Create System]</code></pre>
+<h3 id="view-system-details">View System Details</h3>
+<pre><code>Click System Row
+    ↓
+Modal Dialog (Large)
+    ├── Header: System Name + Status Badge
+    ├── Tab Navigation
+    │   ├── 📊 Overview
+    │   ├── 🔒 Security
+    │   ├── 📋 Compliance
+    │   ├── 🔍 Vulnerabilities
+    │   ├── 📈 Analytics
+    │   └── 📝 Audit Log
+    ├── Content Area (Tab-specific)
+    └── Footer: [Close] [Edit] [Actions ▼]</code></pre>
+<h3 id="edit-system">Edit System</h3>
+<pre><code>[Edit] Button or Row Action
+    ↓
+Slide-out Panel (Right Side)
+    ├── Pre-populated Form Fields
+    ├── Change Tracking
+    ├── Validation Messages
+    └── [Cancel] [Save Changes]</code></pre>
+<h3 id="bulk-operations">Bulk Operations</h3>
+<pre><code>Select Multiple Rows
+    ↓
+Bulk Action Bar (Top of Grid)
+    ├── &quot;X systems selected&quot;
+    ├── [🏷️ Add Tags]
+    ├── [📊 Update Status]
+    ├── [🔍 Run Scan]
+    ├── [📤 Export]
+    └── [🗑️ Delete]</code></pre>
+<h2 id="visual-design-elements">🎨 Visual Design Elements</h2>
+<h3 id="color-palette">Color Palette</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Primary Colors */</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>--primary-blue<span class="in">:</span> <span class="pp">#1e40af</span>;      <span class="co">/* Government blue */</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>--primary-dark<span class="in">:</span> <span class="pp">#1e293b</span>;      <span class="co">/* Dark backgrounds */</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>--primary-light<span class="in">:</span> <span class="pp">#f8fafc</span>;     <span class="co">/* Light backgrounds */</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">/* Status Colors */</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>--success-green<span class="in">:</span> <span class="pp">#059669</span>;     <span class="co">/* Healthy/compliant */</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>--warning-yellow<span class="in">:</span> <span class="pp">#d97706</span>;    <span class="co">/* Warning/attention needed */</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>--danger-red<span class="in">:</span> <span class="pp">#dc2626</span>;        <span class="co">/* Critical/non-compliant */</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>--info-blue<span class="in">:</span> <span class="pp">#2563eb</span>;         <span class="co">/* Informational */</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">/* Neutral Colors */</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>--gray-50<span class="in">:</span> <span class="pp">#f9fafb</span>;</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>--gray-100<span class="in">:</span> <span class="pp">#f3f4f6</span>;</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>--gray-200<span class="in">:</span> <span class="pp">#e5e7eb</span>;</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>--gray-500<span class="in">:</span> <span class="pp">#6b7280</span>;</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>--gray-700<span class="in">:</span> <span class="pp">#374151</span>;</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>--gray-900<span class="in">:</span> <span class="pp">#111827</span>;</span></code></pre></div>
+<h3 id="typography">Typography</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Headings */</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>--font-heading<span class="in">:</span> &#39;Inter&#39;<span class="op">,</span> -apple-system<span class="op">,</span> BlinkMacSystemFont<span class="op">,</span> sans-serif;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>--font-body<span class="in">:</span> &#39;Inter&#39;<span class="op">,</span> -apple-system<span class="op">,</span> BlinkMacSystemFont<span class="op">,</span> sans-serif;</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>--font-mono<span class="in">:</span> &#39;JetBrains Mono&#39;<span class="op">,</span> &#39;Fira Code&#39;<span class="op">,</span> monospace;</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">/* Sizes */</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>--text-xs<span class="in">:</span> 0<span class="fu">.75rem</span>;    <span class="co">/* 12px */</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>--text-sm<span class="in">:</span> 0<span class="fu">.875rem</span>;   <span class="co">/* 14px */</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>--text-base<span class="in">:</span> 1rem;     <span class="co">/* 16px */</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>--text-lg<span class="in">:</span> 1<span class="fu">.125rem</span>;   <span class="co">/* 18px */</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>--text-xl<span class="in">:</span> 1<span class="fu">.25rem</span>;    <span class="co">/* 20px */</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>--text-2xl<span class="in">:</span> 1<span class="fu">.5rem</span>;    <span class="co">/* 24px */</span></span></code></pre></div>
+<h3 id="spacing-layout">Spacing &amp; Layout</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Spacing Scale */</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>--space-1<span class="in">:</span> 0<span class="fu">.25rem</span>;    <span class="co">/* 4px */</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>--space-2<span class="in">:</span> 0<span class="fu">.5rem</span>;     <span class="co">/* 8px */</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>--space-3<span class="in">:</span> 0<span class="fu">.75rem</span>;    <span class="co">/* 12px */</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>--space-4<span class="in">:</span> 1rem;       <span class="co">/* 16px */</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>--space-6<span class="in">:</span> 1<span class="fu">.5rem</span>;     <span class="co">/* 24px */</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>--space-8<span class="in">:</span> 2rem;       <span class="co">/* 32px */</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">/* Border Radius */</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>--radius-sm<span class="in">:</span> 0<span class="fu">.125rem</span>; <span class="co">/* 2px */</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>--radius-md<span class="in">:</span> 0<span class="fu">.375rem</span>; <span class="co">/* 6px */</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>--radius-lg<span class="in">:</span> 0<span class="fu">.5rem</span>;   <span class="co">/* 8px */</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>--radius-xl<span class="in">:</span> 0<span class="fu">.75rem</span>;  <span class="co">/* 12px */</span></span></code></pre></div>
+<h2 id="responsive-design">📱 Responsive Design</h2>
+<h3 id="breakpoints">Breakpoints</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Mobile First Approach */</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>--mobile<span class="in">:</span> 320px;       <span class="co">/* Small phones */</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>--tablet<span class="in">:</span> 768px;       <span class="co">/* Tablets */</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>--desktop<span class="in">:</span> 1024px;     <span class="co">/* Desktop */</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>--wide<span class="in">:</span> 1440px;        <span class="co">/* Wide screens */</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>--ultra-wide<span class="in">:</span> 1920px;  <span class="co">/* Ultra-wide monitors */</span></span></code></pre></div>
+<h3 id="mobile-adaptations">Mobile Adaptations</h3>
+<ul>
+<li><strong>Collapsible Navigation</strong> - Hamburger menu for
+mobile</li>
+<li><strong>Card Layout</strong> - Systems displayed as cards instead of
+table rows</li>
+<li><strong>Touch-Friendly</strong> - Larger touch targets (44px
+minimum)</li>
+<li><strong>Swipe Actions</strong> - Swipe left/right for quick
+actions</li>
+<li><strong>Bottom Sheet</strong> - Mobile-optimized modals</li>
+</ul>
+<h3 id="tablet-adaptations">Tablet Adaptations</h3>
+<ul>
+<li><strong>Hybrid Layout</strong> - Combination of desktop and mobile
+patterns</li>
+<li><strong>Side Panel</strong> - Slide-out panels for forms and
+details</li>
+<li><strong>Touch &amp; Mouse</strong> - Support for both input
+methods</li>
+</ul>
+<h2 id="interactive-components">🔧 Interactive Components</h2>
+<h3 id="data-grid-features">Data Grid Features</h3>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Advanced Grid Capabilities</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gridFeatures <span class="op">=</span> {</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">sorting</span><span class="op">:</span> <span class="st">&#39;multi-column&#39;</span><span class="op">,</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">filtering</span><span class="op">:</span> <span class="st">&#39;column-specific&#39;</span><span class="op">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">grouping</span><span class="op">:</span> <span class="st">&#39;by-category&#39;</span><span class="op">,</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">pagination</span><span class="op">:</span> <span class="st">&#39;virtual-scrolling&#39;</span><span class="op">,</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">selection</span><span class="op">:</span> <span class="st">&#39;multi-row&#39;</span><span class="op">,</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">export</span><span class="op">:</span> [<span class="st">&#39;csv&#39;</span><span class="op">,</span> <span class="st">&#39;excel&#39;</span><span class="op">,</span> <span class="st">&#39;pdf&#39;</span>]<span class="op">,</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">columnResize</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">columnReorder</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">columnVisibility</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">rowActions</span><span class="op">:</span> [<span class="st">&#39;view&#39;</span><span class="op">,</span> <span class="st">&#39;edit&#39;</span><span class="op">,</span> <span class="st">&#39;delete&#39;</span>]<span class="op">,</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bulkActions</span><span class="op">:</span> [<span class="st">&#39;tag&#39;</span><span class="op">,</span> <span class="st">&#39;scan&#39;</span><span class="op">,</span> <span class="st">&#39;export&#39;</span><span class="op">,</span> <span class="st">&#39;delete&#39;</span>]</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="modal-system">Modal System</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Modal Types &amp; Behaviors</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> modalTypes <span class="op">=</span> {</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">small</span><span class="op">:</span> <span class="st">&#39;400px&#39;</span><span class="op">,</span>      <span class="co">// Confirmations, simple forms</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">medium</span><span class="op">:</span> <span class="st">&#39;600px&#39;</span><span class="op">,</span>     <span class="co">// Standard forms, details</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">large</span><span class="op">:</span> <span class="st">&#39;800px&#39;</span><span class="op">,</span>      <span class="co">// Complex forms, system details</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">fullscreen</span><span class="op">:</span> <span class="st">&#39;100%&#39;</span><span class="op">,</span>  <span class="co">// Data visualization, reports</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">slideOut</span><span class="op">:</span> <span class="st">&#39;400px&#39;</span>    <span class="co">// Side panels for CRUD operations</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="form-components">Form Components</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Form Field Types</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> formFields <span class="op">=</span> {</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">textInput</span><span class="op">:</span> <span class="st">&#39;Standard text input with validation&#39;</span><span class="op">,</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">dropdown</span><span class="op">:</span> <span class="st">&#39;Single/multi-select with search&#39;</span><span class="op">,</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">dateRange</span><span class="op">:</span> <span class="st">&#39;Date picker with range selection&#39;</span><span class="op">,</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">tagInput</span><span class="op">:</span> <span class="st">&#39;Multi-tag input with autocomplete&#39;</span><span class="op">,</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">fileUpload</span><span class="op">:</span> <span class="st">&#39;Drag-and-drop file upload&#39;</span><span class="op">,</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">richText</span><span class="op">:</span> <span class="st">&#39;WYSIWYG editor for descriptions&#39;</span><span class="op">,</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">jsonEditor</span><span class="op">:</span> <span class="st">&#39;Code editor for configuration data&#39;</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2 id="user-experience-patterns">🎯 User Experience Patterns</h2>
+<h3 id="progressive-disclosure">Progressive Disclosure</h3>
+<ul>
+<li><strong>Summary View</strong> - Key information visible at a
+glance</li>
+<li><strong>Drill-down Details</strong> - Click to reveal more
+information</li>
+<li><strong>Contextual Actions</strong> - Actions appear based on user
+permissions and context</li>
+</ul>
+<h3 id="feedback-status">Feedback &amp; Status</h3>
+<ul>
+<li><strong>Loading States</strong> - Skeleton screens and progress
+indicators</li>
+<li><strong>Success Messages</strong> - Toast notifications for
+successful actions</li>
+<li><strong>Error Handling</strong> - Clear error messages with
+suggested actions</li>
+<li><strong>Confirmation Dialogs</strong> - Prevent accidental
+destructive actions</li>
+</ul>
+<h3 id="keyboard-navigation">Keyboard Navigation</h3>
+<ul>
+<li><strong>Tab Order</strong> - Logical tab sequence through
+interface</li>
+<li><strong>Keyboard Shortcuts</strong> - Power user shortcuts (Ctrl+N
+for new, etc.)</li>
+<li><strong>Focus Indicators</strong> - Clear visual focus for
+accessibility</li>
+</ul>
+<h2 id="security-compliance-ui">🔒 Security &amp; Compliance UI</h2>
+<h3 id="visual-security-indicators">Visual Security Indicators</h3>
+<ul>
+<li><strong>Classification Banners</strong> - Top/bottom banners for
+classified systems</li>
+<li><strong>Risk Level Badges</strong> - Color-coded risk
+indicators</li>
+<li><strong>Compliance Status</strong> - Visual compliance percentage
+and status</li>
+<li><strong>Access Controls</strong> - UI elements hidden based on user
+permissions</li>
+</ul>
+<h3 id="audit-trail-integration">Audit Trail Integration</h3>
+<ul>
+<li><strong>Change Indicators</strong> - Visual indicators for recently
+modified systems</li>
+<li><strong>User Attribution</strong> - Show who made changes and
+when</li>
+<li><strong>Version History</strong> - Access to previous versions of
+system data</li>
+</ul>
+<p>This design approach provides a modern, efficient, and secure
+interface for managing systems in a government cybersecurity environment
+while maintaining usability and accessibility standards.</p>
+</body>
+</html>

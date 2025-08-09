@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>duplicate-removal</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="duplicate-removal-tool-documentation">Duplicate Removal Tool
+Documentation</h1>
+<p>The Duplicate Removal Tool safely identifies and removes duplicate
+records from your database tables. It provides multiple safety
+mechanisms and clear visibility into what will be removed.</p>
+<h2 id="quick-start">🚀 Quick Start</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show what duplicates exist (safe)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># See what would be removed (safe)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--dry-run</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Actually remove duplicates</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--verbose</span></span></code></pre></div>
+<h2 id="command-syntax">🎯 Command Syntax</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="pp">[</span><span class="ss">options</span><span class="pp">]</span></span></code></pre></div>
+<h3 id="options">Options</h3>
+<ul>
+<li><code>--show, -s</code> - Only show duplicates, don’t remove
+anything</li>
+<li><code>--dry-run, -d</code> - Show what would be removed without
+actually removing</li>
+<li><code>--verbose, -v</code> - Show detailed output including removed
+records</li>
+<li><code>--help, -h</code> - Show help information</li>
+</ul>
+<h2 id="current-configuration">🔍 Current Configuration</h2>
+<p><strong>Target Table:</strong> <code>users</code> <strong>Fields
+Checked:</strong> - <code>email</code> - Finds users with duplicate
+email addresses - <code>username</code> - Finds users with duplicate
+usernames</p>
+<p><strong>Removal Strategy:</strong> - ✅ <strong>Keeps the OLDEST
+record</strong> (earliest <code>created_at</code>) - 🗑️ <strong>Removes
+newer duplicates</strong> - 🔗 <strong>Cleans up relationships</strong>
+(removes <code>user_roles</code> entries)</p>
+<h2 id="detailed-examples">📖 Detailed Examples</h2>
+<h3 id="example-1-check-for-duplicates-safe">Example 1: Check for
+Duplicates (Safe)</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>🧹 Duplicate User Removal Tool
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 Target: Table &#39;users&#39;, Fields: [email, username]
+
+🔍 Finding duplicates in table: users
+📋 Checking fields: email, username
+
+  🔎 Checking email duplicates...
+    📊 Found 2 email duplicate groups
+  🔎 Checking username duplicates...
+    📊 Found 1 username duplicate groups
+
+📊 Duplicate Analysis for table: USERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📧 EMAIL Duplicates:
+┌─────────┬──────────────────┬───────┬─────────────┐
+│ (index) │      email       │ count │ record_ids  │
+├─────────┼──────────────────┼───────┼─────────────┤
+│    0    │ &#39;admin@test.com&#39; │   3   │ &#39;1, 4, 7&#39;   │
+│    1    │ &#39;user@test.com&#39;  │   2   │ &#39;2, 5&#39;      │
+└─────────┴──────────────────┴───────┴─────────────┘
+
+👤 USERNAME Duplicates:
+┌─────────┬──────────┬───────┬─────────────┐
+│ (index) │ username │ count │ record_ids  │
+├─────────┼──────────┼───────┼─────────────┤
+│    0    │ &#39;admin&#39;  │   2   │ &#39;1, 6&#39;      │
+└─────────┴──────────┴───────┴─────────────┘</code></pre>
+<h3 id="example-2-dry-run-safe-preview">Example 2: Dry Run (Safe
+Preview)</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--dry-run</span> <span class="at">--verbose</span></span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>🧹 Duplicate User Removal Tool
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 Target: Table &#39;users&#39;, Fields: [email, username]
+
+[... duplicate analysis ...]
+
+⚠️  Found duplicates! Proceeding with removal...
+🔍 DRY RUN MODE - No actual changes will be made
+
+🧹 Removing duplicates from table: users...
+
+📧 Processing email duplicates:
+
+  email: admin@test.com
+    🔒 Keeping record ID: 1 (oldest)
+    🗑️  Removing record IDs: 4, 7
+
+  email: user@test.com
+    🔒 Keeping record ID: 2 (oldest)
+    🗑️  Removing record IDs: 5
+
+👤 Processing username duplicates:
+
+  username: admin
+    🔒 Keeping record ID: 1 (oldest)
+    🗑️  Removing record IDs: 6
+
+📊 Total records to remove from users: 4
+
+🔍 DRY RUN - No changes made
+Would remove 4 duplicate records from users</code></pre>
+<h3 id="example-3-actual-removal">Example 3: Actual Removal</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--verbose</span></span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>🧹 Duplicate User Removal Tool
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[... duplicate analysis and removal plan ...]
+
+⚠️  Found duplicates! Proceeding with removal...
+
+🧹 Removing duplicates from table: users...
+
+[... processing details ...]
+
+📊 Total records to remove from users: 4
+
+🔗 Removing user role assignments...
+  ✅ Removed 6 role assignments
+
+👤 Removing duplicate users...
+  ✅ Removed 4 users
+
+🗑️  Removed users:
+┌─────────┬────┬─────────────────┬──────────┐
+│ (index) │ id │      email      │ username │
+├─────────┼────┼─────────────────┼──────────┤
+│    0    │ 4  │&#39;admin@test.com&#39; │ &#39;admin2&#39; │
+│    1    │ 5  │&#39;user@test.com&#39;  │ &#39;user2&#39;  │
+│    2    │ 6  │&#39;test@test.com&#39;  │ &#39;admin&#39;  │
+│    3    │ 7  │&#39;admin@test.com&#39; │ &#39;admin3&#39; │
+└─────────┴────┴─────────────────┴──────────┘
+
+✅ Duplicate removal completed successfully!
+📊 Total records removed: 4
+
+💡 Run &quot;npm run db:query users&quot; to verify results</code></pre>
+<h2 id="safety-features">🛡️ Safety Features</h2>
+<h3 id="multiple-safety-levels">1. Multiple Safety Levels</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">--show</span>      <span class="co"># Just look, don&#39;t touch anything</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">--dry-run</span>   <span class="co"># Show exactly what would happen</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># (no flag) # Actually perform the removal</span></span></code></pre></div>
+<h3 id="smart-duplicate-detection">2. Smart Duplicate Detection</h3>
+<ul>
+<li><strong>Avoids double-counting</strong> - Won’t remove a user twice
+if they’re duplicate by both email AND username</li>
+<li><strong>Preserves oldest records</strong> - Keeps the record with
+earliest <code>created_at</code> timestamp</li>
+<li><strong>Clear identification</strong> - Shows exactly which records
+will be kept vs removed</li>
+</ul>
+<h3 id="relationship-cleanup">3. Relationship Cleanup</h3>
+<ul>
+<li><strong>Cascading cleanup</strong> - Removes related
+<code>user_roles</code> entries first</li>
+<li><strong>Foreign key safe</strong> - Handles database constraints
+properly</li>
+<li><strong>Transaction safety</strong> - Operations are performed in
+safe order</li>
+</ul>
+<h3 id="detailed-reporting">4. Detailed Reporting</h3>
+<ul>
+<li><strong>Before and after counts</strong> - Shows exactly what
+changed</li>
+<li><strong>Verbose output</strong> - Lists every record that was
+removed</li>
+<li><strong>Verification guidance</strong> - Tells you how to check
+results</li>
+</ul>
+<h2 id="troubleshooting">🔧 Troubleshooting</h2>
+<h3 id="no-duplicates-found">No Duplicates Found</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span></code></pre></div>
+<p><strong>Output:</strong></p>
+<pre><code>📧 EMAIL Duplicates:
+  ✅ No email duplicates found
+
+👤 USERNAME Duplicates:
+  ✅ No username duplicates found</code></pre>
+<p><strong>Solution:</strong> Your database is clean! No action
+needed.</p>
+<h3 id="permission-errors">Permission Errors</h3>
+<pre><code>❌ Error removing duplicates: permission denied for table users</code></pre>
+<p><strong>Solution:</strong> Ensure your database user has DELETE
+permissions:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">DELETE</span> <span class="kw">ON</span> users, user_roles <span class="kw">TO</span> your_database_user;</span></code></pre></div>
+<h3 id="foreign-key-constraint-errors">Foreign Key Constraint
+Errors</h3>
+<pre><code>❌ Error removing duplicates: foreign key constraint violation</code></pre>
+<p><strong>Solution:</strong> The tool should handle this automatically
+by removing <code>user_roles</code> first. If this persists, check for
+other tables that reference users.</p>
+<h3 id="connection-errors">Connection Errors</h3>
+<pre><code>❌ Database connection failed</code></pre>
+<p><strong>Solution:</strong> 1. Check your <code>.env</code> file
+database configuration 2. Ensure database is running 3. Verify SSL
+settings</p>
+<h2 id="best-practices">🎯 Best Practices</h2>
+<h3 id="always-start-with-show">1. Always Start with –show</h3>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Never run removal without checking first</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span></code></pre></div>
+<h3 id="use-dry-run-before-actual-removal">2. Use Dry Run Before Actual
+Removal</h3>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See exactly what will happen</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--dry-run</span> <span class="at">--verbose</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Then actually do it</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--verbose</span></span></code></pre></div>
+<h3 id="backup-before-removal">3. Backup Before Removal</h3>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create database backup first</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pg_dump</span> your_database <span class="op">&gt;</span> backup_before_duplicate_removal.sql</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Then remove duplicates</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--verbose</span></span></code></pre></div>
+<h3 id="verify-results">4. Verify Results</h3>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that duplicates are gone</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify remaining users look correct</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users</span></code></pre></div>
+<h2 id="common-workflows">🔄 Common Workflows</h2>
+<h3 id="regular-maintenance">Regular Maintenance</h3>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Weekly duplicate check</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># If duplicates found, remove them</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--dry-run</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--verbose</span></span></code></pre></div>
+<h3 id="after-data-import">After Data Import</h3>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># After importing user data</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--dry-run</span> <span class="at">--verbose</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--verbose</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:query users:count</span></code></pre></div>
+<h3 id="development-cleanup">Development Cleanup</h3>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up test data duplicates</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--show</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run db:remove-duplicates <span class="at">--verbose</span></span></code></pre></div>
+<h2 id="customization">🛠️ Customization</h2>
+<h3 id="changing-target-table">Changing Target Table</h3>
+<p>Edit <code>/api/scripts/remove-duplicates.js</code> around line
+196:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Configuration - you can modify these</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> tableName <span class="op">=</span> <span class="st">&#39;users&#39;</span><span class="op">;</span>           <span class="co">// Change to other table</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> fieldsToCheck <span class="op">=</span> [<span class="st">&#39;email&#39;</span><span class="op">,</span> <span class="st">&#39;username&#39;</span>]<span class="op">;</span>  <span class="co">// Change fields</span></span></code></pre></div>
+<h3 id="adding-support-for-other-tables">Adding Support for Other
+Tables</h3>
+<p>The current version only supports the <code>users</code> table. To
+add support for other tables, you would need to:</p>
+<ol type="1">
+<li>Modify the removal logic in the <code>removeDuplicates</code>
+function</li>
+<li>Add appropriate relationship cleanup</li>
+<li>Update the schema imports</li>
+</ol>
+<h3 id="custom-duplicate-logic">Custom Duplicate Logic</h3>
+<p>You can modify the duplicate detection query in the
+<code>findDuplicates</code> function to use different criteria or add
+additional filters.</p>
+<h2 id="understanding-the-output">📊 Understanding the Output</h2>
+<h3 id="duplicate-groups">Duplicate Groups</h3>
+<ul>
+<li><strong>Count</strong>: How many records share the same value</li>
+<li><strong>Record IDs</strong>: List of all duplicate record IDs
+(ordered by creation date)</li>
+<li><strong>Keep</strong>: First ID in the list (oldest record)</li>
+<li><strong>Remove</strong>: All other IDs in the list (newer
+records)</li>
+</ul>
+<h3 id="removal-process">Removal Process</h3>
+<ol type="1">
+<li><strong>Analysis</strong>: Find all duplicate groups</li>
+<li><strong>Planning</strong>: Determine which records to
+keep/remove</li>
+<li><strong>Cleanup</strong>: Remove related data
+(<code>user_roles</code>)</li>
+<li><strong>Removal</strong>: Delete duplicate records</li>
+<li><strong>Reporting</strong>: Show what was removed</li>
+</ol>
+<p>This tool provides a safe, transparent way to clean up duplicate data
+while preserving the integrity of your database relationships.</p>
+</body>
+</html>

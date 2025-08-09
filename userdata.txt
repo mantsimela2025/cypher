@@ -1,0 +1,12 @@
+<powershell>
+$NewPassword = "CypherAdmin2025!"
+$SecurePassword = ConvertTo-SecureString $NewPassword -AsPlainText -Force
+try {
+    $AdminUser = Get-LocalUser -Name "Administrator"
+    $AdminUser | Set-LocalUser -Password $SecurePassword
+    Enable-LocalUser -Name "Administrator"
+    New-Item -Path "C:\password-reset-complete.txt" -ItemType File -Force
+} catch {
+    Write-Output "Error: $($_.Exception.Message)"
+}
+</powershell>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ADDITIONAL_ASSET_TABLES</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="additional-asset-tables-documentation">Additional Asset Tables
+Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This document describes the four additional asset-related database
+tables that extend the core asset management functionality:
+<code>asset_operational_costs</code>, <code>asset_risk_mapping</code>,
+<code>asset_tags</code>, and <code>system_assets</code>.</p>
+<h2 id="database-tables">Database Tables</h2>
+<h3 id="asset-operational-costs-asset_operational_costs">1. Asset
+Operational Costs (<code>asset_operational_costs</code>)</h3>
+<p><strong>Purpose</strong>: Track monthly operational expenses for each
+asset across different cost categories.</p>
+<p><strong>Schema</strong>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> asset_operational_costs (</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> SERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    year_month <span class="dt">VARCHAR</span>(<span class="dv">10</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,           <span class="co">-- Format: &#39;YYYY-MM-DD&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    power_cost <span class="dt">NUMERIC</span>(<span class="dv">10</span>,<span class="dv">2</span>) <span class="kw">DEFAULT</span> <span class="dv">0</span>,        <span class="co">-- Monthly power consumption costs</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    space_cost <span class="dt">NUMERIC</span>(<span class="dv">10</span>,<span class="dv">2</span>) <span class="kw">DEFAULT</span> <span class="dv">0</span>,        <span class="co">-- Rack space, office space costs</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    network_cost <span class="dt">NUMERIC</span>(<span class="dv">10</span>,<span class="dv">2</span>) <span class="kw">DEFAULT</span> <span class="dv">0</span>,      <span class="co">-- Network bandwidth, connectivity costs</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    storage_cost <span class="dt">NUMERIC</span>(<span class="dv">10</span>,<span class="dv">2</span>) <span class="kw">DEFAULT</span> <span class="dv">0</span>,      <span class="co">-- Storage, backup costs</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    labor_cost <span class="dt">NUMERIC</span>(<span class="dv">10</span>,<span class="dv">2</span>) <span class="kw">DEFAULT</span> <span class="dv">0</span>,        <span class="co">-- Maintenance, support labor costs</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    other_costs <span class="dt">NUMERIC</span>(<span class="dv">10</span>,<span class="dv">2</span>) <span class="kw">DEFAULT</span> <span class="dv">0</span>,       <span class="co">-- Miscellaneous operational costs</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    notes TEXT,                                <span class="co">-- Additional notes</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    updated_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    asset_uuid UUID <span class="kw">REFERENCES</span> assets(asset_uuid) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p><strong>Use Cases</strong>: - Monthly cost tracking and budgeting -
+Total Cost of Ownership (TCO) calculations - Cost trend analysis and
+forecasting - Department cost allocation - Operational efficiency
+metrics</p>
+<p><strong>Sample Data Generated</strong>: - 12 months of historical
+data for each asset - Realistic cost ranges based on asset type: -
+Servers: $500-1,500/month total operational costs - Workstations:
+$150-400/month - Laptops: $50-150/month - Network equipment:
+$200-800/month</p>
+<h3 id="asset-risk-mapping-asset_risk_mapping">2. Asset Risk Mapping
+(<code>asset_risk_mapping</code>)</h3>
+<p><strong>Purpose</strong>: Map assets to risk models and cost centers
+for risk assessment and financial tracking.</p>
+<p><strong>Schema</strong>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> asset_risk_mapping (</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> SERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    asset_uuid UUID <span class="kw">REFERENCES</span> assets(asset_uuid) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    existing_asset_id <span class="dt">INTEGER</span>,                 <span class="co">-- Reference to legacy asset ID</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    risk_model_id <span class="dt">INTEGER</span>,                     <span class="co">-- Risk model identifier</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    cost_center_id <span class="dt">INTEGER</span>,                    <span class="co">-- Cost center for financial tracking</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    mapping_confidence <span class="dt">NUMERIC</span>(<span class="dv">3</span>,<span class="dv">2</span>),          <span class="co">-- Confidence level (0.00-1.00)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    mapping_method <span class="dt">VARCHAR</span>(<span class="dv">50</span>),                <span class="co">-- How mapping was determined</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    mapping_criteria TEXT,                     <span class="co">-- Criteria used for mapping</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    verified_by <span class="dt">INTEGER</span>,                       <span class="co">-- User ID who verified mapping</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    verified_at <span class="dt">TIMESTAMP</span>,                     <span class="co">-- When mapping was verified</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    updated_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p><strong>Mapping Methods</strong>: - <code>agent_based</code>:
+Determined by agent data - <code>scan_based</code>: Determined by
+vulnerability scans - <code>manual</code>: Manually assigned by
+administrator - <code>automatic</code>: System-generated mapping -
+<code>hybrid</code>: Combination of methods</p>
+<p><strong>Risk Model Assignment</strong>: - High criticality assets:
+Risk models 101-105 - Medium criticality assets: Risk models 201-210 -
+Low criticality assets: Risk models 301-315 - Unknown criticality: Risk
+models 401-405</p>
+<p><strong>Cost Center Assignment</strong>: - SYS-001 (Infrastructure):
+Cost center 1001 - SYS-002 (Development): Cost center 1002 - SYS-003
+(Production): Cost center 1003 - SYS-004 (Security): Cost center 1004 -
+SYS-005 (Cloud): Cost center 1005 - Default: Cost center 1000</p>
+<h3 id="asset-tags-asset_tags">3. Asset Tags
+(<code>asset_tags</code>)</h3>
+<p><strong>Purpose</strong>: Flexible tagging system for asset
+categorization, filtering, and management.</p>
+<p><strong>Schema</strong>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> asset_tags (</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> SERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    asset_uuid UUID <span class="kw">REFERENCES</span> assets(asset_uuid) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    tag_key <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,             <span class="co">-- Tag category/key</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    tag_value <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,           <span class="co">-- Tag value</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p><strong>Standard Tag Categories Generated</strong>:</p>
+<ol type="1">
+<li><strong>Environment Tags</strong>:
+<ul>
+<li><code>infrastructure</code>, <code>development</code>,
+<code>production</code>, <code>security</code>, <code>cloud</code>,
+<code>general</code></li>
+</ul></li>
+<li><strong>Asset Type Tags</strong>:
+<ul>
+<li><code>server</code>, <code>workstation</code>, <code>laptop</code>,
+<code>printer</code>, <code>scanner</code>, <code>firewall</code>,
+<code>switch</code>, <code>ups</code>, <code>other</code></li>
+</ul></li>
+<li><strong>Criticality Tags</strong>:
+<ul>
+<li><code>high</code>, <code>medium</code>, <code>low</code>,
+<code>unknown</code></li>
+</ul></li>
+<li><strong>Location Tags</strong>:
+<ul>
+<li><code>datacenter-east</code>, <code>datacenter-west</code>,
+<code>office-hq</code>, <code>office-branch</code></li>
+</ul></li>
+<li><strong>Department Tags</strong>:
+<ul>
+<li><code>engineering</code>, <code>data</code>,
+<code>operations</code>, <code>general</code>, <code>network</code>,
+<code>infrastructure</code></li>
+</ul></li>
+<li><strong>Compliance Tags</strong>:
+<ul>
+<li><code>sox-compliant</code>, <code>pci-dss</code>,
+<code>fisma-moderate</code>, <code>standard</code></li>
+</ul></li>
+</ol>
+<p><strong>Use Cases</strong>: - Asset filtering and search - Compliance
+tracking - Automated policy application - Reporting and analytics -
+Inventory management</p>
+<h3 id="system-assets-system_assets">4. System Assets
+(<code>system_assets</code>)</h3>
+<p><strong>Purpose</strong>: Many-to-many relationship between systems
+and assets, allowing assets to belong to multiple systems.</p>
+<p><strong>Schema</strong>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> system_assets (</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> SERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    system_id <span class="dt">VARCHAR</span>(<span class="dv">50</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,            <span class="co">-- System identifier</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    asset_uuid UUID <span class="kw">REFERENCES</span> assets(asset_uuid) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    assignment_type <span class="dt">VARCHAR</span>(<span class="dv">20</span>) <span class="kw">DEFAULT</span> <span class="st">&#39;direct&#39;</span>, <span class="co">-- Type of assignment</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p><strong>Assignment Types</strong>: - <code>primary</code>: Asset’s
+main system assignment - <code>secondary</code>: Asset supports
+additional systems - <code>shared</code>: Asset is shared across
+multiple systems - <code>direct</code>: Direct assignment (default)</p>
+<p><strong>Assignment Logic</strong>: 1. <strong>Primary
+Assignments</strong>: Each asset gets assigned to its main system 2.
+<strong>Secondary Assignments</strong>: Database servers may support
+multiple applications 3. <strong>Shared Assignments</strong>: Network
+infrastructure (firewalls, switches, DNS, DHCP) shared across
+systems</p>
+<h2 id="data-population">Data Population</h2>
+<h3 id="running-the-seed-script">Running the Seed Script</h3>
+<p>Execute the SQL script to populate all tables:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In DBeaver or your PostgreSQL client</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">--</span> Run the script: api/scripts/seed-additional-asset-tables.sql</span></code></pre></div>
+<h3 id="expected-data-volume">Expected Data Volume</h3>
+<p>After running the script, you should have: - <strong>Asset
+Operational Costs</strong>: ~300-500 records (12 months × 25-40 assets)
+- <strong>Asset Risk Mapping</strong>: ~25-40 records (one per asset) -
+<strong>Asset Tags</strong>: ~150-240 records (6 tags per asset) -
+<strong>System Assets</strong>: ~40-80 records (primary + secondary +
+shared assignments)</p>
+<h2 id="api-integration">API Integration</h2>
+<h3 id="drizzle-schema-integration">Drizzle Schema Integration</h3>
+<p>The schemas are defined in
+<code>api/src/db/schema/assetManagement.js</code>:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Import the new schemas</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> { </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  assetOperationalCosts<span class="op">,</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  assetRiskMapping<span class="op">,</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  assetTags<span class="op">,</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  systemAssets </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>} <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;./db/schema/assetManagement&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="recommended-api-endpoints">Recommended API Endpoints</h3>
+<ol type="1">
+<li><strong>Asset Operational Costs</strong>:
+<ul>
+<li><code>GET /api/v1/asset-management/operational-costs?assetUuid={uuid}</code></li>
+<li><code>POST /api/v1/asset-management/operational-costs</code></li>
+<li><code>PUT /api/v1/asset-management/operational-costs/{id}</code></li>
+<li><code>DELETE /api/v1/asset-management/operational-costs/{id}</code></li>
+</ul></li>
+<li><strong>Asset Risk Mapping</strong>:
+<ul>
+<li><code>GET /api/v1/asset-management/risk-mapping?assetUuid={uuid}</code></li>
+<li><code>POST /api/v1/asset-management/risk-mapping</code></li>
+<li><code>PUT /api/v1/asset-management/risk-mapping/{id}</code></li>
+</ul></li>
+<li><strong>Asset Tags</strong>:
+<ul>
+<li><code>GET /api/v1/asset-management/tags?assetUuid={uuid}</code></li>
+<li><code>POST /api/v1/asset-management/tags</code></li>
+<li><code>DELETE /api/v1/asset-management/tags/{id}</code></li>
+<li><code>GET /api/v1/asset-management/tags/keys</code> (get all tag
+keys)</li>
+<li><code>GET /api/v1/asset-management/tags/values?key={tagKey}</code>
+(get values for a key)</li>
+</ul></li>
+<li><strong>System Assets</strong>:
+<ul>
+<li><code>GET /api/v1/asset-management/system-assets?systemId={id}</code></li>
+<li><code>GET /api/v1/asset-management/system-assets?assetUuid={uuid}</code></li>
+<li><code>POST /api/v1/asset-management/system-assets</code></li>
+<li><code>DELETE /api/v1/asset-management/system-assets/{id}</code></li>
+</ul></li>
+</ol>
+<h2 id="frontend-integration">Frontend Integration</h2>
+<h3 id="asset-inventory-enhancements">Asset Inventory Enhancements</h3>
+<ol type="1">
+<li><strong>Operational Costs Panel</strong>: Similar to Cost Management
+panel</li>
+<li><strong>Risk Information Display</strong>: Show risk model and
+confidence</li>
+<li><strong>Tag Management</strong>: Add/remove tags, filter by
+tags</li>
+<li><strong>System Relationships</strong>: Show which systems an asset
+belongs to</li>
+</ol>
+<h3 id="new-ui-components-needed">New UI Components Needed</h3>
+<ol type="1">
+<li><strong>Asset Operational Costs Panel</strong>:
+<ul>
+<li>Monthly cost breakdown charts</li>
+<li>Cost trend analysis</li>
+<li>Budget vs actual comparisons</li>
+</ul></li>
+<li><strong>Asset Tags Component</strong>:
+<ul>
+<li>Tag cloud display</li>
+<li>Tag filtering interface</li>
+<li>Bulk tag operations</li>
+</ul></li>
+<li><strong>Risk Assessment Panel</strong>:
+<ul>
+<li>Risk score visualization</li>
+<li>Confidence indicators</li>
+<li>Risk model details</li>
+</ul></li>
+<li><strong>System Relationships Panel</strong>:
+<ul>
+<li>System assignment visualization</li>
+<li>Assignment type indicators</li>
+<li>Multi-system dependencies</li>
+</ul></li>
+</ol>
+<h2 id="analytics-and-reporting">Analytics and Reporting</h2>
+<h3 id="cost-analytics">Cost Analytics</h3>
+<ul>
+<li>Monthly operational cost trends</li>
+<li>Cost per asset type analysis</li>
+<li>Department cost allocation</li>
+<li>Budget variance reporting</li>
+</ul>
+<h3 id="risk-analytics">Risk Analytics</h3>
+<ul>
+<li>Risk distribution across assets</li>
+<li>Confidence level analysis</li>
+<li>Risk model effectiveness</li>
+<li>Compliance risk assessment</li>
+</ul>
+<h3 id="tag-analytics">Tag Analytics</h3>
+<ul>
+<li>Tag usage statistics</li>
+<li>Asset categorization reports</li>
+<li>Compliance tag tracking</li>
+<li>Location-based analysis</li>
+</ul>
+<h3 id="system-analytics">System Analytics</h3>
+<ul>
+<li>Asset distribution across systems</li>
+<li>System dependency mapping</li>
+<li>Shared resource utilization</li>
+<li>System-specific cost analysis</li>
+</ul>
+<h2 id="next-steps">Next Steps</h2>
+<ol type="1">
+<li><strong>Run the SQL script</strong> to populate the tables with
+sample data</li>
+<li><strong>Implement API endpoints</strong> for each table</li>
+<li><strong>Create frontend panels</strong> for data visualization and
+management</li>
+<li><strong>Add filtering and search</strong> capabilities using
+tags</li>
+<li><strong>Implement analytics dashboards</strong> for cost and risk
+analysis</li>
+<li><strong>Add bulk operations</strong> for tag management and system
+assignments</li>
+</ol>
+<p>This foundation provides comprehensive asset management capabilities
+with operational cost tracking, risk assessment, flexible tagging, and
+system relationship management.</p>
+</body>
+</html>

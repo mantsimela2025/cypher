@@ -1,7 +1,7 @@
 const express = require('express');
 const naturalLanguageQueryController = require('../controllers/naturalLanguageQueryController');
 const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { requirePermission } = require('../middleware/rbac');
 
 const router = express.Router();
 

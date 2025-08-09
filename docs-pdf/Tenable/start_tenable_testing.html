@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>start_tenable_testing</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="quick-start-guide-tenable-integration-testing">Quick Start
+Guide: Tenable Integration Testing</h1>
+<h2 id="test-your-complete-tenable-integration">🚀 Test Your Complete
+Tenable Integration</h2>
+<p>Yes! With this setup you can absolutely test asset/vulnerability
+imports and scheduled tasks locally. Here’s how:</p>
+<h3 id="step-1-start-mock-tenable-server">Step 1: Start Mock Tenable
+Server</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 1: Start the mock server</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> mock_tenable_server.py</span></code></pre></div>
+<p>You’ll see:</p>
+<pre><code>Starting Mock Tenable Server...
+Access at: http://localhost:5001
+Available endpoints:
+  GET  /session
+  GET  /scans
+  GET  /assets
+  POST /assets/export
+  GET  /workbenches/vulnerabilities
+  POST /vulns/export</code></pre>
+<h3 id="step-2-test-integration-components">Step 2: Test Integration
+Components</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 2: Test the full integration</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> tsx test_full_integration.ts</span></code></pre></div>
+<p>This will test: - ✅ Connection to mock server - ✅ Asset
+synchronization (100 mock assets) - ✅ Vulnerability synchronization
+(500+ mock vulnerabilities) - ✅ Full sync process with data
+transformation - ✅ Scheduled task configuration - ✅ Manual job
+execution</p>
+<h3 id="step-3-test-via-api-endpoints">Step 3: Test via API
+Endpoints</h3>
+<p>With RAS-DASH running, you can test via HTTP:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test connection</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:5000/api/tenable/test-connection</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual asset sync</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/api/tenable/sync/assets</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual vulnerability sync  </span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/api/tenable/sync/vulnerabilities</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Full sync</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/api/tenable/sync/full</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Check scheduler status</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:5000/api/tenable/scheduler/status</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Run scheduled job manually</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/api/tenable/scheduler/jobs/tenable-health-check/run</span></code></pre></div>
+<h2 id="what-gets-tested">🔄 What Gets Tested</h2>
+<h3 id="asset-import-transformation">Asset Import &amp;
+Transformation</h3>
+<ul>
+<li><strong>Mock Data</strong>: 100 realistic assets with Windows/Linux
+OS, cloud metadata, exposure scores</li>
+<li><strong>Import Process</strong>: Export API → Chunked download →
+Data transformation</li>
+<li><strong>RAS-DASH Format</strong>: Converts Tenable format to your
+existing asset schema</li>
+</ul>
+<h3 id="vulnerability-import-transformation">Vulnerability Import &amp;
+Transformation</h3>
+<ul>
+<li><strong>Mock Data</strong>: 500+ vulnerabilities with CVSS scores,
+severity levels, plugin data</li>
+<li><strong>Import Process</strong>: Vulnerability export → Chunked
+download → Risk analysis</li>
+<li><strong>RAS-DASH Format</strong>: Maps to your vulnerability
+management system</li>
+</ul>
+<h3 id="scheduled-task-testing">Scheduled Task Testing</h3>
+<ul>
+<li><strong>Health Check</strong>: Every 30 minutes (runs immediately
+for testing)</li>
+<li><strong>Delta Sync</strong>: Every 1 hour (configurable via
+env)</li>
+<li><strong>Full Sync</strong>: Every 4 hours (configurable via
+env)</li>
+<li><strong>Manual Execution</strong>: Test any job on-demand</li>
+</ul>
+<h2 id="expected-output">📊 Expected Output</h2>
+<h3 id="asset-sync-results">Asset Sync Results</h3>
+<pre><code>✅ Asset sync completed: 100 assets
+Transforming 100 Tenable assets to RAS-DASH format
+Transformed asset: server-1.example.com (192.168.1.10)
+Transformed asset: server-2.example.com (192.168.1.11)
+...
+Asset transformation completed</code></pre>
+<h3 id="vulnerability-sync-results">Vulnerability Sync Results</h3>
+<pre><code>✅ Vulnerability sync completed: 500 vulnerabilities  
+Transforming 500 Tenable vulnerabilities to RAS-DASH format
+Transformed vulnerability: Sample Vulnerability 1 on server-1.example.com
+...
+Vulnerability transformation completed</code></pre>
+<h3 id="scheduler-status">Scheduler Status</h3>
+<pre><code>✅ Scheduler status:
+   - Initialized: true
+   - Total jobs: 3
+   - Active jobs: 3
+
+Scheduled jobs:
+   - Tenable Delta Sync: enabled (0 */1 * * *)
+   - Tenable Full Sync: enabled (0 2 */1 * *)  
+   - Tenable Health Check: enabled (*/30 * * *)</code></pre>
+<h2 id="configuration-options">🔧 Configuration Options</h2>
+<h3 id="environment-variables-already-set">Environment Variables
+(Already Set)</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">TENABLE_BASE_URL</span><span class="op">=</span>http://localhost:5001  <span class="co"># Mock server</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">TENABLE_SYNC_ENABLED</span><span class="op">=</span>true               <span class="co"># Enable scheduling</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">TENABLE_SYNC_INTERVAL_HOURS</span><span class="op">=</span>1           <span class="co"># Delta sync every hour</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="va">TENABLE_ASSET_CHUNK_SIZE</span><span class="op">=</span>50             <span class="co"># Smaller chunks for testing</span></span></code></pre></div>
+<h3 id="switch-to-production">Switch to Production</h3>
+<p>When you get Tenable cloud access, just change:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">TENABLE_BASE_URL</span><span class="op">=</span>https://cloud.tenable.com</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="va">TENABLE_ACCESS_KEY</span><span class="op">=</span>your_real_access_key</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">TENABLE_SECRET_KEY</span><span class="op">=</span>your_real_secret_key</span></code></pre></div>
+<h2 id="integration-benefits">🎯 Integration Benefits</h2>
+<ol type="1">
+<li><strong>Complete Local Testing</strong>: No cloud dependencies
+required</li>
+<li><strong>Realistic Data</strong>: Mock data matches real Tenable API
+structure<br />
+</li>
+<li><strong>Scheduled Automation</strong>: Test cron jobs and background
+synchronization</li>
+<li><strong>Data Transformation</strong>: Verify Tenable → RAS-DASH data
+mapping</li>
+<li><strong>Error Handling</strong>: Test connection failures and retry
+logic</li>
+<li><strong>Performance Testing</strong>: Measure sync times and
+throughput</li>
+</ol>
+<h2 id="troubleshooting">🚨 Troubleshooting</h2>
+<h3 id="mock-server-not-running">Mock Server Not Running</h3>
+<pre><code>❌ Connection test failed - check if mock server is running</code></pre>
+<p><strong>Solution</strong>: Start
+<code>python mock_tenable_server.py</code> first</p>
+<h3 id="integration-service-errors">Integration Service Errors</h3>
+<pre><code>❌ Tenable Integration initialized with base URL: http://localhost:5001</code></pre>
+<p><strong>Solution</strong>: Check that RAS-DASH server is running and
+environment variables are loaded</p>
+<h3 id="scheduler-not-starting">Scheduler Not Starting</h3>
+<p><strong>Solution</strong>: Verify
+<code>TENABLE_SYNC_ENABLED=true</code> in .env file</p>
+<h2 id="success-indicators">✅ Success Indicators</h2>
+<p>You’ll know everything is working when you see: - ✅ 100 assets
+imported and transformed - ✅ 500+ vulnerabilities imported and
+transformed<br />
+- ✅ 3 scheduled jobs running (delta sync, full sync, health check) - ✅
+Manual job execution working - ✅ Data in RAS-DASH format with proper
+field mapping</p>
+<p>This gives you a complete testing environment for the Tenable
+integration without requiring any cloud access!</p>
+</body>
+</html>

@@ -1,0 +1,47 @@
+# Node
+node_modules/
+**/node_modules/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+/dist/
+/build/
+**/dist/
+**/build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Binaries and archives
+*.zip
+*.7z
+*.tar
+*.gz
+*.pdf
+
+# Runtime
+*.pid
+
+# Coverage
+coverage/
+
+# Misc
+*.log
+
+# Exceptions: keep intentional docs PDFs (if needed)
+!docs-pdf-final/

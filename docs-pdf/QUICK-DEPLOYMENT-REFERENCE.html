@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUICK-DEPLOYMENT-REFERENCE</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="cypher-windows-server-2019-quick-deployment-reference">🚀 CYPHER
+Windows Server 2019 Quick Deployment Reference</h1>
+<h2 id="prerequisites-checklist">📋 <strong>Prerequisites
+Checklist</strong></h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Windows Server 2019 EC2 instance
+(t3.large) launched</label></li>
+<li><label><input type="checkbox" />Connected via RDP as
+Administrator</label></li>
+<li><label><input type="checkbox" />Your zipped code uploaded to S3
+bucket</label></li>
+<li><label><input type="checkbox" />RDS PostgreSQL database created and
+accessible</label></li>
+<li><label><input type="checkbox" />Security groups configured (ports
+80, 443, 3389, 3001)</label></li>
+</ul>
+<hr />
+<h2 id="super-quick-deployment-5-minutes">⚡ <strong>Super Quick
+Deployment (5 Minutes)</strong></h2>
+<h3 id="option-1-automated-batch-script"><strong>Option 1: Automated
+Batch Script</strong></h3>
+<ol type="1">
+<li><strong>Download files</strong> to your Windows Server desktop</li>
+<li><strong>Right-click</strong> <code>deploy-cypher-iis.bat</code> →
+<strong>“Run as administrator”</strong></li>
+<li><strong>Follow prompts</strong> to enter your S3 and database
+details</li>
+<li><strong>Wait 10-15 minutes</strong> for automatic installation and
+configuration</li>
+<li><strong>Done!</strong> Your app will be running on IIS</li>
+</ol>
+<h3 id="option-2-powershell-script"><strong>Option 2: PowerShell
+Script</strong></h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run as Administrator</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\Deploy-CYPHER-IIS<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>S3Bucket <span class="st">&quot;your-bucket&quot;</span> <span class="op">-</span>S3Key <span class="st">&quot;your-code.zip&quot;</span> <span class="op">-</span>RDSEndpoint <span class="st">&quot;your-rds-endpoint&quot;</span> <span class="op">-</span>DBName <span class="st">&quot;your-db&quot;</span> <span class="op">-</span>DBUser <span class="st">&quot;your-user&quot;</span> <span class="op">-</span>DBPassword <span class="st">&quot;your-password&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="manual-step-by-step-if-needed">🔧 <strong>Manual Step-by-Step
+(If Needed)</strong></h2>
+<h3 id="install-software"><strong>1. Install Software</strong></h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install IIS</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Enable-WindowsOptionalFeature <span class="op">-</span>Online <span class="op">-</span>FeatureName IIS-WebServerRole<span class="op">,</span>IIS-WebServer<span class="op">,</span>IIS-CommonHttpFeatures<span class="op">,</span>IIS-HttpErrors<span class="op">,</span>IIS-HttpLogging<span class="op">,</span>IIS-RequestFiltering<span class="op">,</span>IIS-StaticContent<span class="op">,</span>IIS-DefaultDocument<span class="op">,</span>IIS-DirectoryBrowsing<span class="op">,</span>IIS-ASPNET45</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Node.js (download from nodejs.org)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Install IISNode (download from GitHub)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Git and AWS CLI</span></span></code></pre></div>
+<h3 id="download-code"><strong>2. Download Code</strong></h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>aws s3 <span class="fu">cp</span> s3<span class="op">://</span>your-bucket<span class="op">/</span>your-code<span class="op">.</span><span class="fu">zip</span> C<span class="op">:</span>\temp\code<span class="op">.</span><span class="fu">zip</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Expand-Archive C<span class="op">:</span>\temp\code<span class="op">.</span><span class="fu">zip</span> C<span class="op">:</span>\inetpub\wwwroot\cypher</span></code></pre></div>
+<h3 id="configure-environment"><strong>3. Configure
+Environment</strong></h3>
+<p>Create <code>C:\inetpub\wwwroot\cypher\api\.env</code>:</p>
+<pre><code>NODE_ENV=production
+PORT=3001
+DATABASE_URL=postgresql://user:pass@rds-endpoint:5432/dbname
+DB_HOST=your-rds-endpoint
+DB_PORT=5432
+DB_NAME=your-database
+DB_USER=your-username
+DB_PASSWORD=your-password
+JWT_SECRET=your-secret-key
+CORS_ORIGIN=http://your-domain.com</code></pre>
+<h3 id="install-dependencies"><strong>4. Install
+Dependencies</strong></h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> C<span class="op">:</span>\inetpub\wwwroot\cypher\api</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>npm install <span class="op">--</span>production</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> C<span class="op">:</span>\inetpub\wwwroot\cypher\client</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>npm install</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>npm run build</span></code></pre></div>
+<h3 id="configure-iis"><strong>5. Configure IIS</strong></h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Import-Module</span> WebAdministration</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Remove-Website <span class="op">-</span>Name <span class="st">&quot;Default Web Site&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>New-WebAppPool <span class="op">-</span>Name <span class="st">&quot;CypherAppPool&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>New-Website <span class="op">-</span>Name <span class="st">&quot;CypherClient&quot;</span> <span class="op">-</span>Port <span class="dv">80</span> <span class="op">-</span>PhysicalPath <span class="st">&quot;C:\inetpub\wwwroot\cypher\client\dist&quot;</span> <span class="op">-</span>ApplicationPool <span class="st">&quot;CypherAppPool&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>New-WebApplication <span class="op">-</span>Site <span class="st">&quot;CypherClient&quot;</span> <span class="op">-</span>Name <span class="st">&quot;api&quot;</span> <span class="op">-</span>PhysicalPath <span class="st">&quot;C:\inetpub\wwwroot\cypher\api&quot;</span> <span class="op">-</span>ApplicationPool <span class="st">&quot;CypherAppPool&quot;</span></span></code></pre></div>
+<h3 id="create-web.config-for-api"><strong>6. Create web.config for
+API</strong></h3>
+<p>Create <code>C:\inetpub\wwwroot\cypher\api\web.config</code> with
+IISNode configuration.</p>
+<h3 id="start-services"><strong>7. Start Services</strong></h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>iisreset</span></code></pre></div>
+<hr />
+<h2 id="health-checks">🏥 <strong>Health Checks</strong></h2>
+<h3 id="test-api"><strong>Test API</strong></h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Invoke-WebRequest</span> <span class="op">-</span>Uri <span class="st">&quot;http://localhost/api/health&quot;</span></span></code></pre></div>
+<h3 id="test-client"><strong>Test Client</strong></h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Invoke-WebRequest</span> <span class="op">-</span>Uri <span class="st">&quot;http://localhost&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="monitoring-commands">📊 <strong>Monitoring
+Commands</strong></h2>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check IIS status</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-Service</span> W3SVC</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check application pool</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>Get-WebAppPoolState <span class="op">-</span>Name <span class="st">&quot;CypherAppPool&quot;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Restart IIS</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>iisreset</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Restart application pool</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>Restart-WebAppPool <span class="op">-</span>Name <span class="st">&quot;CypherAppPool&quot;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co"># View logs</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-EventLog</span> <span class="op">-</span>LogName Application <span class="op">-</span>Source <span class="st">&quot;IIS*&quot;</span> <span class="op">-</span>Newest <span class="dv">10</span></span></code></pre></div>
+<hr />
+<h2 id="important-file-locations">🔗 <strong>Important File
+Locations</strong></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Application Root</strong></td>
+<td><code>C:\inetpub\wwwroot\cypher</code></td>
+</tr>
+<tr>
+<td><strong>API Code</strong></td>
+<td><code>C:\inetpub\wwwroot\cypher\api</code></td>
+</tr>
+<tr>
+<td><strong>Client Build</strong></td>
+<td><code>C:\inetpub\wwwroot\cypher\client\dist</code></td>
+</tr>
+<tr>
+<td><strong>Environment Config</strong></td>
+<td><code>C:\inetpub\wwwroot\cypher\api\.env</code></td>
+</tr>
+<tr>
+<td><strong>IIS Logs</strong></td>
+<td><code>C:\inetpub\logs\LogFiles\W3SVC1\</code></td>
+</tr>
+<tr>
+<td><strong>Monitoring Script</strong></td>
+<td><code>C:\Scripts\Monitor-Cypher.ps1</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="troubleshooting">🚨 <strong>Troubleshooting</strong></h2>
+<h3 id="api-not-responding"><strong>API Not Responding</strong></h3>
+<ol type="1">
+<li>Check if <code>server.js</code> exists in API directory</li>
+<li>Verify <code>web.config</code> is properly configured</li>
+<li>Check Windows Event Viewer for errors</li>
+<li>Restart application pool:
+<code>Restart-WebAppPool -Name "CypherAppPool"</code></li>
+</ol>
+<h3 id="database-connection-issues"><strong>Database Connection
+Issues</strong></h3>
+<ol type="1">
+<li>Verify RDS security group allows EC2 access (port 5432)</li>
+<li>Test connection:
+<code>Test-NetConnection -ComputerName your-rds-endpoint -Port 5432</code></li>
+<li>Check <code>.env</code> file for correct credentials</li>
+</ol>
+<h3 id="client-not-loading"><strong>Client Not Loading</strong></h3>
+<ol type="1">
+<li>Ensure <code>npm run build</code> completed successfully</li>
+<li>Check if <code>dist</code> folder exists in client directory</li>
+<li>Verify IIS site points to correct path</li>
+</ol>
+<h3 id="port-conflicts"><strong>Port Conflicts</strong></h3>
+<ol type="1">
+<li>Check if port 80 is available:
+<code>netstat -an | findstr :80</code></li>
+<li>Stop conflicting services if needed</li>
+</ol>
+<hr />
+<h2 id="success-indicators">🎯 <strong>Success Indicators</strong></h2>
+<p>✅ <strong>IIS Service Running</strong>:
+<code>Get-Service W3SVC</code> shows “Running”<br />
+✅ <strong>App Pool Active</strong>:
+<code>Get-WebAppPoolState -Name "CypherAppPool"</code> shows
+“Started”<br />
+✅ <strong>API Health Check</strong>:
+<code>http://localhost/api/health</code> returns 200<br />
+✅ <strong>Client Loading</strong>: <code>http://localhost</code> shows
+your React app<br />
+✅ <strong>Database Connected</strong>: No database errors in logs</p>
+<hr />
+<h2 id="quick-commands-reference">📞 <strong>Quick Commands
+Reference</strong></h2>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Full deployment (automated)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\deploy-cypher-iis<span class="op">.</span><span class="fu">bat</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual PowerShell deployment</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\Deploy-CYPHER-IIS<span class="op">.</span><span class="fu">ps1</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check application status</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>C<span class="op">:</span>\Scripts\Monitor-Cypher<span class="op">.</span><span class="fu">ps1</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Restart everything</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>iisreset</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># View recent logs</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-EventLog</span> <span class="op">-</span>LogName Application <span class="op">-</span>Newest <span class="dv">20</span> <span class="op">|</span> <span class="fu">Where-Object</span> <span class="op">{</span><span class="va">$_</span><span class="op">.</span><span class="fu">Source</span> <span class="op">-like</span> <span class="st">&quot;*IIS*&quot;</span><span class="op">}</span></span></code></pre></div>
+<hr />
+<p><strong>🎉 That’s it! Your CYPHER application should now be running
+on Windows Server 2019 with IIS, connected to your PostgreSQL RDS
+database!</strong></p>
+</body>
+</html>

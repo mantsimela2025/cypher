@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>DASHBOARD_CREATOR_DESIGN</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="dashboard-creator---technical-ui-design-document">Dashboard
+Creator - Technical &amp; UI Design Document</h1>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>The Dashboard Creator is a drag-and-drop wizard application that
+allows users to build custom analytics dashboards by selecting
+predefined metrics and arranging them on a configurable grid canvas. The
+application features a multi-step wizard interface with real-time
+preview capabilities and persistent storage.</p>
+<h2 id="architecture-overview">Architecture Overview</h2>
+<h3 id="frontend-architecture">Frontend Architecture</h3>
+<ul>
+<li><strong>Framework</strong>: React 18 with TypeScript</li>
+<li><strong>State Management</strong>: TanStack Query for server state,
+React hooks for local state</li>
+<li><strong>UI Components</strong>: Shadcn/ui built on Radix UI
+primitives</li>
+<li><strong>Styling</strong>: Tailwind CSS with custom CSS
+variables</li>
+<li><strong>Routing</strong>: Wouter for lightweight client-side
+routing</li>
+<li><strong>Build Tool</strong>: Vite for development and production
+builds</li>
+</ul>
+<h3 id="backend-architecture">Backend Architecture</h3>
+<ul>
+<li><strong>Runtime</strong>: Node.js with Express.js</li>
+<li><strong>Language</strong>: TypeScript with ES modules</li>
+<li><strong>Data Layer</strong>: In-memory storage (development) /
+PostgreSQL (production)</li>
+<li><strong>ORM</strong>: Drizzle ORM for type-safe database
+operations</li>
+<li><strong>API Design</strong>: RESTful endpoints with Zod
+validation</li>
+</ul>
+<h2 id="complete-tech-stack">Complete Tech Stack</h2>
+<h3 id="core-technologies">Core Technologies</h3>
+<h4 id="frontend-stack">Frontend Stack</h4>
+<ul>
+<li><strong>React 18.3.1</strong>: Modern React with hooks, concurrent
+features, and TypeScript support</li>
+<li><strong>TypeScript 5.6.3</strong>: Static type checking and enhanced
+developer experience</li>
+<li><strong>Vite 6.0.3</strong>: Lightning-fast build tool with Hot
+Module Replacement (HMR)</li>
+<li><strong>Wouter 3.3.5</strong>: Minimalist routing library (~2.8KB)
+for client-side navigation</li>
+</ul>
+<h4 id="backend-stack">Backend Stack</h4>
+<ul>
+<li><strong>Node.js</strong>: JavaScript runtime environment</li>
+<li><strong>Express 4.21.2</strong>: Fast, minimalist web framework for
+Node.js</li>
+<li><strong>TypeScript (tsx)</strong>: Runtime TypeScript execution with
+hot reload</li>
+<li><strong>Drizzle ORM</strong>: Type-safe database toolkit with
+excellent TypeScript integration</li>
+</ul>
+<h4 id="database-storage">Database &amp; Storage</h4>
+<ul>
+<li><strong>PostgreSQL</strong>: Production database with JSONB support
+for flexible widget storage</li>
+<li><strong>In-Memory Storage</strong>: Development fallback using
+Map-based storage for rapid prototyping</li>
+<li><strong>Session Storage</strong>: PostgreSQL-based session
+persistence using connect-pg-simple</li>
+</ul>
+<h3 id="ui-framework-components">UI Framework &amp; Components</h3>
+<h4 id="design-system-foundation">Design System Foundation</h4>
+<ul>
+<li><strong>Shadcn/ui</strong>: High-quality component library built on
+Radix UI primitives</li>
+<li><strong>Radix UI</strong>: Unstyled, accessible component primitives
+<ul>
+<li><code>@radix-ui/react-dialog</code>: Modal dialogs for preview and
+configuration</li>
+<li><code>@radix-ui/react-dropdown-menu</code>: Action menus for
+widgets</li>
+<li><code>@radix-ui/react-toast</code>: Notification system</li>
+<li><code>@radix-ui/react-tabs</code>: Tabbed interfaces</li>
+<li><code>@radix-ui/react-accordion</code>: Collapsible content
+sections</li>
+<li><code>@radix-ui/react-select</code>: Custom select components</li>
+<li><code>@radix-ui/react-checkbox</code>: Styled checkboxes</li>
+<li><code>@radix-ui/react-slider</code>: Range input controls</li>
+</ul></li>
+</ul>
+<h4 id="styling-theming">Styling &amp; Theming</h4>
+<ul>
+<li><strong>Tailwind CSS 3.4.17</strong>: Utility-first CSS
+framework</li>
+<li><strong>PostCSS</strong>: CSS post-processor for modern CSS
+features</li>
+<li><strong>CSS Custom Properties</strong>: Theme variables for
+consistent design</li>
+<li><strong>Tailwind Plugins</strong>:
+<ul>
+<li><code>@tailwindcss/typography</code>: Beautiful typographic
+defaults</li>
+<li><code>tailwindcss-animate</code>: Animation utilities</li>
+</ul></li>
+</ul>
+<h3 id="data-visualization-charts">Data Visualization &amp; Charts</h3>
+<ul>
+<li><strong>Recharts 2.13.3</strong>: Composable charting library built
+on React and D3
+<ul>
+<li>Line charts for time-series data</li>
+<li>Bar charts for categorical comparisons</li>
+<li>Pie charts for proportional data</li>
+<li>Area charts for filled time-series</li>
+<li>Responsive design with tooltips and legends</li>
+</ul></li>
+</ul>
+<h3 id="state-management-data-fetching">State Management &amp; Data
+Fetching</h3>
+<ul>
+<li><strong>TanStack Query 5.62.7</strong>: Powerful data
+synchronization for React
+<ul>
+<li>Server state caching and synchronization</li>
+<li>Background refetching</li>
+<li>Optimistic updates</li>
+<li>Error handling and retry logic</li>
+<li>Query invalidation and cache management</li>
+</ul></li>
+</ul>
+<h3 id="form-handling-validation">Form Handling &amp; Validation</h3>
+<ul>
+<li><strong>React Hook Form 7.54.2</strong>: Performant forms with
+minimal re-renders</li>
+<li><strong>Hookform Resolvers</strong>: Integration bridge for
+validation libraries</li>
+<li><strong>Zod 3.24.1</strong>: TypeScript-first schema validation
+<ul>
+<li>Runtime type checking</li>
+<li>Schema composition and transformation</li>
+<li>Integration with Drizzle ORM for type safety</li>
+</ul></li>
+</ul>
+<h3 id="icons-visual-assets">Icons &amp; Visual Assets</h3>
+<ul>
+<li><strong>Lucide React 0.468.0</strong>: Beautiful, customizable SVG
+icons
+<ul>
+<li>Consistent 24x24 grid system</li>
+<li>Tree-shakeable icon imports</li>
+<li>Accessible with proper ARIA labels</li>
+</ul></li>
+<li><strong>React Icons</strong>: Additional icon sets when needed
+<ul>
+<li>Company logos via <code>react-icons/si</code></li>
+<li>Alternative icon styles</li>
+</ul></li>
+</ul>
+<h3 id="development-tools-build-system">Development Tools &amp; Build
+System</h3>
+<h4 id="build-development">Build &amp; Development</h4>
+<ul>
+<li><strong>ESBuild</strong>: Ultra-fast JavaScript bundler and
+minifier</li>
+<li><strong>TypeScript Compiler</strong>: Type checking and code
+generation</li>
+<li><strong>Vite Plugins</strong>:
+<ul>
+<li><code>@vitejs/plugin-react</code>: React support with Fast
+Refresh</li>
+<li><code>@replit/vite-plugin-cartographer</code>: Replit-specific
+development tools</li>
+<li><code>@replit/vite-plugin-runtime-error-modal</code>: Enhanced error
+reporting</li>
+</ul></li>
+</ul>
+<h4 id="code-quality-type-safety">Code Quality &amp; Type Safety</h4>
+<ul>
+<li><strong>Drizzle Kit</strong>: Database migration and introspection
+tools</li>
+<li><strong>Drizzle Zod</strong>: Schema validation integration</li>
+<li><strong>TypeScript Definitions</strong>: Comprehensive type coverage
+<ul>
+<li><code>@types/express</code>: Express.js type definitions</li>
+<li><code>@types/node</code>: Node.js type definitions</li>
+<li><code>@types/react</code>: React type definitions</li>
+</ul></li>
+</ul>
+<h3 id="wizard-system-extensions-functionality">Wizard System Extensions
+&amp; Functionality</h3>
+<p>The Dashboard Creator implements a sophisticated wizard system with
+several key extensions that provide comprehensive functionality:</p>
+<h4 id="multi-step-navigation-system">Multi-Step Navigation System</h4>
+<ul>
+<li><strong>Custom Wizard Hook</strong>: State management for step
+progression and validation</li>
+<li><strong>Step Indicators</strong>: Visual progress display with
+click-to-navigate functionality</li>
+<li><strong>Validation Gates</strong>: Prevent progression without
+required data</li>
+<li><strong>Auto-Save</strong>: Periodic saving of draft state to
+prevent data loss</li>
+<li><strong>Previous/Next Navigation</strong>: Seamless step-by-step
+progression with validation</li>
+<li><strong>Step Validation</strong>: Each step validates completion
+before allowing progression</li>
+</ul>
+<h4 id="advanced-drag-drop-system-use-drag-drop.tsx">Advanced Drag &amp;
+Drop System (<code>use-drag-drop.tsx</code>)</h4>
+<p>The application implements a comprehensive drag-and-drop system that
+provides:</p>
+<p><strong>Core Functionality:</strong> - <strong>Metric
+Dragging</strong>: Drag metrics from library to canvas with smooth
+animations - <strong>Widget Repositioning</strong>: Move existing
+widgets within canvas boundaries - <strong>Grid Snapping</strong>:
+Automatic alignment to configurable grid (10px, 20px, 30px) -
+<strong>Visual Feedback</strong>: Drop zones, drag previews, and cursor
+state changes - <strong>Collision Detection</strong>: Prevent widget
+overlap (future enhancement)</p>
+<p><strong>Technical Implementation:</strong> - <strong>Mouse Event
+Handling</strong>: Precise mouse tracking with offset calculations -
+<strong>Touch Support</strong>: Mobile-friendly touch event handling -
+<strong>Performance Optimization</strong>: Debounced operations and
+efficient re-renders - <strong>State Management</strong>: Centralized
+drag state with React hooks - <strong>Canvas Integration</strong>:
+Seamless integration with grid layout system</p>
+<h4 id="smart-grid-layout-engine">Smart Grid Layout Engine</h4>
+<p>The grid system provides precise widget positioning and
+alignment:</p>
+<p><strong>Grid Configuration:</strong> - <strong>Multiple Grid
+Sizes</strong>: 10px, 20px, 30px options for different precision levels
+- <strong>Visual Grid Overlay</strong>: CSS-based grid pattern with
+toggle visibility - <strong>Snap-to-Grid</strong>: Optional automatic
+alignment during drag operations - <strong>Dynamic Canvas</strong>:
+Auto-expanding canvas based on widget positions - <strong>Boundary
+Detection</strong>: Prevent widgets from being dragged outside
+canvas</p>
+<p><strong>Layout Features:</strong> - <strong>Collision
+Prevention</strong>: Smart positioning to avoid widget overlap -
+<strong>Auto-Resize</strong>: Canvas expands to accommodate new widgets
+- <strong>Grid Guides</strong>: Visual snap lines during drag operations
+- <strong>Responsive Design</strong>: Grid adapts to different screen
+sizes - <strong>Memory Persistence</strong>: Grid settings saved with
+dashboard configuration</p>
+<h4 id="advanced-widget-configuration-system">Advanced Widget
+Configuration System</h4>
+<p>Each widget type has specialized configuration options:</p>
+<p><strong>Configuration Interface:</strong> - <strong>Modal
+Configuration</strong>: Per-widget settings in popup dialogs using Radix
+UI - <strong>Real-Time Preview</strong>: Immediate visual feedback for
+configuration changes - <strong>Type-Specific Settings</strong>:
+Different options for KPI, Chart, and Table widgets - <strong>Form
+Validation</strong>: Zod schema validation for all configuration inputs
+- <strong>Auto-Apply</strong>: Changes apply immediately without manual
+save</p>
+<p><strong>Widget-Specific Features:</strong> - <strong>KPI
+Widgets</strong>: Number formatting, trend indicators, color schemes,
+threshold alerts - <strong>Chart Widgets</strong>: Chart type selection,
+axis configuration, color palettes, data filtering - <strong>Table
+Widgets</strong>: Column management, sorting options, pagination
+settings, row styling - <strong>Data Source Mapping</strong>: Connect
+widgets to different data sources and API endpoints - <strong>Visual
+Customization</strong>: Titles, descriptions, colors, and display
+options</p>
+<h4 id="comprehensive-preview-publish-system">Comprehensive Preview
+&amp; Publish System</h4>
+<p>The preview system provides complete dashboard visualization:</p>
+<p><strong>Preview Features:</strong> - <strong>Modal Preview</strong>:
+Full-screen dashboard preview in dedicated modal dialog -
+<strong>Read-Only Mode</strong>: All interactions disabled to simulate
+end-user experience - <strong>Live Data Simulation</strong>: Sample data
+rendering with realistic chart animations - <strong>Responsive
+Preview</strong>: Preview adapts to different screen sizes -
+<strong>Full-Screen Option</strong>: External window preview for
+complete testing</p>
+<p><strong>Publishing Workflow:</strong> - <strong>Draft
+Management</strong>: Auto-save drafts with timestamp tracking -
+<strong>Version Control</strong>: Track changes with creation and update
+timestamps - <strong>Publishing States</strong>: Draft vs Published
+status with appropriate workflows - <strong>Validation</strong>: Ensure
+dashboard completeness before publishing - <strong>Sharing
+Configuration</strong>: Future URL-based sharing and embedding
+system</p>
+<h3 id="database-schema-extensions">Database Schema Extensions</h3>
+<h4 id="jsonb-storage-strategy">JSONB Storage Strategy</h4>
+<ul>
+<li><strong>Flexible Widget Storage</strong>: Store complex widget
+configurations as JSON</li>
+<li><strong>Query Performance</strong>: Efficient JSONB operations in
+PostgreSQL</li>
+<li><strong>Schema Evolution</strong>: Add new widget types without
+database migrations</li>
+<li><strong>Validation Layer</strong>: Zod schemas ensure data
+integrity</li>
+</ul>
+<h4 id="session-management">Session Management</h4>
+<ul>
+<li><strong>PostgreSQL Sessions</strong>: Persistent session storage
+using connect-pg-simple</li>
+<li><strong>Memory Store Fallback</strong>: In-memory sessions for
+development</li>
+<li><strong>Session Security</strong>: Configurable session timeouts and
+security options</li>
+</ul>
+<h3 id="performance-optimizations">Performance Optimizations</h3>
+<h4 id="frontend-performance">Frontend Performance</h4>
+<ul>
+<li><strong>Code Splitting</strong>: Lazy loading of widget
+components</li>
+<li><strong>Tree Shaking</strong>: Eliminate unused code from
+bundles</li>
+<li><strong>Image Optimization</strong>: SVG icons for scalability and
+performance</li>
+<li><strong>Debounced Operations</strong>: Auto-save with 2-second
+debounce</li>
+<li><strong>Memoization</strong>: React.memo and useMemo for expensive
+operations</li>
+</ul>
+<h4 id="backend-performance">Backend Performance</h4>
+<ul>
+<li><strong>Express Middleware</strong>: Efficient request processing
+pipeline</li>
+<li><strong>CORS Configuration</strong>: Optimized cross-origin resource
+sharing</li>
+<li><strong>Compression</strong>: Gzip compression for API
+responses</li>
+<li><strong>Static Asset Serving</strong>: Efficient static file
+delivery</li>
+</ul>
+<h3 id="security-validation">Security &amp; Validation</h3>
+<h4 id="input-validation">Input Validation</h4>
+<ul>
+<li><strong>Zod Schemas</strong>: Runtime validation for all API
+endpoints</li>
+<li><strong>Type Safety</strong>: End-to-end TypeScript type
+checking</li>
+<li><strong>Sanitization</strong>: Input cleaning to prevent XSS
+attacks</li>
+<li><strong>Rate Limiting</strong>: Future API throttling
+implementation</li>
+</ul>
+<h4 id="data-protection">Data Protection</h4>
+<ul>
+<li><strong>Parameterized Queries</strong>: SQL injection prevention via
+ORM</li>
+<li><strong>Session Security</strong>: Secure session configuration</li>
+<li><strong>Environment Variables</strong>: Secure configuration
+management</li>
+</ul>
+<h2 id="wizard-extensions-deep-dive">Wizard Extensions Deep Dive</h2>
+<h3 id="custom-hook-implementation">Custom Hook Implementation</h3>
+<h4
+id="use-dashboard.tsx---dashboard-state-management"><code>use-dashboard.tsx</code>
+- Dashboard State Management</h4>
+<ul>
+<li><strong>Purpose</strong>: Centralizes all dashboard-related state
+and operations</li>
+<li><strong>Features</strong>: Auto-save functionality, optimistic
+updates, error handling</li>
+<li><strong>Integration</strong>: Works seamlessly with TanStack Query
+for server synchronization</li>
+</ul>
+<h4
+id="use-drag-drop.tsx---advanced-drag-drop-engine"><code>use-drag-drop.tsx</code>
+- Advanced Drag &amp; Drop Engine</h4>
+<ul>
+<li><strong>Mouse Tracking</strong>: Precise cursor position calculation
+with offset handling</li>
+<li><strong>Touch Support</strong>: Full mobile device compatibility
+with touch events</li>
+<li><strong>Grid Integration</strong>: Automatic snapping to
+configurable grid boundaries</li>
+<li><strong>Performance</strong>: Debounced updates to prevent excessive
+re-renders</li>
+<li><strong>Visual Feedback</strong>: Dynamic cursor changes and drop
+zone highlighting</li>
+</ul>
+<h4
+id="use-mobile.tsx---responsive-design-hook"><code>use-mobile.tsx</code>
+- Responsive Design Hook</h4>
+<ul>
+<li><strong>Breakpoint Detection</strong>: Automatic mobile/desktop
+layout switching</li>
+<li><strong>Touch Optimization</strong>: Enhanced touch interactions for
+mobile devices</li>
+<li><strong>Responsive Grids</strong>: Adaptive grid sizing based on
+screen dimensions</li>
+</ul>
+<h3 id="component-architecture-extensions">Component Architecture
+Extensions</h3>
+<h4 id="multi-step-wizard-system">Multi-Step Wizard System</h4>
+<p>The wizard implements a sophisticated step-by-step flow:</p>
+<ol type="1">
+<li><strong>Step 1 - Basic Info</strong>: Dashboard metadata
+collection</li>
+<li><strong>Step 2 - Add Metrics</strong>: Metric selection with
+real-time library search</li>
+<li><strong>Step 3 - Layout &amp; Design</strong>: Canvas customization
+and widget arrangement</li>
+<li><strong>Step 4 - Review &amp; Publish</strong>: Final preview and
+publishing workflow</li>
+</ol>
+<p><strong>Step Validation Logic:</strong> - Each step validates
+completion before allowing progression - Visual indicators show step
+completion status - Previous/Next navigation respects validation rules -
+Click-to-navigate allows jumping to completed steps</p>
+<h4 id="widget-type-system">Widget Type System</h4>
+<p>The application supports three main widget types with extensible
+architecture:</p>
+<p><strong>KPI Widgets:</strong> - Single-value display with trend
+indicators - Configurable number formatting (currency, percentage, etc.)
+- Color-coded status indicators - Sample data includes revenue, user
+counts, and performance metrics</p>
+<p><strong>Chart Widgets:</strong> - Multiple chart types: Line, Bar,
+Pie, Area - Recharts integration with responsive design - Configurable
+axes, colors, and data formatting - Interactive tooltips and legends</p>
+<p><strong>Table Widgets:</strong> - Sortable columns with customizable
+headers - Configurable row styling and pagination - Data filtering and
+search capabilities - Responsive design for mobile devices</p>
+<h3 id="data-flow-architecture">Data Flow Architecture</h3>
+<h4 id="real-time-updates">Real-Time Updates</h4>
+<ul>
+<li><strong>Auto-Save</strong>: Changes saved automatically every 2
+seconds</li>
+<li><strong>Optimistic Updates</strong>: UI updates immediately, syncs
+to server</li>
+<li><strong>Conflict Resolution</strong>: Handles concurrent editing
+scenarios</li>
+<li><strong>Offline Support</strong>: Local storage fallback for network
+interruptions</li>
+</ul>
+<h4 id="cache-management">Cache Management</h4>
+<ul>
+<li><strong>TanStack Query</strong>: Intelligent server state
+caching</li>
+<li><strong>Cache Invalidation</strong>: Strategic cache updates on
+mutations</li>
+<li><strong>Background Sync</strong>: Automatic data refresh when window
+gains focus</li>
+<li><strong>Stale-While-Revalidate</strong>: Show cached data while
+fetching updates</li>
+</ul>
+<h3 id="development-workflow">Development Workflow</h3>
+<h4 id="hot-reload-system">Hot Reload System</h4>
+<ul>
+<li><strong>Vite HMR</strong>: Instant frontend updates during
+development</li>
+<li><strong>Express Restart</strong>: Automatic server restart on
+backend changes</li>
+<li><strong>Full-Stack Sync</strong>: Coordinated frontend and backend
+development</li>
+</ul>
+<h4 id="error-handling">Error Handling</h4>
+<ul>
+<li><strong>LSP Integration</strong>: Real-time error detection and
+reporting</li>
+<li><strong>Runtime Error Modal</strong>: Enhanced error display in
+development</li>
+<li><strong>Graceful Degradation</strong>: Fallback states for missing
+data</li>
+</ul>
+<h4 id="testing-infrastructure-future">Testing Infrastructure
+(Future)</h4>
+<ul>
+<li><strong>React Testing Library</strong>: Component testing
+framework</li>
+<li><strong>Jest</strong>: Unit testing framework</li>
+<li><strong>Cypress</strong>: End-to-end testing for user workflows</li>
+<li><strong>API Testing</strong>: Backend route testing with
+supertest</li>
+</ul>
+<h2 id="database-schema">Database Schema</h2>
+<h3 id="tables-structure">Tables Structure</h3>
+<h4 id="users-table">1. Users Table</h4>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> users (</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">VARCHAR</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    username TEXT <span class="kw">UNIQUE</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">password</span> TEXT <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h4 id="dashboards-table">2. Dashboards Table</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> dashboards (</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">VARCHAR</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    description TEXT,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    user_id <span class="dt">VARCHAR</span> <span class="kw">REFERENCES</span> users(<span class="kw">id</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    widgets JSONB <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;[]&#39;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    grid_settings JSONB <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;{}&#39;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    is_published <span class="dt">BOOLEAN</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="kw">FALSE</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> NOW(),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    updated_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> NOW()</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h4 id="metrics-table">3. Metrics Table</h4>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> metrics (</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">VARCHAR</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    description TEXT,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">category</span> TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- &#39;kpi&#39;, &#39;chart&#39;, &#39;table&#39;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    icon TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    color TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    default_config JSONB <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;{}&#39;</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    sample_data JSONB <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;{}&#39;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h3 id="data-models">Data Models</h3>
+<h4 id="widget-schema">Widget Schema</h4>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> Widget {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    id<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    metricId<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    x<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    y<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    width<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    height<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    config<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">any</span><span class="op">&gt;;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h4 id="grid-settings-schema">Grid Settings Schema</h4>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> GridSettings {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    showGrid<span class="op">:</span> <span class="dt">boolean</span><span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    gridSize<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    snapToGrid<span class="op">:</span> <span class="dt">boolean</span><span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="ui-design-specification">UI Design Specification</h2>
+<h3 id="design-system">Design System</h3>
+<h4 id="color-palette">Color Palette</h4>
+<ul>
+<li><strong>Primary</strong>: <code>hsl(207, 90%, 54%)</code> - Blue for
+primary actions</li>
+<li><strong>Secondary</strong>: <code>hsl(142, 70%, 45%)</code> - Green
+for success states</li>
+<li><strong>Neutral</strong>: Slate color scale for backgrounds and
+text</li>
+<li><strong>Destructive</strong>: <code>hsl(0, 84.2%, 60.2%)</code> -
+Red for delete actions</li>
+</ul>
+<h4 id="typography">Typography</h4>
+<ul>
+<li><strong>Font Family</strong>: System font stack with fallbacks</li>
+<li><strong>Sizes</strong>: Tailwind CSS scale (text-xs to
+text-4xl)</li>
+<li><strong>Weights</strong>: 400 (normal), 500 (medium), 600
+(semibold), 700 (bold)</li>
+</ul>
+<h4 id="spacing">Spacing</h4>
+<ul>
+<li><strong>Grid Unit</strong>: 20px base grid for canvas
+positioning</li>
+<li><strong>Component Spacing</strong>: 4px increments following
+Tailwind scale</li>
+<li><strong>Layout Gaps</strong>: 16px-24px between major sections</li>
+</ul>
+<h3 id="layout-structure">Layout Structure</h3>
+<h4 id="header-bar">Header Bar</h4>
+<ul>
+<li><strong>Height</strong>: 80px</li>
+<li><strong>Content</strong>: Logo, app title, save/publish actions</li>
+<li><strong>Background</strong>: White with bottom border</li>
+<li><strong>Elevation</strong>: Subtle shadow</li>
+</ul>
+<h4 id="main-content-area">Main Content Area</h4>
+<ul>
+<li><strong>Layout</strong>: Sidebar + Canvas (80/20 split on
+desktop)</li>
+<li><strong>Height</strong>: <code>calc(100vh - 80px)</code></li>
+<li><strong>Responsive</strong>: Stacked on mobile, tabbed
+interface</li>
+</ul>
+<h4 id="sidebar-320px-width">Sidebar (320px width)</h4>
+<ol type="1">
+<li><strong>Wizard Steps Panel</strong>
+<ul>
+<li>Fixed height: ~200px</li>
+<li>Shows current progress</li>
+<li>Clickable step navigation</li>
+</ul></li>
+<li><strong>Metrics Library Panel</strong>
+<ul>
+<li>Scrollable content area</li>
+<li>Search functionality</li>
+<li>Categorized metric groups</li>
+<li>Drag-enabled metric cards</li>
+</ul></li>
+</ol>
+<h4 id="canvas-area">Canvas Area</h4>
+<ol type="1">
+<li><strong>Canvas Header</strong>
+<ul>
+<li>Dashboard name and description</li>
+<li>Action buttons (Preview, Clear All, Grid Toggle)</li>
+</ul></li>
+<li><strong>Grid Canvas</strong>
+<ul>
+<li>Flexible container with background grid pattern</li>
+<li>Drop zone for new widgets</li>
+<li>Positioned widgets with drag handles</li>
+</ul></li>
+<li><strong>Bottom Action Bar</strong>
+<ul>
+<li>Status indicators (widget count, save status)</li>
+<li>Navigation buttons (Previous/Next step)</li>
+</ul></li>
+</ol>
+<h2 id="wizard-flow-design">Wizard Flow Design</h2>
+<h3 id="step-1-basic-info">Step 1: Basic Info</h3>
+<p><strong>Purpose</strong>: Collect dashboard metadata - Dashboard name
+input field - Description textarea (optional) - Template selection
+(future enhancement) - <strong>Next Action</strong>: Proceed to metrics
+selection</p>
+<h3 id="step-2-add-metrics">Step 2: Add Metrics</h3>
+<p><strong>Purpose</strong>: Select and add metrics to dashboard -
+Metrics library with search and filtering - Drag and drop from sidebar
+to canvas - Real-time widget creation - <strong>Next Action</strong>:
+Proceed to layout customization</p>
+<h3 id="step-3-layout-design">Step 3: Layout &amp; Design</h3>
+<p><strong>Purpose</strong>: Fine-tune widget positioning and appearance
+- Grid configuration options - Widget resize and reposition -
+Widget-specific configuration modals - <strong>Next Action</strong>:
+Proceed to review</p>
+<h3 id="step-4-review-publish">Step 4: Review &amp; Publish</h3>
+<p><strong>Purpose</strong>: Final review and publication - Dashboard
+preview mode - Publish/save options - Sharing configuration -
+<strong>Next Action</strong>: Deploy dashboard</p>
+<h2 id="component-architecture">Component Architecture</h2>
+<h3 id="core-components">Core Components</h3>
+<h4 id="dashboardwizard-main-container">1. DashboardWizard (Main
+Container)</h4>
+<ul>
+<li><strong>Purpose</strong>: Orchestrates the entire wizard flow</li>
+<li><strong>State</strong>: Dashboard data, widgets, grid settings,
+current step</li>
+<li><strong>Key Functions</strong>: Auto-save, step navigation, publish
+workflow</li>
+</ul>
+<h4 id="wizardsteps-navigation">2. WizardSteps (Navigation)</h4>
+<ul>
+<li><strong>Purpose</strong>: Shows progress and enables step
+navigation</li>
+<li><strong>Features</strong>: Visual progress indicators,
+click-to-navigate</li>
+<li><strong>States</strong>: Completed, current, upcoming</li>
+</ul>
+<h4 id="metricslibrary-content-panel">3. MetricsLibrary (Content
+Panel)</h4>
+<ul>
+<li><strong>Purpose</strong>: Display available metrics for
+selection</li>
+<li><strong>Features</strong>: Search, categorization, drag
+initiation</li>
+<li><strong>Data Source</strong>: Metrics API endpoint</li>
+</ul>
+<h4 id="dashboardcanvas-main-workspace">4. DashboardCanvas (Main
+Workspace)</h4>
+<ul>
+<li><strong>Purpose</strong>: Visual dashboard builder interface</li>
+<li><strong>Features</strong>: Grid system, drag &amp; drop, widget
+management</li>
+<li><strong>Sub-components</strong>: Individual widget renderers</li>
+</ul>
+<h4 id="widget-components">5. Widget Components</h4>
+<ul>
+<li><strong>KpiWidget</strong>: Single-value metrics with trend
+indicators</li>
+<li><strong>ChartWidget</strong>: Line, bar, and pie chart
+visualizations</li>
+<li><strong>TableWidget</strong>: Tabular data with sorting
+capabilities</li>
+<li><strong>Common Features</strong>: Drag handles, configuration
+access, delete option</li>
+</ul>
+<h3 id="widget-system">Widget System</h3>
+<h4 id="widget-types-and-properties">Widget Types and Properties</h4>
+<ol type="1">
+<li><strong>KPI Widgets</strong>
+<ul>
+<li><strong>Size</strong>: 200x120px (default)</li>
+<li><strong>Data</strong>: Single value, change percentage, trend
+direction</li>
+<li><strong>Formats</strong>: Currency, percentage, raw numbers</li>
+<li><strong>Visual Elements</strong>: Color-coded icon, large value
+display</li>
+</ul></li>
+<li><strong>Chart Widgets</strong>
+<ul>
+<li><strong>Size</strong>: 400x240px (default)</li>
+<li><strong>Chart Types</strong>: Line, bar, pie, area charts</li>
+<li><strong>Data</strong>: Time series or categorical data</li>
+<li><strong>Interactivity</strong>: Tooltips, hover states</li>
+<li><strong>Library</strong>: Recharts for rendering</li>
+</ul></li>
+<li><strong>Table Widgets</strong>
+<ul>
+<li><strong>Size</strong>: 480x200px (default)</li>
+<li><strong>Features</strong>: Sortable columns, pagination
+(future)</li>
+<li><strong>Data</strong>: Structured row/column format</li>
+<li><strong>Styling</strong>: Minimal borders, alternating row
+colors</li>
+</ul></li>
+</ol>
+<h4 id="widget-configuration-system">Widget Configuration System</h4>
+<ul>
+<li><strong>Modal Interface</strong>: Popup configuration for each
+widget</li>
+<li><strong>Common Settings</strong>: Title, data source, refresh
+interval</li>
+<li><strong>Type-specific Settings</strong>: Chart type, table columns,
+KPI format</li>
+<li><strong>Real-time Preview</strong>: Changes apply immediately</li>
+</ul>
+<h2 id="interaction-design">Interaction Design</h2>
+<h3 id="drag-and-drop-system">Drag and Drop System</h3>
+<h4 id="drag-sources">Drag Sources</h4>
+<ol type="1">
+<li><strong>Metrics from Library</strong>: Creates new widget on
+canvas</li>
+<li><strong>Existing Widgets</strong>: Repositions widget on canvas</li>
+</ol>
+<h4 id="drop-targets">Drop Targets</h4>
+<ul>
+<li><strong>Canvas Area</strong>: Primary drop zone for all draggable
+items</li>
+<li><strong>Grid Snapping</strong>: Automatic alignment to grid when
+enabled</li>
+<li><strong>Collision Detection</strong>: Prevents widget overlap
+(future enhancement)</li>
+</ul>
+<h4 id="visual-feedback">Visual Feedback</h4>
+<ul>
+<li><strong>Drag State</strong>: Semi-transparent dragged item</li>
+<li><strong>Drop Zones</strong>: Highlighted areas when dragging</li>
+<li><strong>Grid Guides</strong>: Visible snap lines during
+positioning</li>
+<li><strong>Cursor Changes</strong>: Grab/grabbing cursor states</li>
+</ul>
+<h3 id="grid-system">Grid System</h3>
+<h4 id="configuration-options">Configuration Options</h4>
+<ul>
+<li><strong>Grid Size</strong>: 10px, 20px, 30px options</li>
+<li><strong>Visibility</strong>: Toggle grid background pattern</li>
+<li><strong>Snapping</strong>: Enable/disable snap-to-grid behavior</li>
+<li><strong>Responsive</strong>: Grid adapts to canvas size changes</li>
+</ul>
+<h4 id="positioning-logic">Positioning Logic</h4>
+<ul>
+<li><strong>Coordinate System</strong>: Top-left origin (0,0)</li>
+<li><strong>Unit System</strong>: Pixel-based positioning</li>
+<li><strong>Constraints</strong>: Minimum widget sizes, boundary
+detection</li>
+<li><strong>Persistence</strong>: Position data stored in widget
+configuration</li>
+</ul>
+<h2 id="api-design">API Design</h2>
+<h3 id="restful-endpoints">RESTful Endpoints</h3>
+<h4 id="metrics-management">Metrics Management</h4>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>GET    <span class="op">/</span>api<span class="op">/</span>metrics                    <span class="co">// Get all metrics</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>GET    <span class="op">/</span>api<span class="op">/</span>metrics<span class="op">/</span>category<span class="op">/:</span>category <span class="co">// Get metrics by category</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>GET    <span class="op">/</span>api<span class="op">/</span>metrics<span class="op">/:</span>id               <span class="co">// Get specific metric</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>POST   <span class="op">/</span>api<span class="op">/</span>metrics                   <span class="co">// Create new metric (admin)</span></span></code></pre></div>
+<h4 id="dashboard-operations">Dashboard Operations</h4>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>GET    <span class="op">/</span>api<span class="op">/</span>dashboards                <span class="co">// Get user dashboards</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>GET    <span class="op">/</span>api<span class="op">/</span>dashboards<span class="op">/:</span>id           <span class="co">// Get specific dashboard</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>POST   <span class="op">/</span>api<span class="op">/</span>dashboards               <span class="co">// Create new dashboard</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>PATCH  <span class="op">/</span>api<span class="op">/</span>dashboards<span class="op">/:</span>id           <span class="co">// Update dashboard</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>DELETE <span class="op">/</span>api<span class="op">/</span>dashboards<span class="op">/:</span>id           <span class="co">// Delete dashboard</span></span></code></pre></div>
+<h3 id="data-transfer-objects">Data Transfer Objects</h3>
+<h4 id="dashboard-creation-request">Dashboard Creation Request</h4>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> CreateDashboardRequest {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    name<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    description<span class="op">?:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    widgets<span class="op">:</span> Widget[]<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    gridSettings<span class="op">:</span> GridSettings<span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    isPublished<span class="op">:</span> <span class="dt">boolean</span><span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h4 id="widget-data-structure">Widget Data Structure</h4>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> Widget {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    id<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    metricId<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    x<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    y<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    width<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    height<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    config<span class="op">?:</span> {</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        title<span class="op">?:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        dataSource<span class="op">?:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        refreshInterval<span class="op">?:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        [key<span class="op">:</span> <span class="dt">string</span>]<span class="op">:</span> <span class="dt">any</span><span class="op">;</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="frontend-optimization">Frontend Optimization</h3>
+<ul>
+<li><strong>React Query Caching</strong>: Aggressive caching of metrics
+data</li>
+<li><strong>Debounced Auto-save</strong>: 2-second delay to prevent
+excessive API calls</li>
+<li><strong>Virtual Scrolling</strong>: For large metric libraries
+(future enhancement)</li>
+<li><strong>Lazy Loading</strong>: Code splitting for widget
+components</li>
+</ul>
+<h3 id="backend-optimization">Backend Optimization</h3>
+<ul>
+<li><strong>Response Compression</strong>: Gzip compression for API
+responses</li>
+<li><strong>Database Indexing</strong>: Indexes on user_id, category,
+and timestamps</li>
+<li><strong>Query Optimization</strong>: Efficient JSONB queries for
+widget data</li>
+<li><strong>Rate Limiting</strong>: API throttling to prevent abuse</li>
+</ul>
+<h3 id="caching-strategy">Caching Strategy</h3>
+<ul>
+<li><strong>Browser Cache</strong>: Static assets with long cache
+headers</li>
+<li><strong>API Cache</strong>: Short-term caching for metrics data</li>
+<li><strong>Session Storage</strong>: Temporary storage for unsaved
+changes</li>
+<li><strong>Local Storage</strong>: User preferences and grid
+settings</li>
+</ul>
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="data-protection-1">Data Protection</h3>
+<ul>
+<li><strong>Input Validation</strong>: Zod schemas for all API
+inputs</li>
+<li><strong>SQL Injection Prevention</strong>: Parameterized queries via
+ORM</li>
+<li><strong>XSS Protection</strong>: React’s built-in escaping</li>
+<li><strong>CSRF Protection</strong>: Same-origin policy
+enforcement</li>
+</ul>
+<h3 id="access-control">Access Control</h3>
+<ul>
+<li><strong>User Authentication</strong>: Session-based authentication
+(future)</li>
+<li><strong>Dashboard Privacy</strong>: User-specific dashboard
+access</li>
+<li><strong>Metrics Access</strong>: Role-based metric visibility</li>
+<li><strong>API Security</strong>: Rate limiting and input
+sanitization</li>
+</ul>
+<h2 id="current-issues-solutions">Current Issues &amp; Solutions</h2>
+<h3 id="issue-1-preview-button-functionality">Issue 1: Preview Button
+Functionality</h3>
+<p><strong>Problem</strong>: Preview button only shows a toast message
+<strong>Solution</strong>: Implement modal preview mode with read-only
+dashboard view</p>
+<h3 id="issue-2-next-step-button">Issue 2: Next Step Button</h3>
+<p><strong>Problem</strong>: Bottom action buttons don’t connect to
+wizard navigation <strong>Solution</strong>: Wire up Previous/Next
+buttons to wizard step management</p>
+<h3 id="issue-3-react-key-warning">Issue 3: React Key Warning</h3>
+<p><strong>Problem</strong>: Key prop being spread in widget components
+<strong>Solution</strong>: Extract key prop before spreading widget
+props</p>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<h3 id="phase-2-features">Phase 2 Features</h3>
+<ul>
+<li><strong>User Authentication</strong>: Login/register system</li>
+<li><strong>Dashboard Templates</strong>: Pre-built dashboard
+layouts</li>
+<li><strong>Custom Metrics</strong>: User-defined metric creation</li>
+<li><strong>Real Data Sources</strong>: API integrations for live
+data</li>
+<li><strong>Collaboration</strong>: Shared dashboard editing</li>
+<li><strong>Export Options</strong>: PDF/PNG dashboard exports</li>
+</ul>
+<h3 id="phase-3-features">Phase 3 Features</h3>
+<ul>
+<li><strong>Advanced Widgets</strong>: Calendar, map, gauge widgets</li>
+<li><strong>Dashboard Themes</strong>: Custom color schemes and
+layouts</li>
+<li><strong>Mobile App</strong>: React Native companion app</li>
+<li><strong>Analytics</strong>: Usage tracking and optimization</li>
+<li><strong>Enterprise Features</strong>: Team management,
+permissions</li>
+</ul>
+<h2 id="testing-strategy">Testing Strategy</h2>
+<h3 id="unit-testing">Unit Testing</h3>
+<ul>
+<li><strong>Component Tests</strong>: React Testing Library for UI
+components</li>
+<li><strong>Hook Tests</strong>: Custom hook testing with
+renderHook</li>
+<li><strong>API Tests</strong>: Jest for backend route testing</li>
+<li><strong>Utility Tests</strong>: Pure function testing</li>
+</ul>
+<h3 id="integration-testing">Integration Testing</h3>
+<ul>
+<li><strong>Drag &amp; Drop</strong>: End-to-end drag operation
+testing</li>
+<li><strong>API Integration</strong>: Frontend-backend communication
+tests</li>
+<li><strong>Database Tests</strong>: Storage layer integration
+tests</li>
+<li><strong>User Flows</strong>: Complete wizard navigation tests</li>
+</ul>
+<h3 id="performance-testing">Performance Testing</h3>
+<ul>
+<li><strong>Load Testing</strong>: Large dashboard rendering
+performance</li>
+<li><strong>Memory Testing</strong>: Widget creation/deletion memory
+leaks</li>
+<li><strong>API Performance</strong>: Response time benchmarks</li>
+<li><strong>Bundle Size</strong>: JavaScript bundle optimization</li>
+</ul>
+<h2 id="deployment-architecture">Deployment Architecture</h2>
+<h3 id="development-environment">Development Environment</h3>
+<ul>
+<li><strong>Local Development</strong>: Vite dev server with HMR</li>
+<li><strong>API Server</strong>: Express with auto-restart</li>
+<li><strong>Database</strong>: In-memory storage for rapid
+development</li>
+<li><strong>Hot Reload</strong>: Full-stack development with instant
+feedback</li>
+</ul>
+<h3 id="production-environment">Production Environment</h3>
+<ul>
+<li><strong>Build Process</strong>: Vite production build with
+optimization</li>
+<li><strong>Server</strong>: Single Express server serving static assets
+and API</li>
+<li><strong>Database</strong>: PostgreSQL with connection pooling</li>
+<li><strong>Monitoring</strong>: Error tracking and performance
+monitoring</li>
+</ul>
+<h3 id="environment-configuration">Environment Configuration</h3>
+<ul>
+<li><strong>Development</strong>: Local environment variables</li>
+<li><strong>Staging</strong>: Test deployment with sample data</li>
+<li><strong>Production</strong>: Secure environment with real
+database</li>
+<li><strong>CI/CD</strong>: Automated testing and deployment
+pipeline</li>
+</ul>
+<hr />
+<h2 id="implementation-priority">Implementation Priority</h2>
+<h3 id="high-priority-issues">High Priority Issues</h3>
+<ol type="1">
+<li>Fix Preview button to show functional preview mode</li>
+<li>Connect Next/Previous step buttons to wizard navigation</li>
+<li>Resolve React key warning in widget components</li>
+<li>Implement proper step validation and progression logic</li>
+</ol>
+<h3 id="medium-priority-enhancements">Medium Priority Enhancements</h3>
+<ol type="1">
+<li>Add widget resize functionality</li>
+<li>Implement widget configuration modal actions</li>
+<li>Add real-time save status indicators</li>
+<li>Create dashboard export functionality</li>
+</ol>
+<h3 id="low-priority-features">Low Priority Features</h3>
+<ol type="1">
+<li>Add keyboard shortcuts for common actions</li>
+<li>Implement undo/redo functionality</li>
+<li>Add widget templates and presets</li>
+<li>Create advanced grid layout options</li>
+</ol>
+<p>This design document serves as the blueprint for the Dashboard
+Creator application, providing both current implementation details and
+future development roadmap.</p>
+</body>
+</html>

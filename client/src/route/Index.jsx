@@ -1,197 +1,213 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { ProductContextProvider } from "@/pages/pre-built/products/ProductContext";
 import { UserContextProvider } from "@/pages/pre-built/user-manage/UserContext";
 
-import Sales from "@/pages/Sales";
-import Crypto from "@/pages/Crypto";
-import Homepage from "@/pages/Homepage";
-import Invest from "@/pages/Invest";
-
-// New Dashboard Pages
-import SecurityPostureDashboard from "@/pages/dashboards/SecurityPostureDashboard";
-import SystemsDashboard from "@/pages/dashboards/SystemsDashboard";
-import AssetsDashboard from "@/pages/dashboards/AssetsDashboard";
-import VulnerabilitiesDashboard from "@/pages/dashboards/VulnerabilitiesDashboard";
-
-// Dashboard Creator Pages
-import MyDashboards from "@/pages/MyDashboards";
-import DashboardCreator from "@/pages/DashboardCreator";
-
-// Systems Management
-import SystemsMain from "@/pages/systems/SystemsMain";
-import SystemDiscovery from "@/pages/systems/SystemDiscovery";
-import SystemAnalytics from "@/pages/systems/SystemAnalytics";
-import SecurityPosture from "@/pages/systems/SecurityPosture";
-
-// Asset Management
-import AssetAnalytics from "@/pages/assets/AssetAnalytics";
-import AssetInventory from "@/pages/assets/AssetInventory";
-
-// Vulnerability Management
-import VulnerabilityData from "@/pages/vulnerabilities/VulnerabilityData";
-import VulnerabilityMetrics from "@/pages/vulnerabilities/VulnerabilityMetrics";
-
-// Admin Management
-import AdminUsers from "@/pages/admin/users/AdminUsers";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import AdminRoles from "@/pages/admin/roles/AdminRoles";
-import AdminPermissions from "@/pages/admin/permissions/AdminPermissions";
-import IngestionSimulationPage from "@/pages/admin/ingestion-simulation/IngestionSimulationPage";
-import AccessRequests from "@/pages/admin/access-requests/AccessRequests";
-import RoleManagement from "@/pages/admin/role-management/RoleManagement";
-import DistributionGroups from "@/pages/admin/distribution-groups/DistributionGroups";
-import EmailManagement from "@/pages/admin/email-management/EmailManagement";
-import AuditLogs from "@/pages/admin/audit-logs/AuditLogs";
-import AIManagement from "@/pages/admin/ai-management/AIManagement";
-import AWSIntegration from "@/pages/admin/aws-integration/AWSIntegration";
-import SecurityBanner from "@/pages/admin/security-banner/SecurityBanner";
-import DatabaseManagement from "@/pages/admin/database-management/DatabaseManagement";
-import CVEDatabase from "@/pages/admin/cve-database/CVEDatabase";
-import ControlsImport from "@/pages/admin/controls-import/ControlsImport";
-import APIDocumentation from "@/pages/admin/api-documentation/APIDocumentation";
-import EnvironmentSettings from "@/pages/admin/environment-settings/EnvironmentSettings";
-import SystemSettings from "@/pages/admin/system-settings/SystemSettings";
-
-// Scan Management
-import {
-  Scans,
-  Results,
-  ScanTerminal,
-  Templates,
-  Schedule,
-  Settings as ScanSettings
-} from "@/pages/scan-management";
-
-// Document Management
-import {
-  DocumentLibrary,
-  UploadDocument,
-  DocumentTemplate,
-  Categories,
-  Tags,
-  DocumentSettings
-} from "@/pages/document-management";
-// Policy Management
-import Policies from "@/pages/policy-management/Policies";
-
-import Component from "@/pages/components/Index";
-import Accordian from "@/pages/components/Accordions";
-import Alerts from "@/pages/components/Alerts";
-import Avatar from "@/pages/components/Avatar";
-import Badges from "@/pages/components/Badges";
-import Breadcrumbs from "@/pages/components/Breadcrumbs";
-import ButtonGroup from "@/pages/components/ButtonGroup";
-import Buttons from "@/pages/components/Buttons";
-import Cards from "@/pages/components/Cards";
-import Carousel from "@/pages/components/Carousel";
-import Dropdowns from "@/pages/components/Dropdowns";
-import FormElements from "@/pages/components/forms/FormElements";
-import FormLayouts from "@/pages/components/forms/FormLayouts";
-import FormValidation from "@/pages/components/forms/FormValidation";
-import DataTablePage from "@/pages/components/table/DataTable";
-import DateTimePicker from "@/pages/components/forms/DateTimePicker";
-import CardWidgets from "@/pages/components/widgets/CardWidgets";
-import ChartWidgets from "@/pages/components/widgets/ChartWidgets";
-import RatingWidgets from "@/pages/components/widgets/RatingWidgets";
-import SlickPage from "@/pages/components/misc/Slick";
-import SweetAlertPage from "@/pages/components/misc/SweetAlert";
-import DndKit from "@/pages/components/misc/DndKit";
-import DualListPage from "@/pages/components/misc/DualListbox";
-import GoogleMapPage from "@/pages/components/misc/GoogleMap";
-import Modals from "@/pages/components/Modals";
-import Pagination from "@/pages/components/Pagination";
-import Popovers from "@/pages/components/Popovers";
-import Progress from "@/pages/components/Progress";
-import Spinner from "@/pages/components/Spinner";
-import Tabs from "@/pages/components/Tabs";
-import Toast from "@/pages/components/Toast";
-import Tooltips from "@/pages/components/Tooltips";
-import Typography from "@/pages/components/Typography";
-import CheckboxRadio from "@/pages/components/forms/CheckboxRadio";
-import AdvancedControls from "@/pages/components/forms/AdvancedControls";
-import InputGroup from "@/pages/components/forms/InputGroup";
-import FormUpload from "@/pages/components/forms/FormUpload";
-import NumberSpinner from "@/pages/components/forms/NumberSpinner";
-import NouiSlider from "@/pages/components/forms/nouislider";
-import WizardForm from "@/pages/components/forms/WizardForm";
-import UtilBorder from "@/pages/components/UtilBorder";
-import UtilColors from "@/pages/components/UtilColors";
-import UtilDisplay from "@/pages/components/UtilDisplay";
-import UtilEmbeded from "@/pages/components/UtilEmbeded";
-import UtilFlex from "@/pages/components/UtilFlex";
-import UtilOthers from "@/pages/components/UtilOthers";
-import UtilSizing from "@/pages/components/UtilSizing";
-import UtilSpacing from "@/pages/components/UtilSpacing";
-import UtilText from "@/pages/components/UtilText";
-
-import Blank from "@/pages/others/Blank";
-import Faq from "@/pages/others/Faq";
-import Regularv1 from "@/pages/others/Regular-1";
-import Regularv2 from "@/pages/others/Regular-2";
-import Terms from "@/pages/others/Terms";
-import BasicTable from "@/pages/components/table/BasicTable";
-import SpecialTablePage from "@/pages/components/table/SpecialTable";
-import ChartPage from "@/pages/components/charts/Charts";
-import EmailTemplate from "@/pages/components/email-template/Email";
-import NioIconPage from "@/pages/components/crafted-icons/NioIcon";
-import SVGIconPage from "@/pages/components/crafted-icons/SvgIcons";
-
-import ProjectCardPage from "@/pages/pre-built/projects/ProjectCard";
-import ProjectListPage from "@/pages/pre-built/projects/ProjectList";
-import UserListRegular from "@/pages/pre-built/user-manage/UserListRegular";
-import UserContactCard from "@/pages/pre-built/user-manage/UserContactCard";
-import UserDetails from "@/pages/pre-built/user-manage/UserDetailsRegular";
-import UserListCompact from "@/pages/pre-built/user-manage/UserListCompact";
-import UserProfileRegular from "@/pages/pre-built/user-manage/UserProfileRegular";
-import UserProfileSetting from "@/pages/pre-built/user-manage/UserProfileSetting";
-import UserProfileNotification from "@/pages/pre-built/user-manage/UserProfileNotification";
-import UserProfileActivity from "@/pages/pre-built/user-manage/UserProfileActivity";
-import KycListRegular from "@/pages/pre-built/kyc-list-regular/KycListRegular";
-import KycDetailsRegular from "@/pages/pre-built/kyc-list-regular/kycDetailsRegular";
-import TransListBasic from "@/pages/pre-built/trans-list/TransListBasic";
-import TransListCrypto from "@/pages/pre-built/trans-list/TransListCrypto";
-import ProductCard from "@/pages/pre-built/products/ProductCard";
-import ProductList from "@/pages/pre-built/products/ProductList";
-import ProductDetails from "@/pages/pre-built/products/ProductDetails";
-import InvoiceList from "@/pages/pre-built/invoice/InvoiceList";
-import InvoiceDetails from "@/pages/pre-built/invoice/InvoiceDetails";
-import InvoicePrint from "@/pages/pre-built/invoice/InvoicePrint";
-import PricingTable from "@/pages/pre-built/pricing-table/PricingTable";
-import GalleryPreview from "@/pages/pre-built/gallery/GalleryCardPreview";
-import ReactToastify from "@/pages/components/misc/ReactToastify";
-
-import AppMessages from "@/pages/app/messages/Messages";
-import Chat from "@/pages/app/chat/ChatContainer";
-import Kanban from "@/pages/app/kanban/Kanban";
-import FileManager from "@/pages/app/file-manager/FileManager";
-import FileManagerFiles from "@/pages/app/file-manager/FileManagerFiles";
-import FileManagerShared from "@/pages/app/file-manager/FileManagerShared";
-import FileManagerStarred from "@/pages/app/file-manager/FileManagerStarred";
-import FileManagerRecovery from "@/pages/app/file-manager/FileManagerRecovery";
-import FileManagerSettings from "@/pages/app/file-manager/FileManagerSettings";
-import Inbox from "@/pages/app/inbox/Inbox";
-import TreeViewPreview from "@/pages/components/misc/TreeView";
-import Calender from "@/pages/app/calender/Calender";
-import QuillPreview from "@/pages/components/forms/rich-editor/QuillPreview";
-import TinymcePreview from "@/pages/components/forms/rich-editor/TinymcePreview";
-import KnobPreview from "@/pages/components/charts/KnobPreview";
-
-import Error404Classic from "@/pages/error/404-classic";
-import Error404Modern from "@/pages/error/404-modern";
-import Error504Modern from "@/pages/error/504-modern";
-import Error504Classic from "@/pages/error/504-classic";
-
-import Login from "@/pages/auth/Login";
-import Register from "@/pages/auth/Register";
-import ForgotPassword from "@/pages/auth/ForgotPassword";
-import Success from "@/pages/auth/Success";
-
+// Layout imports (keep these as they're critical)
 import Layout from "@/layout/Index";
 import LayoutNoSidebar from "@/layout/Index-nosidebar";
 import LayoutApp from "@/layout/Index-app";
 import ThemeProvider from "@/layout/provider/Theme";
 import FileManagerProviderWrapper from "@/pages/app/file-manager/components/ProviderWrapper";
+
+// Loading component
+const PageLoader = () => (
+  <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
+
+// Lazy load all page components
+const Sales = React.lazy(() => import("@/pages/Sales"));
+const Crypto = React.lazy(() => import("@/pages/Crypto"));
+const HomePage = React.lazy(() => import("@/pages/Homepage.jsx"));
+const Invest = React.lazy(() => import("@/pages/Invest"));
+
+// New Dashboard Pages
+const SecurityPostureDashboard = React.lazy(() => import("@/pages/dashboards/SecurityPostureDashboard"));
+const SystemsDashboard = React.lazy(() => import("@/pages/dashboards/SystemsDashboard"));
+const AssetsDashboard = React.lazy(() => import("@/pages/dashboards/AssetsDashboard"));
+const VulnerabilitiesDashboard = React.lazy(() => import("@/pages/dashboards/VulnerabilitiesDashboard"));
+
+// Dashboard Creator Pages
+const MyDashboards = React.lazy(() => import("@/pages/MyDashboards"));
+const DashboardCreator = React.lazy(() => import("@/pages/DashboardCreator"));
+
+// Systems Management
+const SystemsMain = React.lazy(() => import("@/pages/systems/SystemsMain"));
+const SystemDiscovery = React.lazy(() => import("@/pages/systems/SystemDiscovery"));
+const SystemAnalytics = React.lazy(() => import("@/pages/systems/SystemAnalytics"));
+const SecurityPosture = React.lazy(() => import("@/pages/systems/SecurityPosture"));
+
+// Asset Management
+const AssetAnalytics = React.lazy(() => import("@/pages/assets/AssetAnalytics"));
+const AssetInventory = React.lazy(() => import("@/pages/assets/AssetInventory"));
+
+// Vulnerability Management
+const VulnerabilityData = React.lazy(() => import("@/pages/vulnerabilities/VulnerabilityData"));
+const VulnerabilityMetrics = React.lazy(() => import("@/pages/vulnerabilities/VulnerabilityMetrics"));
+
+// Admin Management
+const AdminUsers = React.lazy(() => import("@/pages/admin/users/AdminUsers"));
+const NlqAdmin = React.lazy(() => import("@/pages/admin/NlqAdmin"));
+const AdminDashboard = React.lazy(() => import("@/pages/admin/AdminDashboard"));
+const AdminRoles = React.lazy(() => import("@/pages/admin/roles/AdminRoles"));
+const AdminPermissions = React.lazy(() => import("@/pages/admin/permissions/AdminPermissions"));
+const IngestionSimulationPage = React.lazy(() => import("@/pages/admin/ingestion-simulation/IngestionSimulationPage"));
+const AccessRequests = React.lazy(() => import("@/pages/admin/access-requests/AccessRequests"));
+const RoleManagement = React.lazy(() => import("@/pages/admin/role-management/RoleManagement"));
+const DistributionGroups = React.lazy(() => import("@/pages/admin/distribution-groups/DistributionGroups"));
+const EmailManagement = React.lazy(() => import("@/pages/admin/email-management/EmailManagement"));
+const AuditLogs = React.lazy(() => import("@/pages/admin/audit-logs/AuditLogs"));
+const AIManagement = React.lazy(() => import("@/pages/admin/ai-management/AIManagement"));
+const AWSIntegration = React.lazy(() => import("@/pages/admin/aws-integration/AWSIntegration"));
+const SecurityBanner = React.lazy(() => import("@/pages/admin/security-banner/SecurityBanner"));
+const DatabaseManagement = React.lazy(() => import("@/pages/admin/database-management/DatabaseManagement"));
+const CVEDatabase = React.lazy(() => import("@/pages/admin/cve-database/CVEDatabase"));
+const ControlsImport = React.lazy(() => import("@/pages/admin/controls-import/ControlsImport"));
+const APIDocumentation = React.lazy(() => import("@/pages/admin/api-documentation/APIDocumentation"));
+const EnvironmentSettings = React.lazy(() => import("@/pages/admin/environment-settings/EnvironmentSettings"));
+const SystemSettings = React.lazy(() => import("@/pages/admin/system-settings/SystemSettings"));
+
+// Scan Management - Direct imports for better reliability
+const Scans = React.lazy(() => import("@/pages/scan-management/Scans"));
+const Results = React.lazy(() => import("@/pages/scan-management/Results"));
+const ScanTerminal = React.lazy(() => import("@/pages/scan-management/ScanTerminal"));
+const Templates = React.lazy(() => import("@/pages/scan-management/Templates"));
+const Schedule = React.lazy(() => import("@/pages/scan-management/Schedule"));
+const ScanSettings = React.lazy(() => import("@/pages/scan-management/Settings"));
+
+// Document Management - Direct imports for better reliability
+const DocumentLibrary = React.lazy(() => import("@/pages/document-management/DocumentLibrary"));
+const UploadDocument = React.lazy(() => import("@/pages/document-management/UploadDocument"));
+const DocumentTemplate = React.lazy(() => import("@/pages/document-management/DocumentTemplate"));
+const Categories = React.lazy(() => import("@/pages/document-management/Categories"));
+const Tags = React.lazy(() => import("@/pages/document-management/Tags"));
+const DocumentSettings = React.lazy(() => import("@/pages/document-management/DocumentSettings"));
+
+// Policy Management
+const Policies = React.lazy(() => import("@/pages/policy-management/Policies"));
+
+// Components
+const Component = React.lazy(() => import("@/pages/components/Index"));
+const Accordian = React.lazy(() => import("@/pages/components/Accordions"));
+const Alerts = React.lazy(() => import("@/pages/components/Alerts"));
+const Avatar = React.lazy(() => import("@/pages/components/Avatar"));
+const Badges = React.lazy(() => import("@/pages/components/Badges"));
+const Breadcrumbs = React.lazy(() => import("@/pages/components/Breadcrumbs"));
+const ButtonGroup = React.lazy(() => import("@/pages/components/ButtonGroup"));
+const Buttons = React.lazy(() => import("@/pages/components/Buttons"));
+const Cards = React.lazy(() => import("@/pages/components/Cards"));
+const Carousel = React.lazy(() => import("@/pages/components/Carousel"));
+const Dropdowns = React.lazy(() => import("@/pages/components/Dropdowns"));
+const FormElements = React.lazy(() => import("@/pages/components/forms/FormElements"));
+const FormLayouts = React.lazy(() => import("@/pages/components/forms/FormLayouts"));
+const FormValidation = React.lazy(() => import("@/pages/components/forms/FormValidation"));
+const DataTablePage = React.lazy(() => import("@/pages/components/table/DataTable"));
+const DateTimePicker = React.lazy(() => import("@/pages/components/forms/DateTimePicker"));
+const CardWidgets = React.lazy(() => import("@/pages/components/widgets/CardWidgets"));
+const ChartWidgets = React.lazy(() => import("@/pages/components/widgets/ChartWidgets"));
+const RatingWidgets = React.lazy(() => import("@/pages/components/widgets/RatingWidgets"));
+const SlickPage = React.lazy(() => import("@/pages/components/misc/Slick"));
+const SweetAlertPage = React.lazy(() => import("@/pages/components/misc/SweetAlert"));
+const DndKit = React.lazy(() => import("@/pages/components/misc/DndKit"));
+const DualListPage = React.lazy(() => import("@/pages/components/misc/DualListbox"));
+const GoogleMapPage = React.lazy(() => import("@/pages/components/misc/GoogleMap"));
+const Modals = React.lazy(() => import("@/pages/components/Modals"));
+const Pagination = React.lazy(() => import("@/pages/components/Pagination"));
+const Popovers = React.lazy(() => import("@/pages/components/Popovers"));
+const Progress = React.lazy(() => import("@/pages/components/Progress"));
+const Spinner = React.lazy(() => import("@/pages/components/Spinner"));
+const Tabs = React.lazy(() => import("@/pages/components/Tabs"));
+const Toast = React.lazy(() => import("@/pages/components/Toast"));
+const Tooltips = React.lazy(() => import("@/pages/components/Tooltips"));
+const Typography = React.lazy(() => import("@/pages/components/Typography"));
+const CheckboxRadio = React.lazy(() => import("@/pages/components/forms/CheckboxRadio"));
+const AdvancedControls = React.lazy(() => import("@/pages/components/forms/AdvancedControls"));
+const InputGroup = React.lazy(() => import("@/pages/components/forms/InputGroup"));
+const FormUpload = React.lazy(() => import("@/pages/components/forms/FormUpload"));
+const NumberSpinner = React.lazy(() => import("@/pages/components/forms/NumberSpinner"));
+const NouiSlider = React.lazy(() => import("@/pages/components/forms/nouislider"));
+const WizardForm = React.lazy(() => import("@/pages/components/forms/WizardForm"));
+const UtilBorder = React.lazy(() => import("@/pages/components/UtilBorder"));
+const UtilColors = React.lazy(() => import("@/pages/components/UtilColors"));
+const UtilDisplay = React.lazy(() => import("@/pages/components/UtilDisplay"));
+const UtilEmbeded = React.lazy(() => import("@/pages/components/UtilEmbeded"));
+const UtilFlex = React.lazy(() => import("@/pages/components/UtilFlex"));
+const UtilOthers = React.lazy(() => import("@/pages/components/UtilOthers"));
+const UtilSizing = React.lazy(() => import("@/pages/components/UtilSizing"));
+const UtilSpacing = React.lazy(() => import("@/pages/components/UtilSpacing"));
+const UtilText = React.lazy(() => import("@/pages/components/UtilText"));
+
+// Others
+const Blank = React.lazy(() => import("@/pages/others/Blank"));
+const Faq = React.lazy(() => import("@/pages/others/Faq"));
+const Regularv1 = React.lazy(() => import("@/pages/others/Regular-1"));
+const Regularv2 = React.lazy(() => import("@/pages/others/Regular-2"));
+const Terms = React.lazy(() => import("@/pages/others/Terms"));
+const BasicTable = React.lazy(() => import("@/pages/components/table/BasicTable"));
+const SpecialTablePage = React.lazy(() => import("@/pages/components/table/SpecialTable"));
+const ChartPage = React.lazy(() => import("@/pages/components/charts/Charts"));
+const EmailTemplate = React.lazy(() => import("@/pages/components/email-template/Email"));
+const NioIconPage = React.lazy(() => import("@/pages/components/crafted-icons/NioIcon"));
+const SVGIconPage = React.lazy(() => import("@/pages/components/crafted-icons/SvgIcons"));
+
+// Pre-built
+const ProjectCardPage = React.lazy(() => import("@/pages/pre-built/projects/ProjectCard"));
+const ProjectListPage = React.lazy(() => import("@/pages/pre-built/projects/ProjectList"));
+const UserListRegular = React.lazy(() => import("@/pages/pre-built/user-manage/UserListRegular"));
+const UserContactCard = React.lazy(() => import("@/pages/pre-built/user-manage/UserContactCard"));
+const UserDetails = React.lazy(() => import("@/pages/pre-built/user-manage/UserDetailsRegular"));
+const UserListCompact = React.lazy(() => import("@/pages/pre-built/user-manage/UserListCompact"));
+const UserProfileRegular = React.lazy(() => import("@/pages/pre-built/user-manage/UserProfileRegular"));
+const UserProfileSetting = React.lazy(() => import("@/pages/pre-built/user-manage/UserProfileSetting"));
+const UserProfileNotification = React.lazy(() => import("@/pages/pre-built/user-manage/UserProfileNotification"));
+const UserProfileActivity = React.lazy(() => import("@/pages/pre-built/user-manage/UserProfileActivity"));
+const KycListRegular = React.lazy(() => import("@/pages/pre-built/kyc-list-regular/KycListRegular"));
+const KycDetailsRegular = React.lazy(() => import("@/pages/pre-built/kyc-list-regular/kycDetailsRegular"));
+const TransListBasic = React.lazy(() => import("@/pages/pre-built/trans-list/TransListBasic"));
+const TransListCrypto = React.lazy(() => import("@/pages/pre-built/trans-list/TransListCrypto"));
+const ProductCard = React.lazy(() => import("@/pages/pre-built/products/ProductCard"));
+const ProductList = React.lazy(() => import("@/pages/pre-built/products/ProductList"));
+const ProductDetails = React.lazy(() => import("@/pages/pre-built/products/ProductDetails"));
+const InvoiceList = React.lazy(() => import("@/pages/pre-built/invoice/InvoiceList"));
+const InvoiceDetails = React.lazy(() => import("@/pages/pre-built/invoice/InvoiceDetails"));
+const InvoicePrint = React.lazy(() => import("@/pages/pre-built/invoice/InvoicePrint"));
+const PricingTable = React.lazy(() => import("@/pages/pre-built/pricing-table/PricingTable"));
+const GalleryPreview = React.lazy(() => import("@/pages/pre-built/gallery/GalleryCardPreview"));
+const ReactToastify = React.lazy(() => import("@/pages/components/misc/ReactToastify"));
+
+// App pages
+const AppMessages = React.lazy(() => import("@/pages/app/messages/Messages"));
+const Chat = React.lazy(() => import("@/pages/app/chat/ChatContainer"));
+const Kanban = React.lazy(() => import("@/pages/app/kanban/Kanban"));
+const FileManager = React.lazy(() => import("@/pages/app/file-manager/FileManager"));
+const FileManagerFiles = React.lazy(() => import("@/pages/app/file-manager/FileManagerFiles"));
+const FileManagerShared = React.lazy(() => import("@/pages/app/file-manager/FileManagerShared"));
+const FileManagerStarred = React.lazy(() => import("@/pages/app/file-manager/FileManagerStarred"));
+const FileManagerRecovery = React.lazy(() => import("@/pages/app/file-manager/FileManagerRecovery"));
+const FileManagerSettings = React.lazy(() => import("@/pages/app/file-manager/FileManagerSettings"));
+const Inbox = React.lazy(() => import("@/pages/app/inbox/Inbox"));
+const TreeViewPreview = React.lazy(() => import("@/pages/components/misc/TreeView"));
+const Calender = React.lazy(() => import("@/pages/app/calender/Calender"));
+const QuillPreview = React.lazy(() => import("@/pages/components/forms/rich-editor/QuillPreview"));
+const TinymcePreview = React.lazy(() => import("@/pages/components/forms/rich-editor/TinymcePreview"));
+const KnobPreview = React.lazy(() => import("@/pages/components/charts/KnobPreview"));
+
+// Error pages
+const Error404Classic = React.lazy(() => import("@/pages/error/404-classic"));
+const Error404Modern = React.lazy(() => import("@/pages/error/404-modern"));
+const Error504Modern = React.lazy(() => import("@/pages/error/504-modern"));
+const Error504Classic = React.lazy(() => import("@/pages/error/504-classic"));
+
+// Auth pages
+const Login = React.lazy(() => import("@/pages/auth/Login"));
+const Register = React.lazy(() => import("@/pages/auth/Register"));
+const ForgotPassword = React.lazy(() => import("@/pages/auth/ForgotPassword"));
+const Success = React.lazy(() => import("@/pages/auth/Success"));
+
 
 const ScrollToTop = (props) => {
   const location = useLocation();
@@ -203,9 +219,8 @@ const ScrollToTop = (props) => {
 };
 
 const Pages = () => {
-
   return (
-    <BrowserRouter   future={{
+    <BrowserRouter future={{
       v7_startTransition: true,
       v7_relativeSplatPath: true,
     }}>
@@ -213,235 +228,236 @@ const Pages = () => {
         <Routes>
           <Route element={<ThemeProvider />}>
             <Route element={<Layout />}>
-              <Route index element={<Homepage />}></Route>
-              <Route path="crypto" element={<Crypto />}></Route>
-              <Route path="sales" element={<Sales />}></Route>
-              <Route path="invest" element={<Invest />}></Route>
+              <Route index element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>}></Route>
+              <Route path="crypto" element={<Suspense fallback={<PageLoader />}><Crypto /></Suspense>}></Route>
+              <Route path="sales" element={<Suspense fallback={<PageLoader />}><Sales /></Suspense>}></Route>
+              <Route path="invest" element={<Suspense fallback={<PageLoader />}><Invest /></Suspense>}></Route>
 
               {/*New Dashboard Routes*/}
-              <Route path="security-posture-dashboard" element={<SecurityPostureDashboard />}></Route>
-              <Route path="systems-dashboard" element={<SystemsDashboard />}></Route>
-              <Route path="assets-dashboard" element={<AssetsDashboard />}></Route>
-              <Route path="vulnerabilities-dashboard" element={<VulnerabilitiesDashboard />}></Route>
+              <Route path="security-posture-dashboard" element={<Suspense fallback={<PageLoader />}><SecurityPostureDashboard /></Suspense>}></Route>
+              <Route path="systems-dashboard" element={<Suspense fallback={<PageLoader />}><SystemsDashboard /></Suspense>}></Route>
+              <Route path="assets-dashboard" element={<Suspense fallback={<PageLoader />}><AssetsDashboard /></Suspense>}></Route>
+              <Route path="vulnerabilities-dashboard" element={<Suspense fallback={<PageLoader />}><VulnerabilitiesDashboard /></Suspense>}></Route>
 
               {/*Dashboard Creator Routes*/}
-              <Route path="my-dashboards" element={<MyDashboards />}></Route>
-              <Route path="dashboard-creator" element={<DashboardCreator />}></Route>
+              <Route path="my-dashboards" element={<Suspense fallback={<PageLoader />}><MyDashboards /></Suspense>}></Route>
+              <Route path="dashboard-creator" element={<Suspense fallback={<PageLoader />}><DashboardCreator /></Suspense>}></Route>
 
-              <Route path="_blank" element={<Blank />}></Route>
+              <Route path="_blank" element={<Suspense fallback={<PageLoader />}><Blank /></Suspense>}></Route>
 
               {/*Systems Management*/}
-              <Route path="systems" element={<SystemsMain />}></Route>
-              <Route path="systems/discovery" element={<SystemDiscovery />}></Route>
-              <Route path="systems/analytics" element={<SystemAnalytics />}></Route>
-              <Route path="systems/security" element={<SecurityPosture />}></Route>
-              <Route path="systems/compliance" element={<SystemsMain />}></Route>
+              <Route path="systems" element={<Suspense fallback={<PageLoader />}><SystemsMain /></Suspense>}></Route>
+              <Route path="systems/discovery" element={<Suspense fallback={<PageLoader />}><SystemDiscovery /></Suspense>}></Route>
+              <Route path="systems/analytics" element={<Suspense fallback={<PageLoader />}><SystemAnalytics /></Suspense>}></Route>
+              <Route path="systems/security" element={<Suspense fallback={<PageLoader />}><SecurityPosture /></Suspense>}></Route>
+              <Route path="systems/compliance" element={<Suspense fallback={<PageLoader />}><SystemsMain /></Suspense>}></Route>
 
               {/*Asset Management*/}
-              <Route path="assets/analytics" element={<AssetAnalytics />}></Route>
-              <Route path="assets/inventory" element={<AssetInventory />}></Route>
-              <Route path="asset-inventory" element={<AssetInventory />}></Route>
+              <Route path="assets/analytics" element={<Suspense fallback={<PageLoader />}><AssetAnalytics /></Suspense>}></Route>
+              <Route path="assets/inventory" element={<Suspense fallback={<PageLoader />}><AssetInventory /></Suspense>}></Route>
+              <Route path="asset-inventory" element={<Suspense fallback={<PageLoader />}><AssetInventory /></Suspense>}></Route>
 
               {/*Vulnerability Management*/}
-              <Route path="vulnerabilities/data" element={<VulnerabilityData />}></Route>
-              <Route path="vulnerabilities/metrics" element={<VulnerabilityMetrics />}></Route>
+              <Route path="vulnerabilities/data" element={<Suspense fallback={<PageLoader />}><VulnerabilityData /></Suspense>}></Route>
+              <Route path="vulnerabilities/metrics" element={<Suspense fallback={<PageLoader />}><VulnerabilityMetrics /></Suspense>}></Route>
 
               {/*Admin Management*/}
-<Route path="admin/dashboard" element={<AdminDashboard />} />
-              <Route path="admin/users" element={<AdminUsers />}></Route>
-              <Route path="admin/roles" element={<AdminRoles />}></Route>
-              <Route path="admin/permissions" element={<AdminPermissions />}></Route>
-              <Route path="admin/ingestion-simulation" element={<IngestionSimulationPage />}></Route>
-              <Route path="admin/access-requests" element={<AccessRequests />}></Route>
-              <Route path="admin/role-management" element={<RoleManagement />}></Route>
-              <Route path="admin/distribution-groups" element={<DistributionGroups />}></Route>
-              <Route path="admin/email-management" element={<EmailManagement />}></Route>
-              <Route path="admin/audit-logs" element={<AuditLogs />}></Route>
-              <Route path="admin/ai-management" element={<AIManagement />}></Route>
-              <Route path="admin/aws-integration" element={<AWSIntegration />}></Route>
-              <Route path="admin/security-banner" element={<SecurityBanner />}></Route>
-              <Route path="admin/database-management" element={<DatabaseManagement />}></Route>
-              <Route path="admin/cve-database" element={<CVEDatabase />}></Route>
-              <Route path="admin/controls-import" element={<ControlsImport />}></Route>
-              <Route path="admin/api-documentation" element={<APIDocumentation />}></Route>
-              <Route path="admin/environment-settings" element={<EnvironmentSettings />}></Route>
-              <Route path="admin/system-settings" element={<SystemSettings />}></Route>
+              <Route path="admin/dashboard" element={<Suspense fallback={<PageLoader />}><AdminDashboard /></Suspense>} />
+              <Route path="admin/nlq" element={<Suspense fallback={<PageLoader />}><NlqAdmin /></Suspense>} />
+              <Route path="admin/users" element={<Suspense fallback={<PageLoader />}><AdminUsers /></Suspense>}></Route>
+              <Route path="admin/roles" element={<Suspense fallback={<PageLoader />}><AdminRoles /></Suspense>}></Route>
+              <Route path="admin/permissions" element={<Suspense fallback={<PageLoader />}><AdminPermissions /></Suspense>}></Route>
+              <Route path="admin/ingestion-simulation" element={<Suspense fallback={<PageLoader />}><IngestionSimulationPage /></Suspense>}></Route>
+              <Route path="admin/access-requests" element={<Suspense fallback={<PageLoader />}><AccessRequests /></Suspense>}></Route>
+              <Route path="admin/role-management" element={<Suspense fallback={<PageLoader />}><RoleManagement /></Suspense>}></Route>
+              <Route path="admin/distribution-groups" element={<Suspense fallback={<PageLoader />}><DistributionGroups /></Suspense>}></Route>
+              <Route path="admin/email-management" element={<Suspense fallback={<PageLoader />}><EmailManagement /></Suspense>}></Route>
+              <Route path="admin/audit-logs" element={<Suspense fallback={<PageLoader />}><AuditLogs /></Suspense>}></Route>
+              <Route path="admin/ai-management" element={<Suspense fallback={<PageLoader />}><AIManagement /></Suspense>}></Route>
+              <Route path="admin/aws-integration" element={<Suspense fallback={<PageLoader />}><AWSIntegration /></Suspense>}></Route>
+              <Route path="admin/security-banner" element={<Suspense fallback={<PageLoader />}><SecurityBanner /></Suspense>}></Route>
+              <Route path="admin/database-management" element={<Suspense fallback={<PageLoader />}><DatabaseManagement /></Suspense>}></Route>
+              <Route path="admin/cve-database" element={<Suspense fallback={<PageLoader />}><CVEDatabase /></Suspense>}></Route>
+              <Route path="admin/controls-import" element={<Suspense fallback={<PageLoader />}><ControlsImport /></Suspense>}></Route>
+              <Route path="admin/api-documentation" element={<Suspense fallback={<PageLoader />}><APIDocumentation /></Suspense>}></Route>
+              <Route path="admin/environment-settings" element={<Suspense fallback={<PageLoader />}><EnvironmentSettings /></Suspense>}></Route>
+              <Route path="admin/system-settings" element={<Suspense fallback={<PageLoader />}><SystemSettings /></Suspense>}></Route>
 
               {/*Scan Management*/}
-              <Route path="scan-management/scans" element={<Scans />}></Route>
-              <Route path="scan-management/results" element={<Results />}></Route>
-              <Route path="scan-management/terminal" element={<ScanTerminal />}></Route>
-              <Route path="scan-management/templates" element={<Templates />}></Route>
-              <Route path="scan-management/schedule" element={<Schedule />}></Route>
-              <Route path="scan-management/settings" element={<ScanSettings />}></Route>
+              <Route path="scan-management/scans" element={<Suspense fallback={<PageLoader />}><Scans /></Suspense>}></Route>
+              <Route path="scan-management/results" element={<Suspense fallback={<PageLoader />}><Results /></Suspense>}></Route>
+              <Route path="scan-management/terminal" element={<Suspense fallback={<PageLoader />}><ScanTerminal /></Suspense>}></Route>
+              <Route path="scan-management/templates" element={<Suspense fallback={<PageLoader />}><Templates /></Suspense>}></Route>
+              <Route path="scan-management/schedule" element={<Suspense fallback={<PageLoader />}><Schedule /></Suspense>}></Route>
+              <Route path="scan-management/settings" element={<Suspense fallback={<PageLoader />}><ScanSettings /></Suspense>}></Route>
 
               {/*Policy Management*/}
-<Route path="policy-management/policies" element={<Policies />}></Route>
+              <Route path="policy-management/policies" element={<Suspense fallback={<PageLoader />}><Policies /></Suspense>}></Route>
 
-{/*Document Management*/}
-              <Route path="document-management/library" element={<DocumentLibrary />}></Route>
-              <Route path="document-management/upload" element={<UploadDocument />}></Route>
-              <Route path="document-management/template" element={<DocumentTemplate />}></Route>
-              <Route path="document-management/categories" element={<Categories />}></Route>
-              <Route path="document-management/tags" element={<Tags />}></Route>
-              <Route path="document-management/settings" element={<DocumentSettings />}></Route>
+              {/*Document Management*/}
+              <Route path="document-management/library" element={<Suspense fallback={<PageLoader />}><DocumentLibrary /></Suspense>}></Route>
+              <Route path="document-management/upload" element={<Suspense fallback={<PageLoader />}><UploadDocument /></Suspense>}></Route>
+              <Route path="document-management/template" element={<Suspense fallback={<PageLoader />}><DocumentTemplate /></Suspense>}></Route>
+              <Route path="document-management/categories" element={<Suspense fallback={<PageLoader />}><Categories /></Suspense>}></Route>
+              <Route path="document-management/tags" element={<Suspense fallback={<PageLoader />}><Tags /></Suspense>}></Route>
+              <Route path="document-management/settings" element={<Suspense fallback={<PageLoader />}><DocumentSettings /></Suspense>}></Route>
 
               {/*Pre-built Pages*/}
-              <Route path="project-card" element={<ProjectCardPage />}></Route>
-              <Route path="project-list" element={<ProjectListPage />}></Route>
+              <Route path="project-card" element={<Suspense fallback={<PageLoader />}><ProjectCardPage /></Suspense>}></Route>
+              <Route path="project-list" element={<Suspense fallback={<PageLoader />}><ProjectListPage /></Suspense>}></Route>
 
               <Route element={<UserContextProvider />} >
-                <Route path="user-list-regular" element={<UserListRegular />}></Route>
-                <Route path="user-list-compact" element={<UserListCompact />}></Route>
-                <Route path="user-contact-card" element={<UserContactCard />}></Route>
-                <Route path="user-details-regular/:userId" element={<UserDetails />}></Route>
+                <Route path="user-list-regular" element={<Suspense fallback={<PageLoader />}><UserListRegular /></Suspense>}></Route>
+                <Route path="user-list-compact" element={<Suspense fallback={<PageLoader />}><UserListCompact /></Suspense>}></Route>
+                <Route path="user-contact-card" element={<Suspense fallback={<PageLoader />}><UserContactCard /></Suspense>}></Route>
+                <Route path="user-details-regular/:userId" element={<Suspense fallback={<PageLoader />}><UserDetails /></Suspense>}></Route>
               </Route>
 
               <Route >
-                <Route path="user-profile-notification" element={<UserProfileNotification />} ></Route>
-                <Route path="user-profile-regular" element={<UserProfileRegular />}></Route>
-                <Route path="user-profile-activity" element={<UserProfileActivity />}></Route>
-                <Route path="user-profile-setting" element={<UserProfileSetting />}></Route>
+                <Route path="user-profile-notification" element={<Suspense fallback={<PageLoader />}><UserProfileNotification /></Suspense>} ></Route>
+                <Route path="user-profile-regular" element={<Suspense fallback={<PageLoader />}><UserProfileRegular /></Suspense>}></Route>
+                <Route path="user-profile-activity" element={<Suspense fallback={<PageLoader />}><UserProfileActivity /></Suspense>}></Route>
+                <Route path="user-profile-setting" element={<Suspense fallback={<PageLoader />}><UserProfileSetting /></Suspense>}></Route>
               </Route>
 
-              <Route path="kyc-list-regular" element={<KycListRegular />}></Route>
-              <Route path="kyc-details-regular/:kycId" element={<KycDetailsRegular />}></Route>
-              <Route path="transaction-basic" element={<TransListBasic />}></Route>
-              <Route path="transaction-crypto" element={<TransListCrypto />}></Route>
+              <Route path="kyc-list-regular" element={<Suspense fallback={<PageLoader />}><KycListRegular /></Suspense>}></Route>
+              <Route path="kyc-details-regular/:kycId" element={<Suspense fallback={<PageLoader />}><KycDetailsRegular /></Suspense>}></Route>
+              <Route path="transaction-basic" element={<Suspense fallback={<PageLoader />}><TransListBasic /></Suspense>}></Route>
+              <Route path="transaction-crypto" element={<Suspense fallback={<PageLoader />}><TransListCrypto /></Suspense>}></Route>
               <Route element={<ProductContextProvider />}>
-                <Route path="product-list" element={<ProductList />}></Route>
-                <Route path="product-card" element={<ProductCard />}></Route>
-                <Route path="product-details/:productId" element={<ProductDetails />}></Route>
+                <Route path="product-list" element={<Suspense fallback={<PageLoader />}><ProductList /></Suspense>}></Route>
+                <Route path="product-card" element={<Suspense fallback={<PageLoader />}><ProductCard /></Suspense>}></Route>
+                <Route path="product-details/:productId" element={<Suspense fallback={<PageLoader />}><ProductDetails /></Suspense>}></Route>
               </Route>
 
-              <Route path="invoice-list" element={<InvoiceList />}></Route>
-              <Route path="invoice-details/:invoiceId" element={<InvoiceDetails />}></Route>
-              <Route path="pricing-table" element={<PricingTable />}></Route>
-              <Route path="image-gallery" element={<GalleryPreview />}></Route>
+              <Route path="invoice-list" element={<Suspense fallback={<PageLoader />}><InvoiceList /></Suspense>}></Route>
+              <Route path="invoice-details/:invoiceId" element={<Suspense fallback={<PageLoader />}><InvoiceDetails /></Suspense>}></Route>
+              <Route path="pricing-table" element={<Suspense fallback={<PageLoader />}><PricingTable /></Suspense>}></Route>
+              <Route path="image-gallery" element={<Suspense fallback={<PageLoader />}><GalleryPreview /></Suspense>}></Route>
 
               <Route path="pages">
-                <Route path="terms-policy" element={<Terms />}></Route>
-                <Route path="faq" element={<Faq />}></Route>
-                <Route path="regular-v1" element={<Regularv1 />}></Route>
-                <Route path="regular-v2" element={<Regularv2 />}></Route>
+                <Route path="terms-policy" element={<Suspense fallback={<PageLoader />}><Terms /></Suspense>}></Route>
+                <Route path="faq" element={<Suspense fallback={<PageLoader />}><Faq /></Suspense>}></Route>
+                <Route path="regular-v1" element={<Suspense fallback={<PageLoader />}><Regularv1 /></Suspense>}></Route>
+                <Route path="regular-v2" element={<Suspense fallback={<PageLoader />}><Regularv2 /></Suspense>}></Route>
               </Route>
 
               <Route path="components">
-                <Route index element={<Component />}></Route>
-                <Route path="accordions" element={<Accordian />}></Route>
-                <Route path="alerts" element={<Alerts />}></Route>
-                <Route path="avatar" element={<Avatar />}></Route>
-                <Route path="badges" element={<Badges />}></Route>
-                <Route path="breadcrumbs" element={<Breadcrumbs />}></Route>
-                <Route path="button-group" element={<ButtonGroup />}></Route>
-                <Route path="buttons" element={<Buttons />}></Route>
-                <Route path="cards" element={<Cards />}></Route>
-                <Route path="carousel" element={<Carousel />}></Route>
-                <Route path="dropdowns" element={<Dropdowns />}></Route>
-                <Route path="form-elements" element={<FormElements />}></Route>
-                <Route path="form-layouts" element={<FormLayouts />}></Route>
-                <Route path="checkbox-radio" element={<CheckboxRadio />}></Route>
-                <Route path="advanced-control" element={<AdvancedControls />}></Route>
-                <Route path="input-group" element={<InputGroup />}></Route>
-                <Route path="form-upload" element={<FormUpload />}></Route>
-                <Route path="number-spinner" element={<NumberSpinner />}></Route>
-                <Route path="form-validation" element={<FormValidation />}></Route>
-                <Route path="datetime-picker" element={<DateTimePicker />}></Route>
-                <Route path="modals" element={<Modals />}></Route>
-                <Route path="pagination" element={<Pagination />}></Route>
-                <Route path="popovers" element={<Popovers />}></Route>
-                <Route path="progress" element={<Progress />}></Route>
-                <Route path="spinner" element={<Spinner />}></Route>
-                <Route path="tabs" element={<Tabs />}></Route>
-                <Route path="toast" element={<Toast />}></Route>
-                <Route path="tooltips" element={<Tooltips />}></Route>
-                <Route path="typography" element={<Typography />}></Route>
-                <Route path="noUislider" element={<NouiSlider />}></Route>
-                <Route path="wizard-basic" element={<WizardForm />}></Route>
-                <Route path="quill" element={<QuillPreview />}></Route>
-                <Route path="tinymce" element={<TinymcePreview />}></Route>
-                <Route path="util-border" element={<UtilBorder />}></Route>
-                <Route path="util-colors" element={<UtilColors />}></Route>
-                <Route path="util-display" element={<UtilDisplay />}></Route>
-                <Route path="util-embeded" element={<UtilEmbeded />}></Route>
-                <Route path="util-flex" element={<UtilFlex />}></Route>
-                <Route path="util-others" element={<UtilOthers />}></Route>
-                <Route path="util-sizing" element={<UtilSizing />}></Route>
-                <Route path="util-spacing" element={<UtilSpacing />}></Route>
-                <Route path="util-text" element={<UtilText />}></Route>
+                <Route index element={<Suspense fallback={<PageLoader />}><Component /></Suspense>}></Route>
+                <Route path="accordions" element={<Suspense fallback={<PageLoader />}><Accordian /></Suspense>}></Route>
+                <Route path="alerts" element={<Suspense fallback={<PageLoader />}><Alerts /></Suspense>}></Route>
+                <Route path="avatar" element={<Suspense fallback={<PageLoader />}><Avatar /></Suspense>}></Route>
+                <Route path="badges" element={<Suspense fallback={<PageLoader />}><Badges /></Suspense>}></Route>
+                <Route path="breadcrumbs" element={<Suspense fallback={<PageLoader />}><Breadcrumbs /></Suspense>}></Route>
+                <Route path="button-group" element={<Suspense fallback={<PageLoader />}><ButtonGroup /></Suspense>}></Route>
+                <Route path="buttons" element={<Suspense fallback={<PageLoader />}><Buttons /></Suspense>}></Route>
+                <Route path="cards" element={<Suspense fallback={<PageLoader />}><Cards /></Suspense>}></Route>
+                <Route path="carousel" element={<Suspense fallback={<PageLoader />}><Carousel /></Suspense>}></Route>
+                <Route path="dropdowns" element={<Suspense fallback={<PageLoader />}><Dropdowns /></Suspense>}></Route>
+                <Route path="form-elements" element={<Suspense fallback={<PageLoader />}><FormElements /></Suspense>}></Route>
+                <Route path="form-layouts" element={<Suspense fallback={<PageLoader />}><FormLayouts /></Suspense>}></Route>
+                <Route path="checkbox-radio" element={<Suspense fallback={<PageLoader />}><CheckboxRadio /></Suspense>}></Route>
+                <Route path="advanced-control" element={<Suspense fallback={<PageLoader />}><AdvancedControls /></Suspense>}></Route>
+                <Route path="input-group" element={<Suspense fallback={<PageLoader />}><InputGroup /></Suspense>}></Route>
+                <Route path="form-upload" element={<Suspense fallback={<PageLoader />}><FormUpload /></Suspense>}></Route>
+                <Route path="number-spinner" element={<Suspense fallback={<PageLoader />}><NumberSpinner /></Suspense>}></Route>
+                <Route path="form-validation" element={<Suspense fallback={<PageLoader />}><FormValidation /></Suspense>}></Route>
+                <Route path="datetime-picker" element={<Suspense fallback={<PageLoader />}><DateTimePicker /></Suspense>}></Route>
+                <Route path="modals" element={<Suspense fallback={<PageLoader />}><Modals /></Suspense>}></Route>
+                <Route path="pagination" element={<Suspense fallback={<PageLoader />}><Pagination /></Suspense>}></Route>
+                <Route path="popovers" element={<Suspense fallback={<PageLoader />}><Popovers /></Suspense>}></Route>
+                <Route path="progress" element={<Suspense fallback={<PageLoader />}><Progress /></Suspense>}></Route>
+                <Route path="spinner" element={<Suspense fallback={<PageLoader />}><Spinner /></Suspense>}></Route>
+                <Route path="tabs" element={<Suspense fallback={<PageLoader />}><Tabs /></Suspense>}></Route>
+                <Route path="toast" element={<Suspense fallback={<PageLoader />}><Toast /></Suspense>}></Route>
+                <Route path="tooltips" element={<Suspense fallback={<PageLoader />}><Tooltips /></Suspense>}></Route>
+                <Route path="typography" element={<Suspense fallback={<PageLoader />}><Typography /></Suspense>}></Route>
+                <Route path="noUislider" element={<Suspense fallback={<PageLoader />}><NouiSlider /></Suspense>}></Route>
+                <Route path="wizard-basic" element={<Suspense fallback={<PageLoader />}><WizardForm /></Suspense>}></Route>
+                <Route path="quill" element={<Suspense fallback={<PageLoader />}><QuillPreview /></Suspense>}></Route>
+                <Route path="tinymce" element={<Suspense fallback={<PageLoader />}><TinymcePreview /></Suspense>}></Route>
+                <Route path="util-border" element={<Suspense fallback={<PageLoader />}><UtilBorder /></Suspense>}></Route>
+                <Route path="util-colors" element={<Suspense fallback={<PageLoader />}><UtilColors /></Suspense>}></Route>
+                <Route path="util-display" element={<Suspense fallback={<PageLoader />}><UtilDisplay /></Suspense>}></Route>
+                <Route path="util-embeded" element={<Suspense fallback={<PageLoader />}><UtilEmbeded /></Suspense>}></Route>
+                <Route path="util-flex" element={<Suspense fallback={<PageLoader />}><UtilFlex /></Suspense>}></Route>
+                <Route path="util-others" element={<Suspense fallback={<PageLoader />}><UtilOthers /></Suspense>}></Route>
+                <Route path="util-sizing" element={<Suspense fallback={<PageLoader />}><UtilSizing /></Suspense>}></Route>
+                <Route path="util-spacing" element={<Suspense fallback={<PageLoader />}><UtilSpacing /></Suspense>}></Route>
+                <Route path="util-text" element={<Suspense fallback={<PageLoader />}><UtilText /></Suspense>}></Route>
 
                 <Route path="widgets">
-                  <Route path="cards" element={<CardWidgets />}></Route>
-                  <Route path="charts" element={<ChartWidgets />}></Route>
-                  <Route path="rating" element={<RatingWidgets />}></Route>
+                  <Route path="cards" element={<Suspense fallback={<PageLoader />}><CardWidgets /></Suspense>}></Route>
+                  <Route path="charts" element={<Suspense fallback={<PageLoader />}><ChartWidgets /></Suspense>}></Route>
+                  <Route path="rating" element={<Suspense fallback={<PageLoader />}><RatingWidgets /></Suspense>}></Route>
                 </Route>
 
                 <Route path="misc">
-                  <Route path="slick-slider" element={<SlickPage />}></Route>
-                  <Route path="sweet-alert" element={<SweetAlertPage />}></Route>
-                  <Route path="dnd" element={<DndKit />}></Route>
-                  <Route path="dual-list" element={<DualListPage />}></Route>
-                  <Route path="map" element={<GoogleMapPage />}></Route>
-                  <Route path="toastify" element={<ReactToastify />}></Route>
-                  <Route path="tree-view" element={<TreeViewPreview />}></Route>
+                  <Route path="slick-slider" element={<Suspense fallback={<PageLoader />}><SlickPage /></Suspense>}></Route>
+                  <Route path="sweet-alert" element={<Suspense fallback={<PageLoader />}><SweetAlertPage /></Suspense>}></Route>
+                  <Route path="dnd" element={<Suspense fallback={<PageLoader />}><DndKit /></Suspense>}></Route>
+                  <Route path="dual-list" element={<Suspense fallback={<PageLoader />}><DualListPage /></Suspense>}></Route>
+                  <Route path="map" element={<Suspense fallback={<PageLoader />}><GoogleMapPage /></Suspense>}></Route>
+                  <Route path="toastify" element={<Suspense fallback={<PageLoader />}><ReactToastify /></Suspense>}></Route>
+                  <Route path="tree-view" element={<Suspense fallback={<PageLoader />}><TreeViewPreview /></Suspense>}></Route>
                 </Route>
               </Route>
               <Route path="charts">
-                <Route path="chartjs" element={<ChartPage />}></Route>
-                <Route path="knobs" element={<KnobPreview />}></Route>
+                <Route path="chartjs" element={<Suspense fallback={<PageLoader />}><ChartPage /></Suspense>}></Route>
+                <Route path="knobs" element={<Suspense fallback={<PageLoader />}><KnobPreview /></Suspense>}></Route>
               </Route>
               
-              <Route path="table-basic" element={<BasicTable />}></Route>
-              <Route path="table-datatable" element={<DataTablePage />}></Route>
-              <Route path="table-special" element={<SpecialTablePage />}></Route>
-              <Route path="email-template" element={<EmailTemplate />}></Route>
-              <Route path="nioicon" element={<NioIconPage />}></Route>
-              <Route path="svg-icons" element={<SVGIconPage />}></Route>
+              <Route path="table-basic" element={<Suspense fallback={<PageLoader />}><BasicTable /></Suspense>}></Route>
+              <Route path="table-datatable" element={<Suspense fallback={<PageLoader />}><DataTablePage /></Suspense>}></Route>
+              <Route path="table-special" element={<Suspense fallback={<PageLoader />}><SpecialTablePage /></Suspense>}></Route>
+              <Route path="email-template" element={<Suspense fallback={<PageLoader />}><EmailTemplate /></Suspense>}></Route>
+              <Route path="nioicon" element={<Suspense fallback={<PageLoader />}><NioIconPage /></Suspense>}></Route>
+              <Route path="svg-icons" element={<Suspense fallback={<PageLoader />}><SVGIconPage /></Suspense>}></Route>
               
               {/*File Manager Routes - now inside main Layout to show left sidebar*/}
               <Route element={<FileManagerProviderWrapper />}>
                 <Route path="app-file-manager">
-                  <Route index element={<FileManager />}></Route>
-                  <Route path="files" element={<FileManagerFiles />}></Route>
-                  <Route path="starred" element={<FileManagerStarred />}></Route>
-                  <Route path="shared" element={<FileManagerShared />}></Route>
-                  <Route path="recovery" element={<FileManagerRecovery />}></Route>
+                  <Route index element={<Suspense fallback={<PageLoader />}><FileManager /></Suspense>}></Route>
+                  <Route path="files" element={<Suspense fallback={<PageLoader />}><FileManagerFiles /></Suspense>}></Route>
+                  <Route path="starred" element={<Suspense fallback={<PageLoader />}><FileManagerStarred /></Suspense>}></Route>
+                  <Route path="shared" element={<Suspense fallback={<PageLoader />}><FileManagerShared /></Suspense>}></Route>
+                  <Route path="recovery" element={<Suspense fallback={<PageLoader />}><FileManagerRecovery /></Suspense>}></Route>
                 </Route>
               </Route>
             </Route>
             <Route>
               <Route element={<LayoutApp app={{icon:"chat", theme:"bg-purple-dim", text: "Messages"}} />}>
-                <Route path="app-messages" element={<AppMessages />}></Route>
+                <Route path="app-messages" element={<Suspense fallback={<PageLoader />}><AppMessages /></Suspense>}></Route>
               </Route>
               <Route element={<LayoutApp app={{icon:"chat-circle", theme:"bg-orange-dim", text: "NioChat"}}  />}>
-                <Route path="app-chat" element={<Chat />}></Route>
+                <Route path="app-chat" element={<Suspense fallback={<PageLoader />}><Chat /></Suspense>}></Route>
               </Route>
               <Route element={<LayoutApp app={{icon:"calendar", theme:"bg-success-dim", text: "Calendar"}} />}>
-                <Route path="app-calender" element={<Calender />}></Route>
+                <Route path="app-calender" element={<Suspense fallback={<PageLoader />}><Calender /></Suspense>}></Route>
               </Route>
               <Route element={<LayoutApp app={{icon:"inbox", theme:"bg-primary-dim", text: "Mailbox"}} />}>
-                <Route path="app-inbox" element={<Inbox />}></Route>
+                <Route path="app-inbox" element={<Suspense fallback={<PageLoader />}><Inbox /></Suspense>}></Route>
               </Route>
               <Route element={<LayoutApp app={{icon:"template", theme:"bg-info-dim", text: "Kanban"}} />}>
-                <Route path="app-kanban" element={<Kanban />}></Route>
+                <Route path="app-kanban" element={<Suspense fallback={<PageLoader />}><Kanban /></Suspense>}></Route>
               </Route>
             </Route>
 
             <Route element={<LayoutNoSidebar />}>
-              <Route path="auth-success" element={<Success />}></Route>
-                <Route path="auth-reset" element={<ForgotPassword />}></Route>
-                <Route path="auth-register" element={<Register />}></Route>
-                <Route path="auth-login" element={<Login />}></Route>
+              <Route path="auth-success" element={<Suspense fallback={<PageLoader />}><Success /></Suspense>}></Route>
+                <Route path="auth-reset" element={<Suspense fallback={<PageLoader />}><ForgotPassword /></Suspense>}></Route>
+                <Route path="auth-register" element={<Suspense fallback={<PageLoader />}><Register /></Suspense>}></Route>
+                <Route path="auth-login" element={<Suspense fallback={<PageLoader />}><Login /></Suspense>}></Route>
 
                 <Route path="errors">
-                  <Route path="404-modern" element={<Error404Modern />}></Route>
-                  <Route path="404-classic" element={<Error404Classic />}></Route>
-                  <Route path="504-modern" element={<Error504Modern />}></Route>
-                  <Route path="504-classic" element={<Error504Classic />}></Route>
+                  <Route path="404-modern" element={<Suspense fallback={<PageLoader />}><Error404Modern /></Suspense>}></Route>
+                  <Route path="404-classic" element={<Suspense fallback={<PageLoader />}><Error404Classic /></Suspense>}></Route>
+                  <Route path="504-modern" element={<Suspense fallback={<PageLoader />}><Error504Modern /></Suspense>}></Route>
+                  <Route path="504-classic" element={<Suspense fallback={<PageLoader />}><Error504Classic /></Suspense>}></Route>
                 </Route>
-                <Route path="*" element={<Error404Modern />}></Route>
+                <Route path="*" element={<Suspense fallback={<PageLoader />}><Error404Modern /></Suspense>}></Route>
                 
-                <Route path="invoice-print/:invoiceId" element={<InvoicePrint />}></Route>
+                <Route path="invoice-print/:invoiceId" element={<Suspense fallback={<PageLoader />}><InvoicePrint /></Suspense>}></Route>
             </Route>
           </Route>
         </Routes>
@@ -449,4 +465,5 @@ const Pages = () => {
     </BrowserRouter>
   );
 };
+
 export default Pages;

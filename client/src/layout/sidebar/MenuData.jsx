@@ -837,4 +837,11 @@ const menu = [
   //   link: "/email-template",
   // },
 ];
+// Add NLQ Admin menu item at the end
+menu.push({
+  icon: "robot",
+  text: "NLQ Admin",
+  link: "/admin/nlq",
+});
+
 export default menu;

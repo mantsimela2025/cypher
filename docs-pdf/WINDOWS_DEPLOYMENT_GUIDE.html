@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>WINDOWS_DEPLOYMENT_GUIDE</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="cypher-dashboard-windows-server-2019-deployment-guide">CYPHER
+Dashboard Windows Server 2019 Deployment Guide</h1>
+<h2 id="overview">Overview</h2>
+<p>This guide provides step-by-step instructions for deploying the
+CYPHER Dashboard application on your Windows Server 2019 EC2
+instance.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Windows Server 2019 EC2 instance</li>
+<li>Administrator access to the server</li>
+<li>AWS CLI configured (or will be installed by script)</li>
+<li>Internet connectivity</li>
+<li>Security groups configured for ports 3000 and 3001</li>
+</ul>
+<h2 id="quick-deployment-steps">Quick Deployment Steps</h2>
+<h3 id="step-1-connect-to-your-windows-server">Step 1: Connect to Your
+Windows Server</h3>
+<p>Use <strong>Remote Desktop Protocol (RDP)</strong> to connect to your
+Windows Server 2019 EC2 instance:</p>
+<ol type="1">
+<li><strong>Get RDP credentials</strong> from AWS EC2 Console</li>
+<li><strong>Connect via RDP</strong> using Windows Remote Desktop
+Connection</li>
+<li><strong>Log in as Administrator</strong></li>
+</ol>
+<h3 id="step-2-open-powershell-as-administrator">Step 2: Open PowerShell
+as Administrator</h3>
+<ol type="1">
+<li><strong>Right-click</strong> on Start button</li>
+<li>Select <strong>“Windows PowerShell (Admin)”</strong></li>
+<li>Click <strong>“Yes”</strong> when prompted by UAC</li>
+</ol>
+<h3 id="step-3-download-and-run-deployment-script">Step 3: Download and
+Run Deployment Script</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the deployment script from S3</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>aws s3 <span class="fu">cp</span> s3<span class="op">://</span>cypher-deployment-20250806<span class="op">/</span>Deploy-CYPHER-WindowsServer<span class="op">.</span><span class="fu">ps1</span> C<span class="op">:</span>\Deploy-CYPHER-WindowsServer<span class="op">.</span><span class="fu">ps1</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the deployment script</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\C<span class="op">:</span>\Deploy-CYPHER-WindowsServer<span class="op">.</span><span class="fu">ps1</span></span></code></pre></div>
+<h2 id="what-the-deployment-script-does">What the Deployment Script
+Does</h2>
+<h3 id="installs-prerequisites">1. <strong>Installs
+Prerequisites</strong></h3>
+<ul>
+<li><strong>Chocolatey</strong> - Windows package manager</li>
+<li><strong>Node.js</strong> - JavaScript runtime (latest LTS
+version)</li>
+<li><strong>AWS CLI</strong> - For S3 access</li>
+<li><strong>PM2</strong> - Process manager for Node.js applications</li>
+</ul>
+<h3 id="downloads-application">2. <strong>Downloads
+Application</strong></h3>
+<ul>
+<li>Downloads CYPHER source code from S3</li>
+<li>Extracts to <code>C:\CYPHER-Dashboard\</code></li>
+<li>Creates backup of existing installation (if any)</li>
+</ul>
+<h3 id="configures-application">3. <strong>Configures
+Application</strong></h3>
+<ul>
+<li>Installs npm dependencies for API and Client</li>
+<li>Creates environment configuration files</li>
+<li>Builds client application for production</li>
+<li>Configures database connection to your PostgreSQL</li>
+</ul>
+<h3 id="sets-up-services">4. <strong>Sets Up Services</strong></h3>
+<ul>
+<li>Configures PM2 process manager</li>
+<li>Starts API server on port 3001</li>
+<li>Starts client server on port 3000</li>
+<li>Sets up auto-start on Windows boot</li>
+</ul>
+<h3 id="configures-security">5. <strong>Configures
+Security</strong></h3>
+<ul>
+<li>Opens Windows Firewall ports 3000 and 3001</li>
+<li>Sets up proper file permissions</li>
+</ul>
+<h2 id="application-structure-on-windows">Application Structure on
+Windows</h2>
+<h3 id="main-directory">Main Directory:</h3>
+<pre><code>C:\CYPHER-Dashboard\
+├── api\
+│   ├── src\                    # API source code
+│   ├── package.json           # API dependencies
+│   └── .env                   # API configuration
+├── client\
+│   ├── src\                   # Client source code
+│   ├── dist\                  # Built client files
+│   ├── package.json           # Client dependencies
+│   └── .env                   # Client configuration
+└── ecosystem.config.js        # PM2 configuration</code></pre>
+<h3 id="log-files">Log Files:</h3>
+<pre><code>C:\CYPHER-logs\
+├── cypher-api.log            # API application logs
+├── cypher-api-error.log      # API error logs
+├── cypher-client.log         # Client application logs
+└── cypher-client-error.log   # Client error logs
+
+C:\CYPHER-deployment.log      # Deployment script log</code></pre>
+<h2 id="post-deployment-verification">Post-Deployment Verification</h2>
+<h3 id="step-1-check-pm2-status">Step 1: Check PM2 Status</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if services are running</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pm2 status</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># View logs</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>pm2 logs</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor services</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>pm2 monit</span></code></pre></div>
+<h3 id="step-2-test-api">Step 2: Test API</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test API health endpoint</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Invoke-WebRequest</span> <span class="op">-</span>Uri <span class="st">&quot;http://localhost:3001/health&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Or open in browser</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-Process</span> <span class="st">&quot;http://localhost:3001/health&quot;</span></span></code></pre></div>
+<h3 id="step-3-test-client-application">Step 3: Test Client
+Application</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test client application</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Invoke-WebRequest</span> <span class="op">-</span>Uri <span class="st">&quot;http://localhost:3000&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Or open in browser</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-Process</span> <span class="st">&quot;http://localhost:3000&quot;</span></span></code></pre></div>
+<h2 id="accessing-your-cypher-dashboard">Accessing Your CYPHER
+Dashboard</h2>
+<p>Once deployed successfully: - <strong>CYPHER Dashboard</strong>:
+<code>http://your-windows-server-ip:3000</code> - <strong>API
+Endpoints</strong>: <code>http://your-windows-server-ip:3001</code> -
+<strong>Health Check</strong>:
+<code>http://your-windows-server-ip:3001/health</code></p>
+<h2 id="service-management-commands">Service Management Commands</h2>
+<h3 id="pm2-commands-in-powershell">PM2 Commands (in PowerShell):</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check service status</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pm2 status</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># View logs</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pm2 logs</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Restart all services</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>pm2 restart all</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Stop all services</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>pm2 stop all</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Start services</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>pm2 <span class="fu">start</span> ecosystem<span class="op">.</span><span class="fu">config</span><span class="op">.</span><span class="fu">js</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete all services</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>pm2 delete all</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Save PM2 configuration</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>pm2 save</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor services in real-time</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>pm2 monit</span></code></pre></div>
+<h3 id="windows-service-management">Windows Service Management:</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if PM2 Windows service is running</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-Service</span> <span class="op">-</span>Name <span class="st">&quot;PM2*&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Start PM2 Windows service</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-Service</span> <span class="op">-</span>Name <span class="st">&quot;PM2 cypher-api&quot;</span></span></code></pre></div>
+<h2 id="security-groups-configuration">Security Groups
+Configuration</h2>
+<p>Ensure your EC2 security group allows: - <strong>Port 3000</strong>
+(Client) - Inbound TCP from 0.0.0.0/0 - <strong>Port 3001</strong> (API)
+- Inbound TCP from 0.0.0.0/0 - <strong>Port 3389</strong> (RDP) - For
+remote desktop access - <strong>Port 80/443</strong> (HTTP/HTTPS) - If
+using reverse proxy</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues:</h3>
+<ol type="1">
+<li><p><strong>PowerShell Execution Policy</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Set-ExecutionPolicy</span> <span class="op">-</span>ExecutionPolicy RemoteSigned <span class="op">-</span>Scope CurrentUser <span class="op">-</span>Force</span></code></pre></div></li>
+<li><p><strong>Node.js Installation Issues</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually install Node.js</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>choco install nodejs <span class="op">-</span>y</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Refresh environment variables</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>refreshenv</span></code></pre></div></li>
+<li><p><strong>Port Already in Use</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check what&#39;s using the port</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>netstat <span class="op">-</span>ano <span class="op">|</span> findstr <span class="op">:</span><span class="dv">3001</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="dt">netstat</span> <span class="op">-</span>ano <span class="op">|</span> findstr <span class="op">:</span><span class="dv">3000</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Kill process if needed</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>taskkill <span class="op">/</span>PID <span class="op">&lt;</span>PID<span class="op">&gt;</span> <span class="op">/</span>F</span></code></pre></div></li>
+<li><p><strong>Database Connection Issues</strong></p>
+<ul>
+<li>Check if EC2 security group allows outbound connections</li>
+<li>Verify database credentials in <code>.env</code> files</li>
+<li>Test database connectivity from Windows</li>
+</ul></li>
+<li><p><strong>PM2 Service Issues</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reinstall PM2 Windows startup</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>npm install <span class="op">-</span>g pm2-windows-startup</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>pm2-startup install</span></code></pre></div></li>
+</ol>
+<h3 id="log-locations">Log Locations:</h3>
+<ul>
+<li><strong>Deployment Log</strong>:
+<code>C:\CYPHER-deployment.log</code></li>
+<li><strong>Application Logs</strong>: <code>C:\CYPHER-logs\</code></li>
+<li><strong>PM2 Logs</strong>:
+<code>%USERPROFILE%\.pm2\logs\</code></li>
+</ul>
+<h2 id="updates-and-maintenance">Updates and Maintenance</h2>
+<h3 id="to-update-the-application">To Update the Application:</h3>
+<ol type="1">
+<li>Upload new files to S3 bucket</li>
+<li>Re-run the deployment script</li>
+<li>The script will automatically backup existing installation</li>
+</ol>
+<h3 id="regular-maintenance">Regular Maintenance:</h3>
+<ul>
+<li>Monitor PM2 processes: <code>pm2 status</code></li>
+<li>Check logs regularly: <code>pm2 logs</code></li>
+<li>Monitor Windows Event Logs</li>
+<li>Keep Node.js and npm updated</li>
+<li>Monitor disk space and memory usage</li>
+</ul>
+<h2 id="backup-strategy">Backup Strategy</h2>
+<p>The deployment script automatically creates backups: -
+<strong>Location</strong>:
+<code>C:\CYPHER-Dashboard-Backup-YYYYMMDD-HHMMSS\</code> -
+<strong>Restore</strong>: Copy backup folder back to
+<code>C:\CYPHER-Dashboard\</code></p>
+<h2 id="optional-iis-reverse-proxy">Optional: IIS Reverse Proxy</h2>
+<p>For production use, consider setting up IIS as a reverse proxy:</p>
+<ol type="1">
+<li><strong>Install IIS</strong> with Application Request Routing</li>
+<li><strong>Configure reverse proxy</strong> rules</li>
+<li><strong>Setup SSL certificates</strong></li>
+<li><strong>Configure domain routing</strong></li>
+</ol>
+<hr />
+<p><strong>Deployment Package</strong>: cypher-deployment-20250806
+<strong>Target Platform</strong>: Windows Server 2019 EC2
+<strong>Ports</strong>: 3000 (Client), 3001 (API)</p>
+<p>Your CYPHER Dashboard is ready for Windows deployment! 🚀</p>
+</body>
+</html>

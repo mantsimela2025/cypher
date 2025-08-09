@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CVE_API</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.css" />
+</head>
+<body>
+<h1 id="cve-api-documentation">CVE API Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>The CVE API provides access to real vulnerability data from the
+National Vulnerability Database (NVD) with enhanced analysis including
+exploit detection, patch availability, and remediation guidance.</p>
+<h2 id="base-url">Base URL</h2>
+<pre><code>http://localhost:3000/api/v1/cves</code></pre>
+<h2 id="endpoints">Endpoints</h2>
+<h3 id="get-cves-paginated-with-filters">1. Get CVEs (Paginated with
+Filters)</h3>
+<pre><code>GET /api/v1/cves</code></pre>
+<h4 id="query-parameters">Query Parameters</h4>
+<table>
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 15%" />
+<col style="width: 33%" />
+<col style="width: 23%" />
+</colgroup>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>page</code></td>
+<td>integer</td>
+<td>Page number (default: 1)</td>
+<td><code>?page=2</code></td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>Items per page (default: 50)</td>
+<td><code>?limit=100</code></td>
+</tr>
+<tr>
+<td><code>severity</code></td>
+<td>string</td>
+<td>Filter by severity: critical, high, medium, low</td>
+<td><code>?severity=critical</code></td>
+</tr>
+<tr>
+<td><code>exploitAvailable</code></td>
+<td>boolean</td>
+<td>Filter by exploit availability</td>
+<td><code>?exploitAvailable=true</code></td>
+</tr>
+<tr>
+<td><code>patchAvailable</code></td>
+<td>boolean</td>
+<td>Filter by patch availability</td>
+<td><code>?patchAvailable=true</code></td>
+</tr>
+<tr>
+<td><code>search</code></td>
+<td>string</td>
+<td>Search in CVE ID, description, or search vector</td>
+<td><code>?search=microsoft</code></td>
+</tr>
+<tr>
+<td><code>sortBy</code></td>
+<td>string</td>
+<td>Sort field (default: publishedDate)</td>
+<td><code>?sortBy=cvss3BaseScore</code></td>
+</tr>
+<tr>
+<td><code>sortOrder</code></td>
+<td>string</td>
+<td>Sort order: asc, desc (default: desc)</td>
+<td><code>?sortOrder=asc</code></td>
+</tr>
+<tr>
+<td><code>minScore</code></td>
+<td>float</td>
+<td>Minimum CVSS score</td>
+<td><code>?minScore=7.0</code></td>
+</tr>
+<tr>
+<td><code>maxScore</code></td>
+<td>float</td>
+<td>Maximum CVSS score</td>
+<td><code>?maxScore=9.0</code></td>
+</tr>
+<tr>
+<td><code>dateFrom</code></td>
+<td>date</td>
+<td>Published date from (YYYY-MM-DD)</td>
+<td><code>?dateFrom=2025-01-01</code></td>
+</tr>
+<tr>
+<td><code>dateTo</code></td>
+<td>date</td>
+<td>Published date to (YYYY-MM-DD)</td>
+<td><code>?dateTo=2025-12-31</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-response">Example Response</h4>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;cves&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cveId&quot;</span><span class="fu">:</span> <span class="st">&quot;CVE-2025-1234&quot;</span><span class="fu">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Critical buffer overflow vulnerability...&quot;</span><span class="fu">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;publishedDate&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-07-15T10:00:00.000Z&quot;</span><span class="fu">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;lastModifiedDate&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-07-15T15:30:00.000Z&quot;</span><span class="fu">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cvss3BaseScore&quot;</span><span class="fu">:</span> <span class="fl">9.1</span><span class="fu">,</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cvss3Vector&quot;</span><span class="fu">:</span> <span class="st">&quot;CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H&quot;</span><span class="fu">,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cvss2BaseScore&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cvss2Vector&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;exploitAvailable&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;patchAvailable&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;source&quot;</span><span class="fu">:</span> <span class="st">&quot;NVD&quot;</span><span class="fu">,</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;remediationGuidance&quot;</span><span class="fu">:</span> <span class="st">&quot;🔴 CRITICAL: Immediate action required...&quot;</span><span class="fu">,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;searchVector&quot;</span><span class="fu">:</span> <span class="st">&quot;CVE-2025-1234 buffer overflow critical...&quot;</span><span class="fu">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;severity&quot;</span><span class="fu">:</span> <span class="st">&quot;critical&quot;</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cvssScore&quot;</span><span class="fu">:</span> <span class="fl">9.1</span><span class="fu">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;createdAt&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-07-16T12:00:00.000Z&quot;</span><span class="fu">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;updatedAt&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-07-16T12:00:00.000Z&quot;</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;pagination&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;page&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;limit&quot;</span><span class="fu">:</span> <span class="dv">50</span><span class="fu">,</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;total&quot;</span><span class="fu">:</span> <span class="dv">1000</span><span class="fu">,</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pages&quot;</span><span class="fu">:</span> <span class="dv">20</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;filters&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;severity&quot;</span><span class="fu">:</span> <span class="st">&quot;critical&quot;</span><span class="fu">,</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;exploitAvailable&quot;</span><span class="fu">:</span> <span class="st">&quot;true&quot;</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="get-specific-cve">2. Get Specific CVE</h3>
+<pre><code>GET /api/v1/cves/:cveId</code></pre>
+<h4 id="example">Example</h4>
+<pre><code>GET /api/v1/cves/CVE-2025-1234</code></pre>
+<h4 id="response">Response</h4>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;cveId&quot;</span><span class="fu">:</span> <span class="st">&quot;CVE-2025-1234&quot;</span><span class="fu">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Critical buffer overflow vulnerability...&quot;</span><span class="fu">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;publishedDate&quot;</span><span class="fu">:</span> <span class="st">&quot;2025-07-15T10:00:00.000Z&quot;</span><span class="fu">,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;cvss3BaseScore&quot;</span><span class="fu">:</span> <span class="fl">9.1</span><span class="fu">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;exploitAvailable&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;patchAvailable&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;remediationGuidance&quot;</span><span class="fu">:</span> <span class="st">&quot;🔴 CRITICAL: Immediate action required. Apply patches within 24 hours.</span><span class="ch">\n</span><span class="st">• Buffer Overflow: Update to patched version immediately.</span><span class="ch">\n</span><span class="st">• Monitor vendor security advisories for patches.&quot;</span><span class="fu">,</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;severity&quot;</span><span class="fu">:</span> <span class="st">&quot;critical&quot;</span><span class="fu">,</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;cvssScore&quot;</span><span class="fu">:</span> <span class="fl">9.1</span><span class="fu">,</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;cweMappings&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cweId&quot;</span><span class="fu">:</span> <span class="st">&quot;CWE-119&quot;</span><span class="fu">,</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;cweName&quot;</span><span class="fu">:</span> <span class="st">&quot;Improper Restriction of Operations within the Bounds of a Memory Buffer&quot;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="get-cve-statistics">3. Get CVE Statistics</h3>
+<pre><code>GET /api/v1/cves/stats/summary</code></pre>
+<h4 id="response-1">Response</h4>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;total&quot;</span><span class="fu">:</span> <span class="dv">1000</span><span class="fu">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bySeverity&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;critical&quot;</span><span class="fu">:</span> <span class="dv">58</span><span class="fu">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;high&quot;</span><span class="fu">:</span> <span class="dv">230</span><span class="fu">,</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;medium&quot;</span><span class="fu">:</span> <span class="dv">221</span><span class="fu">,</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;low&quot;</span><span class="fu">:</span> <span class="dv">32</span><span class="fu">,</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;unscored&quot;</span><span class="fu">:</span> <span class="dv">459</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;exploitAvailable&quot;</span><span class="fu">:</span> <span class="dv">45</span><span class="fu">,</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;patchAvailable&quot;</span><span class="fu">:</span> <span class="dv">678</span><span class="fu">,</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;withGuidance&quot;</span><span class="fu">:</span> <span class="dv">950</span><span class="fu">,</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;recentCves&quot;</span><span class="fu">:</span> <span class="dv">247</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="advanced-search">4. Advanced Search</h3>
+<pre><code>GET /api/v1/cves/search/advanced</code></pre>
+<h4 id="query-parameters-1">Query Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q</code></td>
+<td>string</td>
+<td>Search query (required)</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>string</td>
+<td>Search type: all, exploitable, critical</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples">Examples</h4>
+<pre><code>GET /api/v1/cves/search/advanced?q=microsoft&amp;type=critical
+GET /api/v1/cves/search/advanced?q=buffer overflow&amp;type=exploitable</code></pre>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="get-critical-cves-with-exploits">Get Critical CVEs with
+Exploits</h3>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/cves?severity=critical&amp;exploitAvailable=true&amp;limit=10&quot;</span></span></code></pre></div>
+<h3 id="search-for-microsoft-vulnerabilities">Search for Microsoft
+Vulnerabilities</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/cves?search=microsoft&amp;sortBy=cvss3BaseScore&amp;sortOrder=desc&quot;</span></span></code></pre></div>
+<h3 id="get-recent-high-severity-cves">Get Recent High-Severity
+CVEs</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/cves?severity=high&amp;dateFrom=2025-07-01&amp;limit=20&quot;</span></span></code></pre></div>
+<h3 id="get-cve-with-full-details">Get CVE with Full Details</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/cves/CVE-2025-1234&quot;</span></span></code></pre></div>
+<h3 id="get-cve-statistics-1">Get CVE Statistics</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="st">&quot;http://localhost:3000/api/v1/cves/stats/summary&quot;</span></span></code></pre></div>
+<h2 id="response-fields">Response Fields</h2>
+<h3 id="cve-object">CVE Object</h3>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 23%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>Database ID</td>
+</tr>
+<tr>
+<td><code>cveId</code></td>
+<td>string</td>
+<td>CVE identifier (e.g., CVE-2025-1234)</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>string</td>
+<td>Vulnerability description</td>
+</tr>
+<tr>
+<td><code>publishedDate</code></td>
+<td>datetime</td>
+<td>When CVE was published</td>
+</tr>
+<tr>
+<td><code>lastModifiedDate</code></td>
+<td>datetime</td>
+<td>When CVE was last modified</td>
+</tr>
+<tr>
+<td><code>cvss3BaseScore</code></td>
+<td>float</td>
+<td>CVSS v3 base score (0.0-10.0)</td>
+</tr>
+<tr>
+<td><code>cvss3Vector</code></td>
+<td>string</td>
+<td>CVSS v3 vector string</td>
+</tr>
+<tr>
+<td><code>cvss2BaseScore</code></td>
+<td>float</td>
+<td>CVSS v2 base score (0.0-10.0)</td>
+</tr>
+<tr>
+<td><code>cvss2Vector</code></td>
+<td>string</td>
+<td>CVSS v2 vector string</td>
+</tr>
+<tr>
+<td><code>exploitAvailable</code></td>
+<td>boolean</td>
+<td>Whether exploits are known</td>
+</tr>
+<tr>
+<td><code>patchAvailable</code></td>
+<td>boolean</td>
+<td>Whether patches are available</td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>string</td>
+<td>Data source (always “NVD”)</td>
+</tr>
+<tr>
+<td><code>remediationGuidance</code></td>
+<td>string</td>
+<td>Detailed remediation recommendations</td>
+</tr>
+<tr>
+<td><code>searchVector</code></td>
+<td>string</td>
+<td>Full-text search terms</td>
+</tr>
+<tr>
+<td><code>severity</code></td>
+<td>string</td>
+<td>Computed severity: critical, high, medium, low, unscored</td>
+</tr>
+<tr>
+<td><code>cvssScore</code></td>
+<td>float</td>
+<td>Best available CVSS score (v3 preferred)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="error-responses">Error Responses</h2>
+<h3 id="not-found">404 Not Found</h3>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;CVE not found&quot;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="bad-request">400 Bad Request</h3>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;Search query required&quot;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="internal-server-error">500 Internal Server Error</h3>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;Internal server error&quot;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h2 id="rate-limiting">Rate Limiting</h2>
+<ul>
+<li>No rate limiting currently implemented</li>
+<li>Consider implementing rate limiting for production use</li>
+</ul>
+<h2 id="authentication">Authentication</h2>
+<ul>
+<li>No authentication currently required</li>
+<li>Consider adding API key authentication for production use</li>
+</ul>
+</body>
+</html>

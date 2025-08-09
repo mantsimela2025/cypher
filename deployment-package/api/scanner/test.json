@@ -1,0 +1,162 @@
+{
+  "scan_job": {
+    "launch_date": "2025-04-02T10:00:00Z",
+    "type": "comprehensive",
+    "status": "completed",
+    "reference": "patch_assessment_001",
+    "scanner_appliance": "scanner_01",
+    "duration": "00:15:00",
+    "scan_title": "Patch & Version Detection Test"
+  },
+  "patch_assessment": {
+    "target": "example.com",
+    "scanTime": "2025-04-02T10:15:00Z",
+    "operatingSystem": {
+      "type": "linux",
+      "distribution": "ubuntu",
+      "version": "20.04",
+      "patchLevel": "20.04.6",
+      "kernelVersion": "5.4.0-156",
+      "eol": false,
+      "missingPatches": [
+        {
+          "package": "openssl",
+          "currentVersion": "1.1.1f-1ubuntu2.17",
+          "newVersion": "1.1.1f-1ubuntu2.19",
+          "severity": "high",
+          "cve": "CVE-2023-0466"
+        },
+        {
+          "package": "openssh-server",
+          "currentVersion": "8.2p1-4ubuntu0.5",
+          "newVersion": "8.2p1-4ubuntu0.7",
+          "severity": "medium"
+        }
+      ]
+    },
+    "webServer": {
+      "software": "apache",
+      "version": "2.4.41",
+      "isOutdated": true,
+      "latestVersion": "2.4.57",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2023-25690",
+          "description": "HTTP Request Smuggling vulnerability in Apache HTTP Server",
+          "severity": "high",
+          "fixedInVersion": "2.4.56"
+        },
+        {
+          "cve": "CVE-2022-31813",
+          "description": "HTTP Request Smuggling in Apache HTTP Server",
+          "severity": "medium",
+          "fixedInVersion": "2.4.54"
+        }
+      ]
+    },
+    "database": {
+      "software": "mysql",
+      "version": "5.7.40",
+      "isOutdated": true,
+      "latestVersion": "8.0.33",
+      "latestInBranch": "5.7.42",
+      "eol": false,
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2022-21417",
+          "description": "Remote DoS vulnerability in MySQL Server",
+          "severity": "high",
+          "fixedInVersion": "5.7.37"
+        }
+      ]
+    },
+    "frameworks": [
+      {
+        "framework": "PHP",
+        "type": "server-language",
+        "version": "7.4.3",
+        "isOutdated": true,
+        "latestVersion": "8.2.7",
+        "latestInBranch": "7.4.33",
+        "eol": true,
+        "detectionMethod": "header",
+        "vulnerabilities": [
+          {
+            "cve": "CVE-2023-0567",
+            "description": "Heap buffer overflow in PHP",
+            "severity": "high",
+            "fixedInVersion": "7.4.33"
+          }
+        ]
+      },
+      {
+        "framework": "jQuery",
+        "type": "javascript-library",
+        "version": "1.12.4",
+        "isOutdated": true,
+        "latestVersion": "3.7.0",
+        "eol": true,
+        "detectionMethod": "script",
+        "vulnerabilities": [
+          {
+            "cve": "CVE-2020-11023",
+            "description": "XSS vulnerability in jQuery",
+            "severity": "high",
+            "fixedInVersion": "3.5.0"
+          },
+          {
+            "cve": "CVE-2019-11358",
+            "description": "Prototype pollution in jQuery",
+            "severity": "medium",
+            "fixedInVersion": "3.4.0"
+          }
+        ]
+      },
+      {
+        "framework": "Bootstrap",
+        "type": "css-framework",
+        "version": "3.3.7",
+        "isOutdated": true,
+        "latestVersion": "5.3.0",
+        "latestInBranch": "3.4.1",
+        "eol": true,
+        "detectionMethod": "link",
+        "vulnerabilities": [
+          {
+            "cve": "CVE-2019-8331",
+            "description": "XSS vulnerability in Bootstrap",
+            "severity": "medium",
+            "fixedInVersion": "3.4.1"
+          }
+        ]
+      },
+      {
+        "framework": "WordPress",
+        "type": "cms",
+        "version": "5.9.5",
+        "isOutdated": true,
+        "latestVersion": "6.2.2",
+        "latestInBranch": "5.9.7",
+        "eol": false,
+        "detectionMethod": "meta",
+        "vulnerabilities": [
+          {
+            "cve": "CVE-2022-3590",
+            "description": "SQL injection vulnerability in WordPress",
+            "severity": "critical",
+            "fixedInVersion": "5.9.5"
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "totalVulnerabilities": 9,
+      "criticalVulnerabilities": 1,
+      "highVulnerabilities": 5,
+      "mediumVulnerabilities": 3,
+      "lowVulnerabilities": 0,
+      "outdatedComponents": 5,
+      "eolComponents": 3
+    }
+  }
+}
