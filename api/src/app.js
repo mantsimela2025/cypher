@@ -91,6 +91,7 @@ app.delete('/api/v1/cache', (req, res) => {
 app.use('/api/v1/users', cache(600), userRoutes); // Cache user data for 10 minutes
 app.use('/api/v1/auth', authRateLimit, authRoutes); // Strict rate limiting for auth
 app.use('/api/v1/integrations', cache(300), integrationRoutes); // Cache integrations for 5 minutes
+app.use(require('./routes/userGroupRoutes')); // GET /api/v1/users/:id/groups
 app.use('/api/v1/systems', cache(900), require('./routes/systems')); // Cache systems for 15 minutes
 app.use('/api/v1/roles', cache(1800), require('./routes/roles')); // Cache roles for 30 minutes
 app.use('/api/v1/permissions', cache(1800), require('./routes/permissions')); // Cache permissions for 30 minutes
@@ -102,6 +103,12 @@ app.use('/api/v1/vulnerabilities', cache(300), require('./routes/vulnerabilities
 app.use('/api/v1/vulnerability-analytics', cache(600), require('./routes/vulnerabilityAnalytics')); // Cache analytics for 10 minutes
 app.use('/api/v1/system-metrics', cache(180), require('./routes/systemMetrics')); // Cache metrics for 3 minutes
 app.use('/api/v1/metrics-dashboards', cache(300), require('./routes/metricsDashboards')); // Cache dashboards for 5 minutes
+
+// Patch Management Routes
+app.use('/api/v1/patches', cache(300), require('./routes/patches')); // Cache patches for 5 minutes
+app.use('/api/v1/patch-jobs', cache(180), require('./routes/patchJobs')); // Cache jobs for 3 minutes (status changes frequently)
+app.use('/api/v1/patch-schedules', cache(600), require('./routes/patchSchedules')); // Cache schedules for 10 minutes
+// app.use('/api/v1/patch-ai', require('./routes/patchAI')); // No cache for AI responses (need fresh analysis) - Temporarily disabled due to missing openai dependency
 // app.use('/api/v1/asset-analytics', require('./routes/assetAnalytics'));
 // app.use('/api/v1/ai-cost-optimization', require('./routes/aiCostOptimization'));
 app.use('/api/v1/nl-query', require('./routes/naturalLanguageQuery')); // No cache for NL queries
@@ -124,6 +131,9 @@ app.use('/api/v1/documents', cache(600), require('./routes/documents')); // Cach
 // app.use('/api/v1/artifacts', require('./routes/artifacts')); // Temporarily disabled - missing dependencies
 // app.use('/api/v1/scanner', require('./routes/scanner'));
 // app.use('/api/v1/settings', require('./routes/settings'));
+
+// Distribution Groups
+app.use('/api/v1/distribution-groups', require('./routes/distributionGroupsRoutes'));
 
 // API base route (catch-all for unmatched routes)
 app.use('/api/v1', (req, res) => {

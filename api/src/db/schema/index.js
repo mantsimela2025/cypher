@@ -120,6 +120,66 @@ const {
 const { syncJobs, syncServiceEnum } = require('./syncJobs');
 const { syncLogs, syncStatusEnum } = require('./syncLogs');
 
+// Patch Management schemas
+const {
+  patches,
+  patchVulnerabilities,
+  patchAssets,
+  patchDependencies,
+  patchManagementStatusEnum,
+  patchSeverityEnum,
+  patchTypeEnum,
+  patchVendorEnum
+} = require('./patches');
+
+const {
+  patchJobs,
+  patchJobTargets,
+  patchJobLogs,
+  patchJobDependencies,
+  jobStatusEnum,
+  jobTypeEnum,
+  executionModeEnum,
+  jobPriorityEnum
+} = require('./patchJobs');
+
+const {
+  patchSchedules,
+  scheduleExecutions,
+  scheduleConditions,
+  scheduleExclusions,
+  scheduleNotifications,
+  scheduleStatusEnum,
+  scheduleTypeEnum,
+  recurrencePatternEnum,
+  maintenanceWindowTypeEnum
+} = require('./patchSchedules');
+
+const {
+  patchApprovals,
+  approvalResponses,
+  approvalWorkflows,
+  workflowApprovers,
+  approvalNotifications,
+  approvalAuditLog,
+  approvalStatusEnum,
+  approvalTypeEnum,
+  approvalLevelEnum,
+  delegationReasonEnum
+} = require('./patchApprovals');
+
+const {
+  patchNotes,
+  noteAttachments,
+  noteComments,
+  patchActivityFeed,
+  noteTemplates,
+  noteTypeEnum,
+  noteCategoryEnum,
+  visibilityLevelEnum,
+  attachmentTypeEnum
+} = require('./patchNotes');
+
 // Policy and Procedure schemas
 const {
   policies,
@@ -251,6 +311,9 @@ const { sessions } = require('./sessions');
 // Settings schemas
 const { settings, settingDataTypeEnum } = require('./settings');
 
+// Distribution Groups schemas
+const { distributionGroups, distributionGroupMembers } = require('./distributionGroups');
+
 module.exports = {
   // User management
   users,
@@ -321,6 +384,10 @@ module.exports = {
   costTypeEnum,
   billingCycleEnum,
   mappingMethodEnum,
+
+  // Distribution Groups
+  distributionGroups,
+  distributionGroupMembers,
 
   // Natural language queries
   nlQueries,
@@ -513,4 +580,54 @@ module.exports = {
   // Settings tables
   settings,
   settingDataTypeEnum,
+
+  // Patch Management system
+  patches,
+  patchVulnerabilities,
+  patchAssets,
+  patchDependencies,
+  patchManagementStatusEnum,
+  patchSeverityEnum,
+  patchTypeEnum,
+  patchVendorEnum,
+
+  patchJobs,
+  patchJobTargets,
+  patchJobLogs,
+  patchJobDependencies,
+  jobStatusEnum,
+  jobTypeEnum,
+  executionModeEnum,
+  jobPriorityEnum,
+
+  patchSchedules,
+  scheduleExecutions,
+  scheduleConditions,
+  scheduleExclusions,
+  scheduleNotifications,
+  scheduleStatusEnum,
+  scheduleTypeEnum,
+  recurrencePatternEnum,
+  maintenanceWindowTypeEnum,
+
+  patchApprovals,
+  approvalResponses,
+  approvalWorkflows,
+  workflowApprovers,
+  approvalNotifications,
+  approvalAuditLog,
+  approvalStatusEnum,
+  approvalTypeEnum,
+  approvalLevelEnum,
+  delegationReasonEnum,
+
+  patchNotes,
+  noteAttachments,
+  noteComments,
+  patchActivityFeed,
+  noteTemplates,
+  noteTypeEnum,
+  noteCategoryEnum,
+  visibilityLevelEnum,
+  attachmentTypeEnum,
 };

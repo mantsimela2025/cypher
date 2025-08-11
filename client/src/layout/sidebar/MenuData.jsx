@@ -115,6 +115,35 @@ const menu = [
     ],
   },
   {
+    heading: "Patch Management",
+  },
+  {
+    icon: "shield-check",
+    text: "Patch Management",
+    subMenu: [
+      {
+        text: "Dashboard",
+        link: "/patch-management/dashboard",
+        icon: "dashboard",
+      },
+      {
+        text: "Patch Library",
+        link: "/patch-management/library",
+        icon: "package",
+      },
+      {
+        text: "Patch Jobs",
+        link: "/patch-management/jobs",
+        icon: "play-circle",
+      },
+      {
+        text: "AI Recommendations",
+        link: "/patch-management/ai-recommendations",
+        icon: "brain",
+      },
+    ],
+  },
+  {
     heading: "Scan Management",
   },
   {

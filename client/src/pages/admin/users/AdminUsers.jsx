@@ -34,6 +34,7 @@ import {
 import { Link } from "react-router-dom";
 import { bulkActionOptions } from "@/utils/Utils";
 import EditUserPanel from "./EditUserPanel";
+import AddUserPanel from "./AddUserPanel";
 
 const AdminUsers = () => {
   const [data, setData] = useState([]);
@@ -45,6 +46,9 @@ const AdminUsers = () => {
   // Edit user panel state
   const [editPanelOpen, setEditPanelOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  
+  // Add user panel state
+  const [addPanelOpen, setAddPanelOpen] = useState(false);
   const [tablesm, updateTableSm] = useState(false);
   const [onSearch, setonSearch] = useState(true);
   const [onSearchText, setSearchText] = useState("");
@@ -178,6 +182,27 @@ const AdminUsers = () => {
   const handleCloseEditPanel = () => {
     setEditPanelOpen(false);
     setSelectedUserId(null);
+  };
+
+  // Handle opening add panel
+  const handleOpenAddPanel = () => {
+    setAddPanelOpen(true);
+  };
+
+  // Handle closing add panel
+  const handleCloseAddPanel = () => {
+    setAddPanelOpen(false);
+  };
+
+  // Handle user added callback
+  const handleUserAdded = () => {
+    // Refresh the user list with current filters
+    fetchUsers(
+      currentPage,
+      onSearchText,
+      selectedRole?.value || "",
+      selectedStatus?.value || ""
+    );
   };
 
   // Handle user updated callback
@@ -572,7 +597,11 @@ const AdminUsers = () => {
                       </a>
                     </li>
                     <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon">
+                      <Button 
+                        color="primary" 
+                        className="btn-icon"
+                        onClick={handleOpenAddPanel}
+                      >
                         <Icon name="plus"></Icon>
                       </Button>
                     </li>
@@ -1063,6 +1092,13 @@ const AdminUsers = () => {
       onUserUpdated={handleUserUpdated}
     />
 
+    {/* Add User Panel */}
+    <AddUserPanel
+      isOpen={addPanelOpen}
+      onClose={handleCloseAddPanel}
+      onUserAdded={handleUserAdded}
+    />
+
     {/* Overlay for slide-out panel */}
     {editPanelOpen && (
       <div
@@ -1077,6 +1113,23 @@ const AdminUsers = () => {
           zIndex: 1020
         }}
         onClick={handleCloseEditPanel}
+      />
+    )}
+
+    {/* Overlay for add panel */}
+    {addPanelOpen && (
+      <div
+        className="toggle-overlay"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          zIndex: 1020
+        }}
+        onClick={handleCloseAddPanel}
       />
     )}
   </React.Fragment>

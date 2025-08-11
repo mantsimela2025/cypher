@@ -49,6 +49,12 @@ const AssetInventory = React.lazy(() => import("@/pages/assets/AssetInventory"))
 const VulnerabilityData = React.lazy(() => import("@/pages/vulnerabilities/VulnerabilityData"));
 const VulnerabilityMetrics = React.lazy(() => import("@/pages/vulnerabilities/VulnerabilityMetrics"));
 
+// Patch Management
+const PatchManagementDashboard = React.lazy(() => import("@/pages/patch-management/Dashboard"));
+const PatchLibrary = React.lazy(() => import("@/pages/patch-management/PatchLibrary"));
+const PatchJobs = React.lazy(() => import("@/pages/patch-management/PatchJobs"));
+const AIRecommendations = React.lazy(() => import("@/pages/patch-management/AIRecommendations"));
+
 // Admin Management
 const AdminUsers = React.lazy(() => import("@/pages/admin/users/AdminUsers"));
 const NlqAdmin = React.lazy(() => import("@/pages/admin/NlqAdmin"));
@@ -260,6 +266,12 @@ const Pages = () => {
               {/*Vulnerability Management*/}
               <Route path="vulnerabilities/data" element={<Suspense fallback={<PageLoader />}><VulnerabilityData /></Suspense>}></Route>
               <Route path="vulnerabilities/metrics" element={<Suspense fallback={<PageLoader />}><VulnerabilityMetrics /></Suspense>}></Route>
+
+              {/*Patch Management*/}
+              <Route path="patch-management/dashboard" element={<Suspense fallback={<PageLoader />}><PatchManagementDashboard /></Suspense>}></Route>
+              <Route path="patch-management/library" element={<Suspense fallback={<PageLoader />}><PatchLibrary /></Suspense>}></Route>
+              <Route path="patch-management/jobs" element={<Suspense fallback={<PageLoader />}><PatchJobs /></Suspense>}></Route>
+              <Route path="patch-management/ai-recommendations" element={<Suspense fallback={<PageLoader />}><AIRecommendations /></Suspense>}></Route>
 
               {/*Admin Management*/}
               <Route path="admin/dashboard" element={<Suspense fallback={<PageLoader />}><AdminDashboard /></Suspense>} />
