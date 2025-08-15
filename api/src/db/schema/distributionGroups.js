@@ -1,4 +1,4 @@
-const { pgTable, serial, varchar, text, integer, timestamp } = require('drizzle-orm/pg-core');
+const { pgTable, serial, varchar, text, integer, timestamp, uniqueIndex } = require('drizzle-orm/pg-core');
 const { relations } = require('drizzle-orm');
 const { users } = require('./users');
 
@@ -17,6 +17,10 @@ const distributionGroupMembers = pgTable('distribution_group_members', {
   userId: integer('user_id').references(() => users.id).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => {
+  return {
+    uniqGroupUser: uniqueIndex('uniq_distribution_group_members_group_user').on(table.groupId, table.userId),
+  };
 });
 
 const distributionGroupRelations = relations(distributionGroups, ({ many, one }) => ({

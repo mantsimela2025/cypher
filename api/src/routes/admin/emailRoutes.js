@@ -2,8 +2,25 @@ const express = require('express');
 const router = express.Router();
 const emailService = require('../../services/emailService');
 const emailTemplateService = require('../../services/emailTemplateService');
-const { validateRequest, requireAuth, requireRole } = require('../../middleware');
+const { authenticateToken, requireRole } = require('../../middleware/auth');
+const { validationResult } = require('express-validator');
 const { query, param, body } = require('express-validator');
+
+// For consistency with the guide, use authenticateToken as requireAuth alias
+const requireAuth = authenticateToken;
+
+// Simple validation middleware that checks express-validator results
+const validateRequest = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      error: 'Validation failed',
+      details: errors.array()
+    });
+  }
+  next();
+};
 
 /**
  * @swagger

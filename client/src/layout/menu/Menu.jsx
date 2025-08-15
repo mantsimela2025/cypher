@@ -13,7 +13,23 @@ const Menu = ({ data }) => {
   // State to manage collapsed sections
   const [collapsedSections, setCollapsedSections] = useState(() => {
     const saved = localStorage.getItem('menuCollapsedSections');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) {
+      return JSON.parse(saved);
+    } else {
+      // Default state: collapse all sections except 'Systems Management' and 'Asset Management'
+      return {
+        "Dashboards": true,
+        "Systems Management": false,
+        "Asset Management": false,
+        "Vulnerability Mgmt": true,
+        "Patch Management": true,
+        "Scan Management": true,
+        "Policy Management": true,
+        "Document Management": true,
+        "DASHBOARD & METRICS": true,
+        "Admin Management": true
+      };
+    }
   });
 
   // Function to toggle section collapse
@@ -33,7 +49,9 @@ const Menu = ({ data }) => {
       "Systems Management": "server",
       "Asset Management": "package",
       "Vulnerability Mgmt": "shield-exclamation",
+      "Patch Management": "shield-check",
       "Scan Management": "scan",
+      "Policy Management": "book",
       "Document Management": "file-docs",
       "DASHBOARD & METRICS": "dashboard-fill",
       "Admin Management": "users"

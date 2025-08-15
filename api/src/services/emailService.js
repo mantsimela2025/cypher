@@ -1,399 +1,429 @@
-const nodemailer = require('nodemailer');
-const axios = require('axios');
+const AWS = require('aws-sdk');
 const { db } = require('../db');
-const { emailLogs } = require('../db/schema');
-const { eq, and, desc } = require('drizzle-orm');
+const { users, emailLogs } = require('../db/schema');
+const { eq, desc, sql, and, gte, lte } = require('drizzle-orm');
+
+// Configure AWS SES
+const ses = new AWS.SES({
+  region: process.env.AWS_REGION || 'us-east-1',
+});
 
 class EmailService {
-  constructor() {
-    this.provider = this.determineProvider();
-    this.transporter = null;
-    this.apiKey = null;
-    this.fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@rasdash.com';
-    this.fromName = process.env.EMAIL_FROM_NAME || 'RAS Dashboard';
-    
-    this.initializeProvider();
-  }
-
-  /**
-   * Determine which email provider to use based on environment variables
-   */
-  determineProvider() {
-    if (process.env.MAILERSEND_API_KEY) {
-      return 'mailersend';
-    } else if (process.env.SENDGRID_API_KEY) {
-      return 'sendgrid';
-    } else if (process.env.MAILGUN_API_KEY) {
-      return 'mailgun';
-    } else if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
-      return 'smtp';
-    } else {
-      throw new Error('No email provider configured. Please set up SMTP or API credentials in .env file.');
-    }
-  }
-
-  /**
-   * Initialize the selected email provider
-   */
-  initializeProvider() {
-    switch (this.provider) {
-      case 'smtp':
-        this.initializeSMTP();
-        break;
-      case 'mailersend':
-        this.initializeMailerSend();
-        break;
-      case 'sendgrid':
-        this.initializeSendGrid();
-        break;
-      case 'mailgun':
-        this.initializeMailgun();
-        break;
-      default:
-        throw new Error(`Unsupported email provider: ${this.provider}`);
-    }
-  }
-
-  /**
-   * Initialize SMTP transporter
-   */
-  initializeSMTP() {
-    this.transporter = nodemailer.createTransporter({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT) || 587,
-      secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-      tls: {
-        rejectUnauthorized: process.env.EMAIL_TLS_REJECT_UNAUTHORIZED !== 'false'
-      }
-    });
-  }
-
-  /**
-   * Initialize MailerSend API
-   */
-  initializeMailerSend() {
-    this.apiKey = process.env.MAILERSEND_API_KEY;
-    this.apiUrl = 'https://api.mailersend.com/v1/email';
-  }
-
-  /**
-   * Initialize SendGrid API
-   */
-  initializeSendGrid() {
-    this.apiKey = process.env.SENDGRID_API_KEY;
-    this.apiUrl = 'https://api.sendgrid.com/v3/mail/send';
-  }
-
-  /**
-   * Initialize Mailgun API
-   */
-  initializeMailgun() {
-    this.apiKey = process.env.MAILGUN_API_KEY;
-    this.domain = process.env.MAILGUN_DOMAIN;
-    this.apiUrl = `https://api.mailgun.net/v3/${this.domain}/messages`;
-  }
-
-  /**
-   * Send email using the configured provider
-   * @param {Object} emailData - Email data
-   * @param {string} emailData.to - Recipient email
-   * @param {string} emailData.subject - Email subject
-   * @param {string} emailData.text - Plain text content
-   * @param {string} emailData.html - HTML content
-   * @param {string} emailData.from - Sender email (optional)
-   * @param {string} emailData.fromName - Sender name (optional)
-   * @param {Array} emailData.attachments - Attachments (optional)
-   * @param {string} emailData.category - Email category for logging (optional)
-   * @param {string} emailData.relatedEntityType - Related entity type (optional)
-   * @param {string} emailData.relatedEntityId - Related entity ID (optional)
-   */
-  async sendEmail(emailData) {
-    let logId = null;
-
+  async sendTestEmail(recipientEmail, senderEmail = 'jerome.harrison@redarchsolutions.com') {
     try {
-      const { to, subject, text, html, from, fromName, attachments, category, relatedEntityType, relatedEntityId, cc, bcc } = emailData;
+      console.log(`📧 Sending test email from ${senderEmail} to ${recipientEmail}`);
+      
+      const params = {
+        Source: senderEmail,
+        Destination: {
+          ToAddresses: [recipientEmail],
+        },
+        Message: {
+          Subject: {
+            Data: 'Test Email from RAS Dashboard',
+            Charset: 'UTF-8',
+          },
+          Body: {
+            Html: {
+              Data: `
+                <html>
+                  <body>
+                    <h2>Test Email from RAS Dashboard</h2>
+                    <p>Hello!</p>
+                    <p>This is a test email sent from the RAS Dashboard application using Amazon SES.</p>
+                    <p><strong>Sent at:</strong> ${new Date().toLocaleString()}</p>
+                    <hr>
+                    <p><small>This email was sent for testing purposes.</small></p>
+                  </body>
+                </html>
+              `,
+              Charset: 'UTF-8',
+            },
+            Text: {
+              Data: `
+Test Email from RAS Dashboard
 
-      // Validate required fields
-      if (!to || !subject || (!text && !html)) {
-        throw new Error('Missing required email fields: to, subject, and content (text or html)');
-      }
+Hello!
 
-      const senderEmail = from || this.fromEmail;
-      const senderName = fromName || this.fromName;
+This is a test email sent from the RAS Dashboard application using Amazon SES.
 
-      // Log email attempt
-      logId = await this.logEmailAttempt({
-        subject,
-        from: `${senderName} <${senderEmail}>`,
-        to,
-        cc: cc || '',
-        bcc: bcc || '',
-        body: text,
-        htmlBody: html,
-        status: 'pending',
-        category: category || 'general',
-        serviceName: this.provider,
-        relatedEntityType,
-        relatedEntityId
+Sent at: ${new Date().toLocaleString()}
+
+This email was sent for testing purposes.
+              `,
+              Charset: 'UTF-8',
+            },
+          },
+        },
+      };
+
+      const result = await ses.sendEmail(params).promise();
+      console.log(`✅ Email sent successfully! Message ID: ${result.MessageId}`);
+      
+      // ✅ CORRECT: Log email to database
+      await this.logEmail({
+        messageId: result.MessageId,
+        recipientEmail,
+        senderEmail,
+        subject: 'Test Email from RAS Dashboard',
+        category: 'test',
+        status: 'sent',
+        metadata: {
+          emailType: 'test',
+          timestamp: new Date().toISOString()
+        }
       });
-
-      let result;
-      switch (this.provider) {
-        case 'smtp':
-          result = await this.sendViaSMTP({ to, subject, text, html, senderEmail, senderName, attachments, cc, bcc });
-          break;
-        case 'mailersend':
-          result = await this.sendViaMailerSend({ to, subject, text, html, senderEmail, senderName, attachments, cc, bcc });
-          break;
-        case 'sendgrid':
-          result = await this.sendViaSendGrid({ to, subject, text, html, senderEmail, senderName, attachments, cc, bcc });
-          break;
-        case 'mailgun':
-          result = await this.sendViaMailgun({ to, subject, text, html, senderEmail, senderName, attachments, cc, bcc });
-          break;
-        default:
-          throw new Error(`Unsupported email provider: ${this.provider}`);
-      }
-
-      // Update log with success
-      if (logId) {
-        await this.updateEmailLog(logId, {
-          status: 'sent',
-          responseMessage: `Email sent successfully via ${this.provider}. Message ID: ${result.messageId}`
-        });
-      }
-
-      return { ...result, logId };
+      
+      return {
+        success: true,
+        messageId: result.MessageId,
+        recipient: recipientEmail,
+        sender: senderEmail,
+        sentAt: new Date().toISOString(),
+      };
     } catch (error) {
-      // Update log with failure
-      if (logId) {
-        await this.updateEmailLog(logId, {
-          status: 'failed',
-          responseMessage: error.message
-        });
-      }
+      console.error('❌ Error sending email:', error);
+      throw error;
+    }
+  }
 
-      console.error('Email sending failed:', error);
+  async sendNotificationEmail(recipientEmail, subject, message, senderEmail = 'jerome.harrison@redarchsolutions.com') {
+    try {
+      console.log(`📧 Sending notification email: "${subject}"`);
+      
+      const params = {
+        Source: senderEmail,
+        Destination: {
+          ToAddresses: [recipientEmail],
+        },
+        Message: {
+          Subject: {
+            Data: subject,
+            Charset: 'UTF-8',
+          },
+          Body: {
+            Html: {
+              Data: `
+                <html>
+                  <body>
+                    <h2>${subject}</h2>
+                    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                      ${message}
+                    </div>
+                    <hr>
+                    <p style="color: #666; font-size: 12px;">
+                      <strong>Sent from:</strong> RAS Dashboard<br>
+                      <strong>Time:</strong> ${new Date().toLocaleString()}
+                    </p>
+                  </body>
+                </html>
+              `,
+              Charset: 'UTF-8',
+            },
+            Text: {
+              Data: `
+${subject}
+
+${message.replace(/<[^>]*>/g, '')}
+
+---
+Sent from: RAS Dashboard
+Time: ${new Date().toLocaleString()}
+              `,
+              Charset: 'UTF-8',
+            },
+          },
+        },
+      };
+
+      const result = await ses.sendEmail(params).promise();
+      console.log(`✅ Notification email sent! Message ID: ${result.MessageId}`);
+      
+      // ✅ CORRECT: Log email to database
+      await this.logEmail({
+        messageId: result.MessageId,
+        recipientEmail,
+        senderEmail,
+        subject,
+        category: 'notification',
+        status: 'sent',
+        metadata: {
+          emailType: 'notification',
+          messageLength: message.length,
+          timestamp: new Date().toISOString()
+        }
+      });
+      
+      return {
+        success: true,
+        messageId: result.MessageId,
+        recipient: recipientEmail,
+        subject,
+        sentAt: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error('❌ Error sending notification email:', error);
+      throw error;
+    }
+  }
+
+  async getSESQuota() {
+    try {
+      const quota = await ses.getSendQuota().promise();
+      const statistics = await ses.getSendStatistics().promise();
+      
+      return {
+        quota: {
+          max24HourSend: quota.Max24HourSend,
+          maxSendRate: quota.MaxSendRate,
+          sentLast24Hours: quota.SentLast24Hours,
+        },
+        statistics: statistics.SendDataPoints || [],
+      };
+    } catch (error) {
+      console.error('❌ Error getting SES quota:', error);
+      throw error;
+    }
+  }
+
+  async getVerifiedIdentities() {
+    try {
+      const identities = await ses.listIdentities().promise();
+      const verificationAttributes = await ses.getIdentityVerificationAttributes({
+        Identities: identities.Identities,
+      }).promise();
+
+      return {
+        identities: identities.Identities,
+        verificationStatus: verificationAttributes.VerificationAttributes,
+      };
+    } catch (error) {
+      console.error('❌ Error getting verified identities:', error);
+      throw error;
+    }
+  }
+
+  async bulkSendEmails(recipients, subject, message, senderEmail = 'jerome.harrison@redarchsolutions.com') {
+    try {
+      console.log(`📧 Sending bulk emails to ${recipients.length} recipients`);
+      
+      const results = [];
+      const errors = [];
+      
+      for (const recipient of recipients) {
+        try {
+          const result = await this.sendNotificationEmail(recipient, subject, message, senderEmail);
+          results.push(result);
+          
+          // Add small delay to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 1100)); // 1.1 seconds (under 1 email/sec limit)
+        } catch (error) {
+          console.error(`❌ Failed to send email to ${recipient}:`, error);
+          errors.push({
+            recipient,
+            error: error.message,
+          });
+        }
+      }
+      
+      return {
+        success: errors.length === 0,
+        totalSent: results.length,
+        totalErrors: errors.length,
+        results,
+        errors,
+      };
+    } catch (error) {
+      console.error('❌ Error in bulk email send:', error);
       throw error;
     }
   }
 
   /**
-   * Send email via SMTP
+   * Log email to database using existing schema
+   * @param {Object} emailData - Email data to log
    */
-  async sendViaSMTP({ to, subject, text, html, senderEmail, senderName, attachments }) {
-    const mailOptions = {
-      from: `"${senderName}" <${senderEmail}>`,
-      to,
-      subject,
-      text,
-      html,
-      attachments
-    };
-
-    const result = await this.transporter.sendMail(mailOptions);
-    return {
-      success: true,
-      messageId: result.messageId,
-      provider: 'smtp'
-    };
-  }
-
-  /**
-   * Send email via MailerSend API
-   */
-  async sendViaMailerSend({ to, subject, text, html, senderEmail, senderName }) {
-    const payload = {
-      from: {
-        email: senderEmail,
-        name: senderName
-      },
-      to: [
-        {
-          email: to,
-          name: to.split('@')[0] // Use email prefix as name if not provided
-        }
-      ],
-      subject,
-      text,
-      html
-    };
-
-    const response = await axios.post(this.apiUrl, payload, {
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    return {
-      success: true,
-      messageId: response.headers['x-message-id'] || response.data.message_id,
-      provider: 'mailersend'
-    };
-  }
-
-  /**
-   * Send email via SendGrid API
-   */
-  async sendViaSendGrid({ to, subject, text, html, senderEmail, senderName }) {
-    const payload = {
-      personalizations: [
-        {
-          to: [{ email: to }],
-          subject
-        }
-      ],
-      from: {
-        email: senderEmail,
-        name: senderName
-      },
-      content: [
-        ...(text ? [{ type: 'text/plain', value: text }] : []),
-        ...(html ? [{ type: 'text/html', value: html }] : [])
-      ]
-    };
-
-    const response = await axios.post(this.apiUrl, payload, {
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    return {
-      success: true,
-      messageId: response.headers['x-message-id'],
-      provider: 'sendgrid'
-    };
-  }
-
-  /**
-   * Send email via Mailgun API
-   */
-  async sendViaMailgun({ to, subject, text, html, senderEmail, senderName }) {
-    const formData = new URLSearchParams();
-    formData.append('from', `${senderName} <${senderEmail}>`);
-    formData.append('to', to);
-    formData.append('subject', subject);
-    if (text) formData.append('text', text);
-    if (html) formData.append('html', html);
-
-    const response = await axios.post(this.apiUrl, formData, {
-      auth: {
-        username: 'api',
-        password: this.apiKey
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    });
-
-    return {
-      success: true,
-      messageId: response.data.id,
-      provider: 'mailgun'
-    };
-  }
-
-  /**
-   * Test email configuration
-   */
-  async testConnection() {
+  async logEmail(emailData) {
     try {
-      if (this.provider === 'smtp') {
-        await this.transporter.verify();
-        return { success: true, provider: this.provider, message: 'SMTP connection verified' };
-      } else {
-        // For API providers, we'll send a test request to validate credentials
-        const testResult = await this.sendEmail({
-          to: this.fromEmail,
-          subject: 'Email Service Test',
-          text: 'This is a test email to verify email service configuration.',
-          html: '<p>This is a test email to verify email service configuration.</p>'
-        });
-        return { success: true, provider: this.provider, message: 'API credentials verified', testResult };
-      }
-    } catch (error) {
-      return { success: false, provider: this.provider, error: error.message };
-    }
-  }
+      const {
+        messageId,
+        recipientEmail,
+        senderEmail,
+        subject,
+        category,
+        status,
+        body = '',
+        htmlBody = '',
+        responseMessage = '',
+        metadata = {}
+      } = emailData;
 
-  /**
-   * Log email attempt to database
-   */
-  async logEmailAttempt(emailData) {
-    try {
-      const [logEntry] = await db.insert(emailLogs).values(emailData).returning({ id: emailLogs.id });
-      return logEntry.id;
+      console.log('📧 Attempting to log email to database...', {
+        subject,
+        recipientEmail,
+        senderEmail,
+        category,
+        status
+      });
+      
+      // ✅ CORRECT: Use Drizzle ORM insert method following the guide
+      const result = await db.insert(emailLogs)
+        .values({
+          subject: subject || 'No Subject',
+          from: senderEmail || 'noreply@redarchsolutions.com',
+          to: recipientEmail,
+          body: body,
+          htmlBody: htmlBody,
+          status: status || 'sent',
+          category: category || 'notification',
+          serviceName: 'SES',
+          responseMessage: responseMessage || messageId || ''
+        })
+        .returning();
+      
+      console.log('✅ Email logged to database successfully:', result.length > 0 ? result[0].id : 'No ID');
+      return result.length > 0 ? result[0] : null;
     } catch (error) {
-      console.error('Failed to log email attempt:', error);
+      console.error('❌ Error logging email:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        detail: error.detail
+      });
+      // Don't throw here to prevent email sending from failing
       return null;
     }
   }
 
   /**
-   * Update email log status
+   * Get email logs with filtering and pagination
+   * @param {Object} options - Query options
    */
-  async updateEmailLog(logId, updateData) {
+  async getEmailLogs(options = {}) {
     try {
-      await db.update(emailLogs)
-        .set({ ...updateData, updatedAt: new Date() })
-        .where(eq(emailLogs.id, logId));
+      console.log('📊 Fetching email logs with options:', options);
+      
+      const {
+        page = 1,
+        limit = 10,
+        status,
+        category,
+        startDate,
+        endDate
+      } = options;
+
+      // ✅ CORRECT: Use Drizzle ORM select following the guide patterns
+      let query = db.select({
+        id: emailLogs.id,
+        subject: emailLogs.subject,
+        sender: emailLogs.from,
+        recipient: emailLogs.to,
+        status: emailLogs.status,
+        category: emailLogs.category,
+        serviceName: emailLogs.serviceName,
+        responseMessage: emailLogs.responseMessage,
+        createdAt: emailLogs.createdAt,
+        updatedAt: emailLogs.updatedAt
+      }).from(emailLogs);
+
+      // ✅ CORRECT: Build WHERE conditions using Drizzle operators
+      const whereConditions = [];
+      
+      if (status) {
+        whereConditions.push(eq(emailLogs.status, status));
+      }
+      if (category) {
+        whereConditions.push(eq(emailLogs.category, category));
+      }
+      if (startDate) {
+        whereConditions.push(gte(emailLogs.createdAt, new Date(startDate)));
+      }
+      if (endDate) {
+        whereConditions.push(lte(emailLogs.createdAt, new Date(endDate)));
+      }
+
+      // Apply WHERE conditions if any exist
+      if (whereConditions.length > 0) {
+        query = query.where(and(...whereConditions));
+      }
+
+      // Order by creation date descending
+      query = query.orderBy(desc(emailLogs.createdAt));
+
+      // Execute query to get all logs
+      const allLogs = await query.execute ? await query.execute() : await query;
+      console.log(`📧 Found ${allLogs ? allLogs.length : 0} email logs in database`);
+      
+      // Handle case where query returns null/undefined
+      const logsArray = Array.isArray(allLogs) ? allLogs : [];
+      const total = logsArray.length;
+      
+      // Apply pagination
+      const offset = (page - 1) * limit;
+      const logs = logsArray.slice(offset, offset + limit);
+
+      return {
+        logs,
+        total,
+        page,
+        limit
+      };
     } catch (error) {
-      console.error('Failed to update email log:', error);
+      console.error('❌ Error fetching email logs:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code
+      });
+      throw error;
     }
   }
 
   /**
-   * Get email logs with optional filtering
+   * Get email statistics
    */
-  async getEmailLogs(filters = {}) {
+  async getEmailStats() {
     try {
-      let query = db.select().from(emailLogs);
+      const result = await db.execute(sql`
+        SELECT
+          COUNT(*) as total_emails,
+          COUNT(CASE WHEN status = 'sent' THEN 1 END) as sent_emails,
+          COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed_emails,
+          COUNT(CASE WHEN status = 'delivered' THEN 1 END) as delivered_emails,
+          COUNT(CASE WHEN category = 'test' THEN 1 END) as test_emails,
+          COUNT(CASE WHEN category = 'notification' THEN 1 END) as notification_emails,
+          COUNT(CASE WHEN category = 'welcome' THEN 1 END) as welcome_emails,
+          COUNT(CASE WHEN category = 'alert' THEN 1 END) as alert_emails,
+          COUNT(CASE WHEN created_at >= NOW() - INTERVAL '24 hours' THEN 1 END) as emails_last_24h,
+          COUNT(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN 1 END) as emails_last_7d
+        FROM email_logs
+      `);
 
-      if (filters.status) {
-        query = query.where(eq(emailLogs.status, filters.status));
-      }
+      const stats = (result && result[0]) || {};
 
-      if (filters.category) {
-        query = query.where(eq(emailLogs.category, filters.category));
-      }
+      // Convert counts to numbers
+      Object.keys(stats).forEach(key => {
+        stats[key] = parseInt(stats[key]) || 0;
+      });
 
-      if (filters.relatedEntityType && filters.relatedEntityId) {
-        query = query.where(
-          and(
-            eq(emailLogs.relatedEntityType, filters.relatedEntityType),
-            eq(emailLogs.relatedEntityId, filters.relatedEntityId)
-          )
-        );
-      }
-
-      return await query.orderBy(desc(emailLogs.createdAt)).limit(filters.limit || 100);
+      return {
+        totalEmails: stats.total_emails || 0,
+        sentEmails: stats.sent_emails || 0,
+        failedEmails: stats.failed_emails || 0,
+        deliveredEmails: stats.delivered_emails || 0,
+        bouncedEmails: 0, // Not supported by enum
+        testEmails: stats.test_emails || 0,
+        notificationEmails: stats.notification_emails || 0,
+        welcomeEmails: stats.welcome_emails || 0,
+        alertEmails: stats.alert_emails || 0,
+        emailsLast24h: stats.emails_last_24h || 0,
+        emailsLast7d: stats.emails_last_7d || 0,
+        successRate: stats.total_emails > 0 ? Math.round((stats.sent_emails / stats.total_emails) * 100) : 0
+      };
     } catch (error) {
-      console.error('Failed to get email logs:', error);
-      return [];
+      console.error('Error fetching email statistics:', error);
+      throw error;
     }
-  }
-
-  /**
-   * Get current provider information
-   */
-  getProviderInfo() {
-    return {
-      provider: this.provider,
-      fromEmail: this.fromEmail,
-      fromName: this.fromName,
-      configured: true
-    };
   }
 }
 
-// Create and export a singleton instance
-const emailService = new EmailService();
-
-module.exports = emailService;
+module.exports = new EmailService();

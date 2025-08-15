@@ -203,6 +203,7 @@ const options = {
   apis: [
     './src/routes/*.js',
     './src/controllers/*.js',
+    './src/swagger/*.js',
   ],
 };
 

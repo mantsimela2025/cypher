@@ -3,6 +3,7 @@ import Icon from "@/components/icon/Icon";
 import data from "./NotificationData";
 import { DropdownToggle, DropdownMenu, Dropdown } from "reactstrap";
 import { useThemeUpdate } from "@/layout/provider/Theme";
+import { Link } from "react-router-dom";
 
 const NotificationItem = (props) => {
   const { icon, iconStyle, text, time, id } = props;
@@ -57,9 +58,9 @@ const Notification = () => {
           </div>
         </div>
         <div className="dropdown-foot center">
-          <a href="#viewall" onClick={(ev) => ev.preventDefault()}>
-            View All
-          </a>
+          <Link to="/vulnerabilities/data" onClick={toggle}>
+            View All Vulnerabilities
+          </Link>
         </div>
       </DropdownMenu>
     </Dropdown>

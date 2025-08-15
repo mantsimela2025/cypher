@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Head from "@/layout/head/Head";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/context/AuthContext";
 import "./Login.css";
 import backgroundImage from "@/assets/images/grayTechyBkgrd.jpg";
 
@@ -12,15 +13,17 @@ const Login = () => {
   const [activeTab, setActiveTab] = useState("login"); // "login" or "request"
   const [passwordAuth, setPasswordAuth] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, login } = useAuth();
 
   // Check if user is already logged in
   React.useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      // User is already logged in, redirect to dashboard
-      navigate('/');
+    if (isAuthenticated) {
+      // Get the intended destination, or default to Asset Analytics dashboard
+      const from = location.state?.from?.pathname || '/assets/analytics';
+      navigate(from, { replace: true });
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate, location]);
 
   const onFormSubmit = async (formData) => {
     setLoading(true);
@@ -41,13 +44,13 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Store the access token and user data
-        localStorage.setItem("accessToken", data.data.accessToken);
-        localStorage.setItem("refreshToken", data.data.refreshToken);
-        localStorage.setItem("user", JSON.stringify(data.data.user));
+        // Use the auth context to handle login
+        login(data.data.user, {
+          accessToken: data.data.accessToken,
+          refreshToken: data.data.refreshToken
+        });
         
-        // Navigate to dashboard
-        navigate('/');
+        // Navigation will be handled by the useEffect above
       } else {
         setError(data.message || "Login failed");
       }
@@ -71,8 +74,8 @@ const Login = () => {
             <div className={`login-card ${activeTab === 'request' ? 'request-active' : ''}`}>
               {activeTab === 'login' ? (
                 <>
-                  <h2 className="login-title">Request System Access</h2>
-                  <p className="login-subtitle">Submit a request for access to the Cyber Security as a Service (CSaaS)</p>
+                  <h2 className="login-title"><strong>Welcome Back!</strong></h2>
+                  <p className="login-subtitle">Login to access Cypher CSaas Application</p>
                 </>
               ) : (
                 <>

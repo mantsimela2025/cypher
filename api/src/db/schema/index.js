@@ -12,9 +12,28 @@ const { emailTemplates, emailTemplateTypeEnum, emailTemplateStatusEnum } = requi
 // Integration schemas
 const { systems, systemImpactLevels } = require('./systems');
 const { assets, assetSystems, systemAssets, assetTags, assetNetwork } = require('./assets');
+
+// Systems Management schemas
+const {
+  systemDiscoveryScans,
+  systemDiscoveryResults,
+  systemSecurityPosture,
+  systemConfigurationDrift,
+  crossSystemCorrelations,
+  enterpriseRiskAggregation,
+  attackSurfaceMapping,
+  systemThreatModeling,
+  businessImpactAnalysis,
+  systemComplianceMapping,
+  discoveryStatusEnum,
+  postureStatusEnum,
+  driftSeverityEnum,
+  riskLevelEnum,
+  environmentTypeEnum
+} = require('./systemsManagement');
 const { vulnerabilities, vulnerabilityReferences, vulnerabilityRiskScores } = require('./vulnerabilities');
 const { cves, cveMappings, vulnerabilityCves } = require('./cves');
-const { poams, poamAssets, poamCves, poamMilestones, vulnerabilityPoams } = require('./poams');
+const { poams, poamAssets, poamCves, poamMilestones, vulnerabilityPoams, poamSignatures } = require('./poams');
 const { controls, controlEvidence, controlFindings, controlInheritance, controlPoams, poamApprovalComments } = require('./controls');
 const { assetVulnerabilities, detectionStatusEnum } = require('./assetVulnerabilities');
 
@@ -119,6 +138,16 @@ const {
 } = require('./documents');
 const { syncJobs, syncServiceEnum } = require('./syncJobs');
 const { syncLogs, syncStatusEnum } = require('./syncLogs');
+const {
+  webhookConfigurations,
+  webhookLogs,
+  webhookDeliveries,
+  webhookSubscriptions,
+  webhookRateLimits,
+  webhookSecurity,
+  webhookServiceEnum,
+  webhookStatusEnum
+} = require('./webhooks');
 
 // Patch Management schemas
 const {
@@ -342,6 +371,23 @@ module.exports = {
   systemAssets,
   assetTags,
   assetNetwork,
+
+  // Systems Management
+  systemDiscoveryScans,
+  systemDiscoveryResults,
+  systemSecurityPosture,
+  systemConfigurationDrift,
+  crossSystemCorrelations,
+  enterpriseRiskAggregation,
+  attackSurfaceMapping,
+  systemThreatModeling,
+  businessImpactAnalysis,
+  systemComplianceMapping,
+  discoveryStatusEnum,
+  postureStatusEnum,
+  driftSeverityEnum,
+  riskLevelEnum,
+  environmentTypeEnum,
   vulnerabilities,
   vulnerabilityReferences,
   vulnerabilityRiskScores,
@@ -353,6 +399,7 @@ module.exports = {
   poamCves,
   poamMilestones,
   vulnerabilityPoams,
+  poamSignatures,
   controls,
   controlEvidence,
   controlFindings,
@@ -464,6 +511,16 @@ module.exports = {
   syncServiceEnum,
   syncLogs,
   syncStatusEnum,
+
+  // Webhook management
+  webhookConfigurations,
+  webhookLogs,
+  webhookDeliveries,
+  webhookSubscriptions,
+  webhookRateLimits,
+  webhookSecurity,
+  webhookServiceEnum,
+  webhookStatusEnum,
 
   // Policy and Procedure management
   policies,

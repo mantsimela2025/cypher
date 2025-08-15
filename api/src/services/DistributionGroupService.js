@@ -1,5 +1,5 @@
 const { and, eq, sql } = require('drizzle-orm');
-const db = require('../db');
+const { db } = require('../db');
 const { distributionGroups, distributionGroupMembers, users } = require('../db/schema');
 
 class DistributionGroupService {
@@ -34,7 +34,7 @@ class DistributionGroupService {
       createdBy: distributionGroups.createdBy,
       createdAt: distributionGroups.createdAt,
       updatedAt: distributionGroups.updatedAt,
-      memberCount: sql`COUNT(${distributionGroupMembers.id})`.as('member_count'),
+      memberCount: sql`COUNT(${distributionGroupMembers.groupId})`.as('member_count'),
     })
       .from(distributionGroups)
       .leftJoin(distributionGroupMembers, eq(distributionGroupMembers.groupId, distributionGroups.id))
@@ -47,6 +47,28 @@ class DistributionGroupService {
         distributionGroups.updatedAt
       );
     return rows;
+  }
+
+  async getGroupById(id) {
+    const rows = await db.select({
+      id: distributionGroups.id,
+      name: distributionGroups.name,
+      description: distributionGroups.description,
+      createdAt: distributionGroups.createdAt,
+      updatedAt: distributionGroups.updatedAt,
+      memberCount: sql`COUNT(${distributionGroupMembers.groupId})`.as('member_count'),
+    })
+      .from(distributionGroups)
+      .leftJoin(distributionGroupMembers, eq(distributionGroupMembers.groupId, distributionGroups.id))
+      .where(eq(distributionGroups.id, id))
+      .groupBy(
+        distributionGroups.id,
+        distributionGroups.name,
+        distributionGroups.description,
+        distributionGroups.createdAt,
+        distributionGroups.updatedAt
+      );
+    return rows?.[0] || null;
   }
 
   async addUserToGroup(userId, groupId) {
@@ -83,12 +105,77 @@ class DistributionGroupService {
       id: users.id,
       username: users.username,
       email: users.email,
+      firstName: users.firstName,
+      lastName: users.lastName,
     })
       .from(distributionGroupMembers)
       .innerJoin(users, eq(distributionGroupMembers.userId, users.id))
       .where(eq(distributionGroupMembers.groupId, groupId));
     return rows;
   }
+
+  async searchAvailableUsers(groupId, searchTerm) {
+    // Users not in the group, optional search
+    let where = and(eq(distributionGroupMembers.groupId, groupId));
+    // Build subquery for users in group
+    const sub = db.select({ userId: distributionGroupMembers.userId })
+      .from(distributionGroupMembers)
+      .where(eq(distributionGroupMembers.groupId, groupId));
+
+    // Base query: users not in subquery
+    let query = db.select({
+      id: users.id,
+      username: users.username,
+      email: users.email,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      role: users.role,
+    }).from(users)
+      .where(sql`${users.id} NOT IN (${sub})`);
+
+    if (searchTerm) {
+      query = db.select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        role: users.role,
+      }).from(users)
+        .where(sql`${users.id} NOT IN (${sub}) AND (
+          ${users.username} ILIKE ${`%${searchTerm}%`} OR
+          ${users.email} ILIKE ${`%${searchTerm}%`} OR
+          ${users.firstName} ILIKE ${`%${searchTerm}%`} OR
+          ${users.lastName} ILIKE ${`%${searchTerm}%`}
+        )`);
+    }
+
+    const rows = await query;
+    return rows;
+  }
+
+  async getGroupStatistics() {
+    const [{ total: totalGroups }] = await db.select({ total: sql`COUNT(*)` }).from(distributionGroups);
+    const [{ total: totalMembers }] = await db.select({ total: sql`COUNT(*)` }).from(distributionGroupMembers);
+
+    const topGroups = await db.select({
+      name: distributionGroups.name,
+      memberCount: sql`COUNT(${distributionGroupMembers.groupId})`.as('member_count'),
+    })
+      .from(distributionGroups)
+      .leftJoin(distributionGroupMembers, eq(distributionGroupMembers.groupId, distributionGroups.id))
+      .groupBy(distributionGroups.id, distributionGroups.name)
+      .orderBy(sql`member_count DESC`)
+      .limit(5);
+
+    return {
+      totalGroups: Number(totalGroups) || 0,
+      totalMembers: Number(totalMembers) || 0,
+      averageMembersPerGroup: Number(totalGroups) > 0 ? Number(totalMembers) / Number(totalGroups) : 0,
+      topGroups,
+    };
+  }
 }
+
 
 module.exports = new DistributionGroupService();

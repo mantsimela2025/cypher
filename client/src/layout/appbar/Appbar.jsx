@@ -6,28 +6,29 @@ import { Link, useLocation } from "react-router";
 import { UserAvatar, LinkList, LinkItem, Icon, TooltipComponent } from "@/components/Component";
 
 import { useTheme } from '@/layout/provider/Theme';
+import { useAuth } from '@/context/AuthContext';
 
 const dashboardLinks = [
   {
     icon: "dashboard",
     text: "Default Dashboard",
-    link: "/",
+    link: "/assets/analytics",
   },
-  {
-    icon: "speed",
-    text: "Sales Dashboard",
-    link: "/sales",
-  },
-  {
-    icon: "bitcoin-cash",
-    text: "Crypto Dashboard",
-    link: "/crypto",
-  },
-  {
-    icon: "coins",
-    text: "Invest Dashboard",
-    link: "/invest",
-  },
+  // {
+  //   icon: "speed",
+  //   text: "Sales Dashboard",
+  //   link: "/sales",
+  // },
+  // {
+  //   icon: "bitcoin-cash",
+  //   text: "Crypto Dashboard",
+  //   link: "/crypto",
+  // },
+  // {
+  //   icon: "coins",
+  //   text: "Invest Dashboard",
+  //   link: "/invest",
+  // },
 ]
 
 const applicationLinks = [
@@ -64,9 +65,53 @@ const applicationLinks = [
 ]
 
 const Appbar = () => {
-  
+
   const location = useLocation();
-  const theme = useTheme(); 
+  const theme = useTheme();
+  const { user } = useAuth();
+
+  // Helper function to get user initials
+  const getUserInitials = (user) => {
+    if (!user) return "U";
+
+    if (user.firstName && user.lastName) {
+      return (user.firstName.charAt(0) + user.lastName.charAt(0)).toUpperCase();
+    }
+
+    if (user.username) {
+      return user.username.substring(0, 2).toUpperCase();
+    }
+
+    if (user.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+
+    return "U";
+  };
+
+  // Helper function to get display name
+  const getDisplayName = (user) => {
+    if (!user) return "User";
+
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+
+    if (user.username) {
+      return user.username;
+    }
+
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
+
+    return "User";
+  };
+
+  // Helper function to get user email
+  const getUserEmail = (user) => {
+    return user?.email || "user@example.com";
+  };
 
   const appSidebarClass = classNames({
     "nk-apps-sidebar": true,
@@ -86,7 +131,8 @@ const Appbar = () => {
           <SimpleBar className="nk-sidebar-content">
             <div className="nk-sidebar-menu">
               <ul className="nk-menu apps-menu">
-                {dashboardLinks.map((item, index) => 
+                {/* Default Dashboard - Restored as requested */}
+                {dashboardLinks.map((item, index) =>
                   <React.Fragment key={index}>
                     <TooltipComponent id={"dashboard" + index} text={item.text} direction="right" />
                     <li
@@ -103,8 +149,8 @@ const Appbar = () => {
                     </li>
                   </React.Fragment>
                 )}
-                <li className="nk-menu-hr"></li>
-                {applicationLinks.map((item, index) => 
+                {/* Application Links - Hidden as requested */}
+                {/* {applicationLinks.map((item, index) =>
                   <React.Fragment key={index}>
                     <TooltipComponent id={"app" + index} text={item.text} direction="right" />
                     <li
@@ -120,9 +166,9 @@ const Appbar = () => {
                       </Link>
                     </li>
                   </React.Fragment>
-                )}
-                <li className="nk-menu-hr"></li>
-                <TooltipComponent id={"componentTooltip"} text="Go to component" direction="right" />
+                )} */}
+                {/* Component Link - Hidden as requested */}
+                {/* <TooltipComponent id={"componentTooltip"} text="Go to component" direction="right" />
                 <li
                   className={`nk-menu-item ${
                     location.pathname === "/components" ? "active current-page" : ""
@@ -134,11 +180,12 @@ const Appbar = () => {
                       <Icon name="layers"></Icon>
                     </span>
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
             <div className="nk-sidebar-footer">
               <ul className="nk-menu">
+                {/* Settings Link - Restored as requested */}
                 <TooltipComponent id={"settingsTooltip"} text="Settings" direction="right" />
                 <li className="nk-menu-item" id="settingsTooltip">
                   <Link to={`/user-profile-setting`} className="nk-menu-link">
@@ -159,15 +206,15 @@ const Appbar = () => {
                 ev.preventDefault();
               }}
             >
-              <UserAvatar text="AB" theme="blue" />
+              <UserAvatar text={getUserInitials(user)} theme="blue" />
             </DropdownToggle>
             <DropdownMenu end className="dropdown-menu-md ms-4">
               <div className="dropdown-inner user-card-wrap bg-lighter d-none d-md-block">
                 <div className="user-card sm">
-                  <UserAvatar text="AB" theme="blue" />
+                  <UserAvatar text={getUserInitials(user)} theme="blue" />
                   <div className="user-info">
-                    <span className="lead-text">Abu Bin Ishtiyak</span>
-                    <span className="sub-text">info@softnio.com</span>
+                    <span className="lead-text">{getDisplayName(user)}</span>
+                    <span className="sub-text">{getUserEmail(user)}</span>
                   </div>
                 </div>
               </div>

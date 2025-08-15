@@ -8,9 +8,10 @@
     "dev": "nodemon server.js",
     "dev:safe": "node scripts/start-api-safe.js",
     "dev:safe:force": "node scripts/start-api-safe.js --force",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:api:distribution-groups": "cross-env NODE_ENV=test node API_TEST_SCRIPTS/test_distribution_groups_api.js",
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
@@ -67,6 +68,9 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.864.0",
+    "aws-sdk": "^2.1692.0",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
@@ -101,6 +105,9 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/jest.setup.js"
+    ],
     "collectCoverageFrom": [
       "src/**/*.js",
       "!src/db/migrations/**"

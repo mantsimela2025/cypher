@@ -1,7 +1,7 @@
 const express = require('express');
 const accessRequestController = require('../controllers/accessRequestController');
 const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { requirePermission } = require('../middleware/rbac');
 
 const router = express.Router();
 
@@ -214,9 +214,84 @@ router.use(authenticateToken);
  *       403:
  *         description: Insufficient permissions
  */
-router.get('/', 
-  requirePermission('access_requests', 'read'),
+router.get('/',
+  requirePermission('access_requests_read'),
   accessRequestController.getAllAccessRequests
+);
+
+/**
+ * @swagger
+ * /api/v1/access-requests/stats:
+ *   get:
+ *     summary: Get access request statistics (admin only)
+ *     tags: [Access Requests - Analytics]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Access request statistics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     overall:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: integer
+ *                           description: Total number of requests
+ *                         pending:
+ *                           type: integer
+ *                           description: Number of pending requests
+ *                         approved:
+ *                           type: integer
+ *                           description: Number of approved requests
+ *                         rejected:
+ *                           type: integer
+ *                           description: Number of rejected requests
+ *                     monthly:
+ *                       type: array
+ *                       description: Monthly statistics for the last 12 months
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           month:
+ *                             type: string
+ *                             format: date-time
+ *                           total:
+ *                             type: integer
+ *                           pending:
+ *                             type: integer
+ *                           approved:
+ *                             type: integer
+ *                           rejected:
+ *                             type: integer
+ *                     recent:
+ *                       type: object
+ *                       description: Statistics for the last 30 days
+ *                       properties:
+ *                         total:
+ *                           type: integer
+ *                         pending:
+ *                           type: integer
+ *                         approved:
+ *                           type: integer
+ *                         rejected:
+ *                           type: integer
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Insufficient permissions
+ */
+router.get('/stats',
+  requirePermission('access_requests_read'),
+  accessRequestController.getAccessRequestStats
 );
 
 /**
@@ -284,8 +359,8 @@ router.get('/',
  *       403:
  *         description: Insufficient permissions
  */
-router.get('/:requestId', 
-  requirePermission('access_requests', 'read'),
+router.get('/:requestId',
+  requirePermission('access_requests_read'),
   accessRequestController.getAccessRequestById
 );
 
@@ -343,8 +418,8 @@ router.get('/:requestId',
  *       403:
  *         description: Insufficient permissions
  */
-router.patch('/:requestId/approve', 
-  requirePermission('access_requests', 'admin'),
+router.patch('/:requestId/approve',
+  requirePermission('access_requests_admin'),
   accessRequestController.approveAccessRequest
 );
 
@@ -419,7 +494,7 @@ router.patch('/:requestId/approve',
  *         description: Insufficient permissions
  */
 router.patch('/:requestId/reject',
-  requirePermission('access_requests', 'admin'),
+  requirePermission('access_requests_admin'),
   accessRequestController.rejectAccessRequest
 );
 
@@ -475,83 +550,9 @@ router.patch('/:requestId/reject',
  *         description: Insufficient permissions
  */
 router.delete('/:requestId',
-  requirePermission('access_requests', 'admin'),
+  requirePermission('access_requests_admin'),
   accessRequestController.deleteAccessRequest
 );
 
-/**
- * @swagger
- * /api/v1/access-requests/stats:
- *   get:
- *     summary: Get access request statistics (admin only)
- *     tags: [Access Requests - Analytics]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Access request statistics retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   type: object
- *                   properties:
- *                     overall:
- *                       type: object
- *                       properties:
- *                         total:
- *                           type: integer
- *                           description: Total number of requests
- *                         pending:
- *                           type: integer
- *                           description: Number of pending requests
- *                         approved:
- *                           type: integer
- *                           description: Number of approved requests
- *                         rejected:
- *                           type: integer
- *                           description: Number of rejected requests
- *                     monthly:
- *                       type: array
- *                       description: Monthly statistics for the last 12 months
- *                       items:
- *                         type: object
- *                         properties:
- *                           month:
- *                             type: string
- *                             format: date-time
- *                           total:
- *                             type: integer
- *                           pending:
- *                             type: integer
- *                           approved:
- *                             type: integer
- *                           rejected:
- *                             type: integer
- *                     recent:
- *                       type: object
- *                       description: Statistics for the last 30 days
- *                       properties:
- *                         total:
- *                           type: integer
- *                         pending:
- *                           type: integer
- *                         approved:
- *                           type: integer
- *                         rejected:
- *                           type: integer
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Insufficient permissions
- */
-router.get('/stats',
-  requirePermission('access_requests', 'read'),
-  accessRequestController.getAccessRequestStats
-);
 
 module.exports = router;

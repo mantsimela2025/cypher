@@ -3,7 +3,7 @@ import classNames from "classnames";
 import Toggle from "../sidebar/Toggle";
 import User from "./dropdown/user/User";
 import Notification from "./dropdown/notification/Notification";
-import ChatDropdown from "./dropdown/chat/Chat";
+// import ChatDropdown from "./dropdown/chat/Chat"; // Removed as requested
 import AppDropdown from "./dropdown/app/App";
 import { Icon } from "@/components/Component";
 
@@ -40,9 +40,10 @@ const AppHeader = ({ fixed, className, app }) => {
           </div>
           <div className="nk-header-tools">
             <ul className="nk-quick-nav">
-              <li className="chats-dropdown hide-mb-xs">
+              {/* Chat dropdown removed as requested */}
+              {/* <li className="chats-dropdown hide-mb-xs">
                 <ChatDropdown />
-              </li>
+              </li> */}
               <li className="notification-dropdown me-n1">
                 <Notification />
               </li>

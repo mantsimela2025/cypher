@@ -95,11 +95,12 @@ app.use(require('./routes/userGroupRoutes')); // GET /api/v1/users/:id/groups
 app.use('/api/v1/systems', cache(900), require('./routes/systems')); // Cache systems for 15 minutes
 app.use('/api/v1/roles', cache(1800), require('./routes/roles')); // Cache roles for 30 minutes
 app.use('/api/v1/permissions', cache(1800), require('./routes/permissions')); // Cache permissions for 30 minutes
-// Temporarily commented out routes with missing dependencies
-// app.use('/api/v1/cves', require('./routes/cves'));
+// CVE routes with NVD API integration
+app.use('/api/v1/cves', cache(600), require('./routes/cves')); // Cache CVE data for 10 minutes
 app.use('/api/v1/asset-management', cache(600), require('./routes/assetManagement')); // Cache assets for 10 minutes
 app.use('/api/v1/asset-tags', cache(900), require('./routes/assetTagsRoutes')); // Cache tags for 15 minutes
 app.use('/api/v1/vulnerabilities', cache(300), require('./routes/vulnerabilities')); // Cache vulns for 5 minutes
+app.use('/api/v1/poams', cache(300), require('./routes/poamRoutes')); // Cache POAMs for 5 minutes
 app.use('/api/v1/vulnerability-analytics', cache(600), require('./routes/vulnerabilityAnalytics')); // Cache analytics for 10 minutes
 app.use('/api/v1/system-metrics', cache(180), require('./routes/systemMetrics')); // Cache metrics for 3 minutes
 app.use('/api/v1/metrics-dashboards', cache(300), require('./routes/metricsDashboards')); // Cache dashboards for 5 minutes
@@ -116,9 +117,12 @@ app.use('/api/v1/nl-query/data-sources', cache(3600), require('./routes/nlqDataS
 // app.use('/api/v1/ato', require('./routes/ato'));
 // app.use('/api/v1/audit-logs', require('./routes/auditLogs'));
 app.use('/api/v1/metrics', cache(180), require('./routes/metrics')); // Cache metrics for 3 minutes
+app.use('/api/v1/global-metrics', require('./routes/globalMetrics')); // No cache for real-time metrics
 app.use('/api/v1/dashboards', cache(300), require('./routes/dashboards')); // Cache dashboards for 5 minutes
 // app.use('/api/v1/notifications', require('./routes/notifications'));
-// app.use('/api/v1/access-requests', require('./routes/accessRequests'));
+app.use('/api/v1/access-requests', require('./routes/accessRequests'));
+// Email routes - no cache for real-time email operations
+app.use('/api/v1/email', require('./routes/emailRoutes'));
 // app.use('/api/v1/policies', require('./routes/policies'));
 // app.use('/api/v1/procedures', require('./routes/procedures'));
 // app.use('/api/v1/reports', require('./routes/reports'));
@@ -131,6 +135,9 @@ app.use('/api/v1/documents', cache(600), require('./routes/documents')); // Cach
 // app.use('/api/v1/artifacts', require('./routes/artifacts')); // Temporarily disabled - missing dependencies
 // app.use('/api/v1/scanner', require('./routes/scanner'));
 // app.use('/api/v1/settings', require('./routes/settings'));
+
+// Admin routes
+app.use('/api/v1/admin', require('./routes/admin'));
 
 // Distribution Groups
 app.use('/api/v1/distribution-groups', require('./routes/distributionGroupsRoutes'));

@@ -10,6 +10,12 @@
 7. [Performance Patterns](#performance-patterns)
 8. [Testing Patterns](#testing-patterns)
 
+## 📚 Related Documentation
+- **[API Development Guide](./API_DEVELOPMENT_GUIDE.md)** - Comprehensive guide for API development patterns, error handling, and best practices
+- **[UI Design Document](./UI_DESIGN_DOCUMENT.md)** - UI/UX standards and component patterns
+
+> **⚠️ CRITICAL**: Before developing any new APIs or fixing API issues, read the [API Development Guide](./API_DEVELOPMENT_GUIDE.md) to prevent common SQL syntax errors, authentication issues, and ensure consistent patterns.
+
 ---
 
 ## Backend Architecture

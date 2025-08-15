@@ -91,4 +91,7 @@ router.post('/logout', authController.logout);
 // GET /api/v1/auth/profile - Get current user profile (requires authentication)
 router.get('/profile', authenticateToken, authController.getProfile);
 
+// GET /api/v1/auth/validate - Validate current token (requires authentication)
+router.get('/validate', authenticateToken, authController.validateToken);
+
 module.exports = router;

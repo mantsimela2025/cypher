@@ -3,10 +3,38 @@ import { NavLink } from "react-router-dom";
 import { Icon, UserAvatar } from "@/components/Component";
 import { findUpper } from "@/utils/Utils";
 import {  DropdownItem, UncontrolledDropdown, DropdownMenu, DropdownToggle } from "reactstrap";
+import { useAuth } from "@/context/AuthContext";
 
-const UserProfileAside = ({updateSm,sm}) => {
-  const [profileName, setProfileName] = useState("Abu Bin Ishtiak");
-  
+const UserProfileAside = ({updateSm,sm, user: propUser}) => {
+  const { user: contextUser } = useAuth();
+
+  // Use prop user if provided, otherwise use context user
+  const user = propUser || contextUser;
+
+  // Helper functions to get user data
+  const getFullName = (user) => {
+    if (!user) return "User";
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    if (user.username) return user.username;
+    if (user.email) return user.email.split('@')[0];
+    return "User";
+  };
+
+  const getUserEmail = (user) => {
+    return user?.email || "user@example.com";
+  };
+
+  const [profileName, setProfileName] = useState(getFullName(user));
+
+  // Update profile name when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileName(getFullName(user));
+    }
+  }, [user]);
+
   useEffect(() => {
     sm ? document.body.classList.add("toggle-shown") : document.body.classList.remove("toggle-shown");
   }, [sm])
@@ -18,7 +46,7 @@ const UserProfileAside = ({updateSm,sm}) => {
         <UserAvatar text={findUpper(profileName)} theme="primary" />
         <div className="user-info">
             <span className="lead-text">{profileName}</span>
-            <span className="sub-text">info@softnio.com</span>
+            <span className="sub-text">{getUserEmail(user)}</span>
         </div>
         <div className="user-action">
             <UncontrolledDropdown>
@@ -54,20 +82,6 @@ const UserProfileAside = ({updateSm,sm}) => {
                 </ul>
             </DropdownMenu>
             </UncontrolledDropdown>
-        </div>
-        </div>
-    </div>
-    <div className="card-inner">
-        <div className="user-account-info py-0">
-        <h6 className="overline-title-alt">Nio Wallet Account</h6>
-        <div className="user-balance">
-            12.395769 <small className="currency currency-btc">BTC</small>
-        </div>
-        <div className="user-balance-sub">
-            Locked{" "}
-            <span>
-            0.344939 <span className="currency currency-btc">BTC</span>
-            </span>
         </div>
         </div>
     </div>

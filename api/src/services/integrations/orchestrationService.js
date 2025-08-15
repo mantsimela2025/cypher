@@ -1,19 +1,27 @@
 const cron = require('node-cron');
 const tenableService = require('./tenableService');
 const xactaService = require('./xactaService');
+const webhookService = require('./webhookService');
+const dataEnrichmentService = require('./dataEnrichmentService');
+const conflictResolutionService = require('./conflictResolutionService');
 const { db } = require('../../db');
-const { syncJobs, syncLogs } = require('../../db/schema');
-const { eq, desc } = require('drizzle-orm');
+const { syncJobs, syncLogs, scheduleTriggers, eventThresholds } = require('../../db/schema');
+const { eq, desc, and, gte, lte, sql } = require('drizzle-orm');
 
 /**
  * External Data Integration Orchestration Service
  * Manages scheduled synchronization, conflict resolution, and data enrichment
+ * Enhanced with real-time webhooks, custom CRON expressions, event-triggered sync, and threshold-based triggers
  */
 class OrchestrationService {
   constructor() {
     this.scheduledJobs = new Map();
+    this.eventTriggers = new Map();
+    this.thresholdMonitors = new Map();
+    this.webhookSubscriptions = new Map();
     this.isInitialized = false;
     this.syncInProgress = new Set();
+    this.realTimeEnabled = true;
   }
 
   /**
@@ -26,12 +34,25 @@ class OrchestrationService {
       // Initialize external services
       await tenableService.initialize();
       await xactaService.initialize();
+      await webhookService.initialize();
+      await dataEnrichmentService.initialize();
+      await conflictResolutionService.initialize();
 
       // Load and schedule sync jobs from database
       await this.loadScheduledJobs();
 
+      // Load event triggers and thresholds
+      await this.loadEventTriggers();
+      await this.loadThresholdMonitors();
+
+      // Setup real-time webhook subscriptions
+      await this.setupWebhookSubscriptions();
+
+      // Start monitoring services
+      this.startThresholdMonitoring();
+
       this.isInitialized = true;
-      console.log('✅ Orchestration service initialized');
+      console.log('✅ Enhanced orchestration service initialized');
     } catch (error) {
       console.error('❌ Failed to initialize orchestration service:', error);
       throw error;

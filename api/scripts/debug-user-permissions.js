@@ -2,87 +2,75 @@ const { client } = require('../src/db');
 
 async function debugUserPermissions() {
   try {
-    console.log('🔍 Debugging user permissions...');
+    console.log('🔍 Debugging user permissions...\n');
     
-    // Get admin user
-    const users = await client`SELECT id, email, role FROM users WHERE role = 'admin' LIMIT 1`;
+    // Check which user is admin@rasdash.com
+    const adminUser = await client`
+      SELECT id, username, email, role, status 
+      FROM users 
+      WHERE email = 'admin@rasdash.com' OR username = 'admin'
+    `;
     
-    if (users.length === 0) {
-      console.log('❌ No admin users found');
+    console.log('👤 Admin user details:');
+    console.table(adminUser);
+    
+    if (adminUser.length === 0) {
+      console.log('❌ No admin user found!');
       return;
     }
     
-    const user = users[0];
-    console.log(`👤 User: ${user.email} (ID: ${user.id})`);
+    const userId = adminUser[0].id;
     
-    // Check user roles
+    // Check user's roles
     const userRoles = await client`
       SELECT r.id, r.name, r.description
-      FROM user_roles ur
-      JOIN roles r ON ur.role_id = r.id
-      WHERE ur.user_id = ${user.id}
+      FROM roles r
+      JOIN user_roles ur ON r.id = ur.role_id
+      WHERE ur.user_id = ${userId}
     `;
     
-    console.log('\n👑 User roles:');
+    console.log('\n🎭 User roles:');
     console.table(userRoles);
     
-    if (userRoles.length === 0) {
-      console.log('❌ User has no roles assigned');
-      
-      // Let's assign admin role to the user
-      const adminRole = await client`SELECT id FROM roles WHERE name = 'admin'`;
-      if (adminRole.length > 0) {
-        await client`
-          INSERT INTO user_roles (user_id, role_id)
-          VALUES (${user.id}, ${adminRole[0].id})
-          ON CONFLICT (user_id, role_id) DO NOTHING
-        `;
-        console.log('✅ Assigned admin role to user');
-        
-        // Re-fetch user roles
-        const newUserRoles = await client`
-          SELECT r.id, r.name, r.description
-          FROM user_roles ur
-          JOIN roles r ON ur.role_id = r.id
-          WHERE ur.user_id = ${user.id}
-        `;
-        console.log('\n👑 Updated user roles:');
-        console.table(newUserRoles);
-      }
-    }
-    
-    // Check role permissions
+    // Check permissions for each role
     for (const role of userRoles) {
       const rolePermissions = await client`
         SELECT p.name, p.category, p.description
-        FROM role_permissions rp
-        JOIN permissions p ON rp.permission_id = p.id
-        WHERE rp.role_id = ${role.id} AND p.name LIKE '%vulnerability%'
+        FROM permissions p
+        JOIN role_permissions rp ON p.id = rp.permission_id
+        WHERE rp.role_id = ${role.id}
+        ORDER BY p.category, p.name
       `;
       
-      console.log(`\n🔑 Permissions for role '${role.name}':`);
-      console.table(rolePermissions);
+      console.log(`\n📋 Permissions for role '${role.name}' (${rolePermissions.length} permissions):`);
+      if (rolePermissions.length > 0) {
+        console.table(rolePermissions);
+      } else {
+        console.log('   No permissions assigned to this role');
+      }
+      
+      // Check specifically for nl_query permissions
+      const nlqPermissions = rolePermissions.filter(p => p.name.includes('nl_query'));
+      console.log(`\n🔍 NL Query permissions for '${role.name}': ${nlqPermissions.length} found`);
+      if (nlqPermissions.length > 0) {
+        nlqPermissions.forEach(p => console.log(`   ✅ ${p.name}`));
+      } else {
+        console.log('   ❌ No NL Query permissions found');
+      }
     }
     
-    // Check all user permissions (through roles)
-    const allUserPermissions = await client`
-      SELECT DISTINCT p.name, p.category, p.description
-      FROM user_roles ur
-      JOIN roles r ON ur.role_id = r.id
-      JOIN role_permissions rp ON r.id = rp.role_id
-      JOIN permissions p ON rp.permission_id = p.id
-      WHERE ur.user_id = ${user.id} AND p.name LIKE '%vulnerability%'
+    // Check all nl_query permissions in system
+    const allNlqPerms = await client`
+      SELECT id, name, category, description
+      FROM permissions
+      WHERE name LIKE '%nl_query%'
     `;
     
-    console.log('\n📋 All user vulnerability permissions:');
-    console.table(allUserPermissions);
-    
-    // Check if user has the specific permission we need
-    const hasPermission = allUserPermissions.some(p => p.name === 'vulnerability_management:read');
-    console.log(`\n✅ User has 'vulnerability_management:read' permission: ${hasPermission}`);
+    console.log('\n🗃️ All NL Query permissions in system:');
+    console.table(allNlqPerms);
     
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('❌ Error debugging user permissions:', error.message);
   } finally {
     await client.end();
   }

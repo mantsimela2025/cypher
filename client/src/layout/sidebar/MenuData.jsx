@@ -112,6 +112,11 @@ const menu = [
         link: "/vulnerabilities/metrics",
         icon: "bar-chart",
       },
+      {
+        text: "POAM Management",
+        link: "/vulnerabilities/poam-management",
+        icon: "clipboard-list",
+      },
     ],
   },
   {

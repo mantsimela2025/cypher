@@ -39,7 +39,7 @@
 }
 
 .login-form-container {
-  width: 448px !important;
+  width: 380px !important;
   position: relative !important;
   z-index: 2 !important;
   margin-top: 70px !important;
@@ -54,12 +54,12 @@
   background: white !important;
   border-radius: 16px !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-  padding: 48px !important;
+  padding: 32px !important;
   margin-top: 0px !important;
   border: 1px solid #e5e7eb !important;
-  width: 448px !important;
+  width: 380px !important;
   height: auto !important;
-  min-height: 650px !important;
+  min-height: 550px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
@@ -83,14 +83,14 @@
 .login-subtitle {
   color: #6b7280;
   font-size: 14px;
-  margin-bottom: 35px !important;
-  text-align: center;
+  margin-bottom: 24px !important;
+  text-align: left;
   line-height: 1.5;
 }
 
 /* Tab Toggle Buttons */
 .auth-tabs {
-  margin-bottom: 29px;
+  margin-bottom: 20px;
 }
 
 .tab-buttons {
@@ -129,7 +129,7 @@
 
 /* Password Authentication Toggle */
 .auth-toggle {
-  margin-bottom: 29px;
+  margin-bottom: 20px;
 }
 
 .toggle-wrapper {
@@ -333,7 +333,7 @@ input:checked + .slider:before {
 }
 
 .form-group {
-  margin-bottom: 21px;
+  margin-bottom: 16px;
 }
 
 .form-label {
@@ -346,7 +346,7 @@ input:checked + .slider:before {
 
 .form-input {
   width: 100% !important;
-  padding: 8px 12px !important;
+  padding: 10px 12px !important;
   border: 1px solid #e5e7eb !important;
   border-radius: 6px !important;
   font-size: 14px !important;

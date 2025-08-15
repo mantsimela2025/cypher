@@ -14,6 +14,9 @@ router.get('/', userController.getAllUsers);
 // GET /api/v1/users/:id - Get user by ID
 router.get('/:id', userController.getUserById);
 
+// GET /api/v1/users/:id/distribution-groups - Get groups a user belongs to
+router.get('/:id/distribution-groups', userController.getUserDistributionGroups);
+
 // POST /api/v1/users - Create new user
 router.post('/', validateUser, userController.createUser);
 

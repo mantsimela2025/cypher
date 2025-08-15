@@ -1,5 +1,0 @@
-# Python dependencies for Tenable local testing
-pytenable>=1.4.0
-flask>=2.0.0
-requests>=2.25.0
-requests-mock>=1.9.0

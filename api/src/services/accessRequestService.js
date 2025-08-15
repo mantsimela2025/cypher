@@ -357,24 +357,26 @@ class AccessRequestService {
       // Send email notifications to admins
       const adminEmails = adminUsers.map(admin => admin.email);
       if (adminEmails.length > 0) {
-        await emailService.sendEmail({
-          to: adminEmails,
-          subject: 'New Access Request - Action Required',
-          html: `
-            <h2>New Access Request</h2>
-            <p>A new access request has been submitted and requires your review:</p>
-            <ul>
-              <li><strong>Name:</strong> ${request.firstName} ${request.lastName}</li>
-              <li><strong>Email:</strong> ${request.email}</li>
-              <li><strong>Reason:</strong> ${request.reason || 'Not provided'}</li>
-              <li><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</li>
-            </ul>
-            <p>Please review and process this request in the admin panel.</p>
-          `,
-          category: 'access_request_admin',
-          relatedEntityType: 'access_request',
-          relatedEntityId: request.id.toString()
-        });
+        const emailBody = `
+          <h2>New Access Request</h2>
+          <p>A new access request has been submitted and requires your review:</p>
+          <ul>
+            <li><strong>Name:</strong> ${request.firstName} ${request.lastName}</li>
+            <li><strong>Email:</strong> ${request.email}</li>
+            <li><strong>Reason:</strong> ${request.reason || 'Not provided'}</li>
+            <li><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</li>
+          </ul>
+          <p>Please review and process this request in the admin panel.</p>
+        `;
+        
+        // Send email to each admin individually due to SES sandbox limitations
+        for (const adminEmail of adminEmails) {
+          await emailService.sendNotificationEmail(
+            adminEmail,
+            'New Access Request - Action Required',
+            emailBody
+          );
+        }
       }
     } catch (error) {
       console.error('Error notifying admins of new request:', error);
@@ -389,28 +391,27 @@ class AccessRequestService {
     try {
       console.log('📧 Sending confirmation email to requester');
 
-      await emailService.sendEmail({
-        to: request.email,
-        subject: 'Access Request Received',
-        html: `
-          <h2>Access Request Received</h2>
-          <p>Dear ${request.firstName} ${request.lastName},</p>
-          <p>Thank you for your interest in accessing our system. We have received your access request and it is currently being reviewed by our administrators.</p>
-          <p><strong>Request Details:</strong></p>
-          <ul>
-            <li><strong>Name:</strong> ${request.firstName} ${request.lastName}</li>
-            <li><strong>Email:</strong> ${request.email}</li>
-            <li><strong>Reason:</strong> ${request.reason || 'Not provided'}</li>
-            <li><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</li>
-          </ul>
-          <p>You will receive an email notification once your request has been processed.</p>
-          <p>If you have any questions, please contact our support team.</p>
-          <p>Best regards,<br>System Administration Team</p>
-        `,
-        category: 'access_request_confirmation',
-        relatedEntityType: 'access_request',
-        relatedEntityId: request.id.toString()
-      });
+      const confirmationBody = `
+        <h2>Access Request Received</h2>
+        <p>Dear ${request.firstName} ${request.lastName},</p>
+        <p>Thank you for your interest in accessing our system. We have received your access request and it is currently being reviewed by our administrators.</p>
+        <p><strong>Request Details:</strong></p>
+        <ul>
+          <li><strong>Name:</strong> ${request.firstName} ${request.lastName}</li>
+          <li><strong>Email:</strong> ${request.email}</li>
+          <li><strong>Reason:</strong> ${request.reason || 'Not provided'}</li>
+          <li><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</li>
+        </ul>
+        <p>You will receive an email notification once your request has been processed.</p>
+        <p>If you have any questions, please contact our support team.</p>
+        <p>Best regards,<br>System Administration Team</p>
+      `;
+      
+      await emailService.sendNotificationEmail(
+        request.email,
+        'Access Request Received',
+        confirmationBody
+      );
     } catch (error) {
       console.error('Error sending confirmation email:', error);
       // Don't throw error here to avoid failing the main request
@@ -424,26 +425,25 @@ class AccessRequestService {
     try {
       console.log('📧 Sending approval notification email');
 
-      await emailService.sendEmail({
-        to: request.email,
-        subject: 'Access Request Approved - Welcome!',
-        html: `
-          <h2>Access Request Approved</h2>
-          <p>Dear ${request.firstName} ${request.lastName},</p>
-          <p>Great news! Your access request has been approved and your account has been created.</p>
-          <p><strong>Account Details:</strong></p>
-          <ul>
-            <li><strong>Email:</strong> ${request.email}</li>
-            <li><strong>Approved:</strong> ${new Date(request.processedAt).toLocaleString()}</li>
-          </ul>
-          <p>You can now log in to the system using your email address. If you haven't set a password yet, please use the password reset feature on the login page.</p>
-          <p>Welcome to the system!</p>
-          <p>Best regards,<br>System Administration Team</p>
-        `,
-        category: 'access_request_approved',
-        relatedEntityType: 'access_request',
-        relatedEntityId: request.id.toString()
-      });
+      const approvalBody = `
+        <h2>Access Request Approved</h2>
+        <p>Dear ${request.firstName} ${request.lastName},</p>
+        <p>Great news! Your access request has been approved and your account has been created.</p>
+        <p><strong>Account Details:</strong></p>
+        <ul>
+          <li><strong>Email:</strong> ${request.email}</li>
+          <li><strong>Approved:</strong> ${new Date(request.processedAt).toLocaleString()}</li>
+        </ul>
+        <p>You can now log in to the system using your email address. If you haven't set a password yet, please use the password reset feature on the login page.</p>
+        <p>Welcome to the system!</p>
+        <p>Best regards,<br>System Administration Team</p>
+      `;
+      
+      await emailService.sendNotificationEmail(
+        request.email,
+        'Access Request Approved - Welcome!',
+        approvalBody
+      );
     } catch (error) {
       console.error('Error sending approval notification email:', error);
       // Don't throw error here to avoid failing the main operation
@@ -457,29 +457,28 @@ class AccessRequestService {
     try {
       console.log('📧 Sending rejection notification email');
 
-      await emailService.sendEmail({
-        to: request.email,
-        subject: 'Access Request Update',
-        html: `
-          <h2>Access Request Update</h2>
-          <p>Dear ${request.firstName} ${request.lastName},</p>
-          <p>Thank you for your interest in accessing our system. After careful review, we are unable to approve your access request at this time.</p>
-          ${request.rejectionReason ? `
-            <p><strong>Reason:</strong></p>
-            <p>${request.rejectionReason}</p>
-          ` : ''}
-          <p><strong>Request Details:</strong></p>
-          <ul>
-            <li><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</li>
-            <li><strong>Processed:</strong> ${new Date(request.processedAt).toLocaleString()}</li>
-          </ul>
-          <p>If you believe this decision was made in error or if your circumstances have changed, please feel free to submit a new request or contact our support team.</p>
-          <p>Best regards,<br>System Administration Team</p>
-        `,
-        category: 'access_request_rejected',
-        relatedEntityType: 'access_request',
-        relatedEntityId: request.id.toString()
-      });
+      const rejectionBody = `
+        <h2>Access Request Update</h2>
+        <p>Dear ${request.firstName} ${request.lastName},</p>
+        <p>Thank you for your interest in accessing our system. After careful review, we are unable to approve your access request at this time.</p>
+        ${request.rejectionReason ? `
+          <p><strong>Reason:</strong></p>
+          <p>${request.rejectionReason}</p>
+        ` : ''}
+        <p><strong>Request Details:</strong></p>
+        <ul>
+          <li><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</li>
+          <li><strong>Processed:</strong> ${new Date(request.processedAt).toLocaleString()}</li>
+        </ul>
+        <p>If you believe this decision was made in error or if your circumstances have changed, please feel free to submit a new request or contact our support team.</p>
+        <p>Best regards,<br>System Administration Team</p>
+      `;
+      
+      await emailService.sendNotificationEmail(
+        request.email,
+        'Access Request Update',
+        rejectionBody
+      );
     } catch (error) {
       console.error('Error sending rejection notification email:', error);
       // Don't throw error here to avoid failing the main operation
@@ -538,6 +537,12 @@ class AccessRequestService {
         return existingUser;
       }
 
+      // Generate a temporary password (user will need to reset it)
+      const crypto = require('crypto');
+      const bcrypt = require('bcrypt');
+      const tempPassword = crypto.randomBytes(16).toString('hex');
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
       // Create new user account
       const [newUser] = await db.insert(users)
         .values({
@@ -545,6 +550,8 @@ class AccessRequestService {
           lastName: request.lastName,
           email: request.email,
           username: request.email, // Use email as username
+          password: 'password', // Default placeholder - user must reset
+          passwordHash: hashedPassword, // Hashed temporary password
           role: 'user', // Default role
           status: 'active',
           createdAt: new Date(),

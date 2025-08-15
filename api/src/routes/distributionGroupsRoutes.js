@@ -1,16 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/distributionGroupsController');
-const { ensureAuthenticated, ensureAdmin } = require('../middleware/authz');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 // collection routes (mounted at /api/v1/distribution-groups)
-router.get('/', ensureAuthenticated, ctrl.listGroups);
-router.post('/', ensureAuthenticated, ensureAdmin, ctrl.createGroup);
-router.put('/:id', ensureAuthenticated, ensureAdmin, ctrl.updateGroup);
-router.delete('/:id', ensureAuthenticated, ensureAdmin, ctrl.deleteGroup);
+router.get('/', authenticateToken, ctrl.listGroups);
+router.get('/:id', authenticateToken, ctrl.getGroupById);
+router.post('/', authenticateToken, requireRole(['admin']), ctrl.createGroup);
+router.put('/:id', authenticateToken, requireRole(['admin']), ctrl.updateGroup);
+router.delete('/:id', authenticateToken, requireRole(['admin']), ctrl.deleteGroup);
 
-router.get('/:id/members', ensureAuthenticated, ctrl.getGroupMembers);
-router.post('/:id/members', ensureAuthenticated, ensureAdmin, ctrl.addMember);
-router.delete('/:id/members/:userId', ensureAuthenticated, ensureAdmin, ctrl.removeMember);
+router.get('/:id/members', authenticateToken, ctrl.getGroupMembers);
+router.post('/:id/members', authenticateToken, requireRole(['admin']), ctrl.addMember);
+router.delete('/:id/members/:userId', authenticateToken, requireRole(['admin']), ctrl.removeMember);
+
+router.get('/:id/available-users', authenticateToken, ctrl.getAvailableUsers);
+router.get('/stats/summary', authenticateToken, requireRole(['admin']), ctrl.getStats);
 
 module.exports = router;

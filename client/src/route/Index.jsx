@@ -3,6 +3,10 @@ import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { ProductContextProvider } from "@/pages/pre-built/products/ProductContext";
 import { UserContextProvider } from "@/pages/pre-built/user-manage/UserContext";
 
+// Auth imports
+import { AuthProvider } from "@/context/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
 // Layout imports (keep these as they're critical)
 import Layout from "@/layout/Index";
 import LayoutNoSidebar from "@/layout/Index-nosidebar";
@@ -48,6 +52,7 @@ const AssetInventory = React.lazy(() => import("@/pages/assets/AssetInventory"))
 // Vulnerability Management
 const VulnerabilityData = React.lazy(() => import("@/pages/vulnerabilities/VulnerabilityData"));
 const VulnerabilityMetrics = React.lazy(() => import("@/pages/vulnerabilities/VulnerabilityMetrics"));
+const POAMManagement = React.lazy(() => import("@/pages/vulnerabilities/POAMManagement"));
 
 // Patch Management
 const PatchManagementDashboard = React.lazy(() => import("@/pages/patch-management/Dashboard"));
@@ -65,6 +70,8 @@ const IngestionSimulationPage = React.lazy(() => import("@/pages/admin/ingestion
 const AccessRequests = React.lazy(() => import("@/pages/admin/access-requests/AccessRequests"));
 const RoleManagement = React.lazy(() => import("@/pages/admin/role-management/RoleManagement"));
 const DistributionGroups = React.lazy(() => import("@/pages/admin/distribution-groups/DistributionGroups"));
+const EditDistributionGroup = React.lazy(() => import("@/pages/admin/distribution-groups/EditDistributionGroup"));
+const GroupMembers = React.lazy(() => import("@/pages/admin/distribution-groups/GroupMembers"));
 const EmailManagement = React.lazy(() => import("@/pages/admin/email-management/EmailManagement"));
 const AuditLogs = React.lazy(() => import("@/pages/admin/audit-logs/AuditLogs"));
 const AIManagement = React.lazy(() => import("@/pages/admin/ai-management/AIManagement"));
@@ -230,11 +237,12 @@ const Pages = () => {
       v7_startTransition: true,
       v7_relativeSplatPath: true,
     }}>
-      <ScrollToTop>  
-        <Routes>
-          <Route element={<ThemeProvider />}>
-            <Route element={<Layout />}>
-              <Route index element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>}></Route>
+      <AuthProvider>
+        <ScrollToTop>
+          <Routes>
+            <Route element={<ThemeProvider />}>
+              <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              <Route index element={<Suspense fallback={<PageLoader />}><AssetAnalytics /></Suspense>}></Route>
               <Route path="crypto" element={<Suspense fallback={<PageLoader />}><Crypto /></Suspense>}></Route>
               <Route path="sales" element={<Suspense fallback={<PageLoader />}><Sales /></Suspense>}></Route>
               <Route path="invest" element={<Suspense fallback={<PageLoader />}><Invest /></Suspense>}></Route>
@@ -266,6 +274,7 @@ const Pages = () => {
               {/*Vulnerability Management*/}
               <Route path="vulnerabilities/data" element={<Suspense fallback={<PageLoader />}><VulnerabilityData /></Suspense>}></Route>
               <Route path="vulnerabilities/metrics" element={<Suspense fallback={<PageLoader />}><VulnerabilityMetrics /></Suspense>}></Route>
+              <Route path="vulnerabilities/poam-management" element={<Suspense fallback={<PageLoader />}><POAMManagement /></Suspense>}></Route>
 
               {/*Patch Management*/}
               <Route path="patch-management/dashboard" element={<Suspense fallback={<PageLoader />}><PatchManagementDashboard /></Suspense>}></Route>
@@ -283,6 +292,8 @@ const Pages = () => {
               <Route path="admin/access-requests" element={<Suspense fallback={<PageLoader />}><AccessRequests /></Suspense>}></Route>
               <Route path="admin/role-management" element={<Suspense fallback={<PageLoader />}><RoleManagement /></Suspense>}></Route>
               <Route path="admin/distribution-groups" element={<Suspense fallback={<PageLoader />}><DistributionGroups /></Suspense>}></Route>
+              <Route path="admin/distribution-groups/:id/edit" element={<Suspense fallback={<PageLoader />}><EditDistributionGroup /></Suspense>}></Route>
+              <Route path="admin/distribution-groups/:id/members" element={<Suspense fallback={<PageLoader />}><GroupMembers /></Suspense>}></Route>
               <Route path="admin/email-management" element={<Suspense fallback={<PageLoader />}><EmailManagement /></Suspense>}></Route>
               <Route path="admin/audit-logs" element={<Suspense fallback={<PageLoader />}><AuditLogs /></Suspense>}></Route>
               <Route path="admin/ai-management" element={<Suspense fallback={<PageLoader />}><AIManagement /></Suspense>}></Route>
@@ -436,24 +447,24 @@ const Pages = () => {
                   <Route path="recovery" element={<Suspense fallback={<PageLoader />}><FileManagerRecovery /></Suspense>}></Route>
                 </Route>
               </Route>
-            </Route>
-            <Route>
-              <Route element={<LayoutApp app={{icon:"chat", theme:"bg-purple-dim", text: "Messages"}} />}>
-                <Route path="app-messages" element={<Suspense fallback={<PageLoader />}><AppMessages /></Suspense>}></Route>
               </Route>
-              <Route element={<LayoutApp app={{icon:"chat-circle", theme:"bg-orange-dim", text: "NioChat"}}  />}>
-                <Route path="app-chat" element={<Suspense fallback={<PageLoader />}><Chat /></Suspense>}></Route>
+              <Route>
+                <Route element={<ProtectedRoute><LayoutApp app={{icon:"chat", theme:"bg-purple-dim", text: "Messages"}} /></ProtectedRoute>}>
+                  <Route path="app-messages" element={<Suspense fallback={<PageLoader />}><AppMessages /></Suspense>}></Route>
+                </Route>
+                <Route element={<ProtectedRoute><LayoutApp app={{icon:"chat-circle", theme:"bg-orange-dim", text: "NioChat"}} /></ProtectedRoute>}>
+                  <Route path="app-chat" element={<Suspense fallback={<PageLoader />}><Chat /></Suspense>}></Route>
+                </Route>
+                <Route element={<ProtectedRoute><LayoutApp app={{icon:"calendar", theme:"bg-success-dim", text: "Calendar"}} /></ProtectedRoute>}>
+                  <Route path="app-calender" element={<Suspense fallback={<PageLoader />}><Calender /></Suspense>}></Route>
+                </Route>
+                <Route element={<ProtectedRoute><LayoutApp app={{icon:"inbox", theme:"bg-primary-dim", text: "Mailbox"}} /></ProtectedRoute>}>
+                  <Route path="app-inbox" element={<Suspense fallback={<PageLoader />}><Inbox /></Suspense>}></Route>
+                </Route>
+                <Route element={<ProtectedRoute><LayoutApp app={{icon:"template", theme:"bg-info-dim", text: "Kanban"}} /></ProtectedRoute>}>
+                  <Route path="app-kanban" element={<Suspense fallback={<PageLoader />}><Kanban /></Suspense>}></Route>
+                </Route>
               </Route>
-              <Route element={<LayoutApp app={{icon:"calendar", theme:"bg-success-dim", text: "Calendar"}} />}>
-                <Route path="app-calender" element={<Suspense fallback={<PageLoader />}><Calender /></Suspense>}></Route>
-              </Route>
-              <Route element={<LayoutApp app={{icon:"inbox", theme:"bg-primary-dim", text: "Mailbox"}} />}>
-                <Route path="app-inbox" element={<Suspense fallback={<PageLoader />}><Inbox /></Suspense>}></Route>
-              </Route>
-              <Route element={<LayoutApp app={{icon:"template", theme:"bg-info-dim", text: "Kanban"}} />}>
-                <Route path="app-kanban" element={<Suspense fallback={<PageLoader />}><Kanban /></Suspense>}></Route>
-              </Route>
-            </Route>
 
             <Route element={<LayoutNoSidebar />}>
               <Route path="auth-success" element={<Suspense fallback={<PageLoader />}><Success /></Suspense>}></Route>
@@ -471,9 +482,10 @@ const Pages = () => {
                 
                 <Route path="invoice-print/:invoiceId" element={<Suspense fallback={<PageLoader />}><InvoicePrint /></Suspense>}></Route>
             </Route>
-          </Route>
-        </Routes>
-      </ScrollToTop>
+            </Route>
+          </Routes>
+        </ScrollToTop>
+      </AuthProvider>
     </BrowserRouter>
   );
 };

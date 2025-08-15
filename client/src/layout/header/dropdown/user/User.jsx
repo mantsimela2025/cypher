@@ -5,25 +5,14 @@ import { LinkList, LinkItem } from "@/components/links/Links";
 import UserAvatar from "@/components/user/UserAvatar";
 import { useTheme, useThemeUpdate } from "@/layout/provider/Theme";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const User = () => {
   const theme = useTheme();
   const themeUpdate = useThemeUpdate();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState(null);
-
-  // Get user data from localStorage
-  React.useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-  }, []);
 
   const toggle = () => {
     themeUpdate.sidebarHide();
@@ -31,12 +20,15 @@ const User = () => {
   };
 
   const handleSignOut = async () => {
+    console.log('🔄 Starting logout process...');
+
     try {
       // Get the refresh token for logout API call
       const refreshToken = localStorage.getItem('refreshToken');
 
       // Call logout API endpoint
       if (refreshToken) {
+        console.log('📡 Calling logout API...');
         await fetch('http://localhost:3001/api/v1/auth/logout', {
           method: 'POST',
           headers: {
@@ -44,16 +36,20 @@ const User = () => {
           },
           body: JSON.stringify({ refreshToken }),
         });
+        console.log('✅ Logout API call successful');
+      } else {
+        console.log('⚠️ No refresh token found, skipping API call');
       }
     } catch (error) {
-      console.error('Logout API call failed:', error);
+      console.error('❌ Logout API call failed:', error);
       // Continue with logout even if API call fails
     } finally {
-      // Clear all authentication data from localStorage
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+      console.log('🔓 Calling AuthContext logout...');
 
+      // Use AuthContext logout method to properly update state
+      logout();
+
+      console.log('🔄 Navigating to login page...');
       // Redirect to login page
       navigate('/auth-login');
     }
@@ -75,13 +71,29 @@ const User = () => {
         <div className="dropdown-inner user-card-wrap bg-lighter d-none d-md-block">
           <div className="user-card sm">
             <div className="user-avatar">
-              <span>{user ? user.firstName?.charAt(0) + user.lastName?.charAt(0) : 'AB'}</span>
+              <span>
+                {user && user.firstName && user.lastName
+                  ? user.firstName.charAt(0) + user.lastName.charAt(0)
+                  : user && user.username
+                    ? user.username.substring(0, 2).toUpperCase()
+                    : user && user.email
+                      ? user.email.substring(0, 2).toUpperCase()
+                      : 'U'
+                }
+              </span>
             </div>
             <div className="user-info">
               <span className="lead-text">
-                {user ? `${user.firstName} ${user.lastName}` : 'Abu Bin Ishtiyak'}
+                {user && user.firstName && user.lastName
+                  ? `${user.firstName} ${user.lastName}`
+                  : user && user.username
+                    ? user.username
+                    : user && user.email
+                      ? user.email.split('@')[0]
+                      : 'User'
+                }
               </span>
-              <span className="sub-text">{user ? user.email : 'info@softnio.com'}</span>
+              <span className="sub-text">{user ? user.email : 'user@example.com'}</span>
             </div>
           </div>
         </div>

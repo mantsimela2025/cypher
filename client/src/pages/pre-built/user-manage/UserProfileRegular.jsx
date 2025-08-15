@@ -20,24 +20,90 @@ import {
 import { countryOptions, userData } from "./UserData";
 import { getDateStructured } from "@/utils/Utils";
 import UserProfileAside from "./UserProfileAside";
+import { useAuth } from "@/context/AuthContext";
 
 const UserProfileRegularPage = () => {
   const [sm, updateSm] = useState(false);
   const [mobileView , setMobileView] = useState(false);
-  
+
   const [modalTab, setModalTab] = useState("1");
-  const [userInfo, setUserInfo] = useState(userData[0]);
+  const { user } = useAuth();
+
+  // Helper functions to get user data
+  const getFullName = (user) => {
+    if (!user) return "User";
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    if (user.username) return user.username;
+    if (user.email) return user.email.split('@')[0];
+    return "User";
+  };
+
+  const getDisplayName = (user) => {
+    if (!user) return "User";
+    if (user.firstName) return user.firstName;
+    if (user.username) return user.username;
+    if (user.email) return user.email.split('@')[0];
+    return "User";
+  };
+
+  const getUserEmail = (user) => {
+    return user?.email || "user@example.com";
+  };
+
+  // Initialize userInfo and formData with current user data
+  const [userInfo, setUserInfo] = useState({
+    name: getFullName(user),
+    displayName: getDisplayName(user),
+    email: getUserEmail(user),
+    phone: user?.phone || "",
+    dob: user?.dob || "1990-01-01",
+    address: user?.address || "",
+    address2: user?.address2 || "",
+    state: user?.state || "",
+    country: user?.country || "",
+  });
+
   const [formData, setFormData] = useState({
-    name: "Abu Bin Ishtiak",
-    displayName: "Ishtiak",
-    phone: "818474958",
-    dob: "1980-08-10",
-    address: "2337 Kildeer Drive",
-    address2: "",
-    state: "Kentucky",
-    country: "Canada",
+    name: getFullName(user),
+    displayName: getDisplayName(user),
+    phone: user?.phone || "",
+    dob: user?.dob || "1990-01-01",
+    address: user?.address || "",
+    address2: user?.address2 || "",
+    state: user?.state || "",
+    country: user?.country || "",
   });
   const [modal, setModal] = useState(false);
+
+  // Update userInfo and formData when user data changes
+  useEffect(() => {
+    if (user) {
+      const updatedUserInfo = {
+        name: getFullName(user),
+        displayName: getDisplayName(user),
+        email: getUserEmail(user),
+        phone: user?.phone || "",
+        dob: user?.dob || "1990-01-01",
+        address: user?.address || "",
+        address2: user?.address2 || "",
+        state: user?.state || "",
+        country: user?.country || "",
+      };
+      setUserInfo(updatedUserInfo);
+      setFormData({
+        name: updatedUserInfo.name,
+        displayName: updatedUserInfo.displayName,
+        phone: updatedUserInfo.phone,
+        dob: updatedUserInfo.dob,
+        address: updatedUserInfo.address,
+        address2: updatedUserInfo.address2,
+        state: updatedUserInfo.state,
+        country: updatedUserInfo.country,
+      });
+    }
+  }, [user]);
 
   const onInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -85,7 +151,7 @@ const UserProfileRegularPage = () => {
                 sm ? "content-active" : ""
               }`}
             >
-              <UserProfileAside updateSm={updateSm} sm={sm} />
+              <UserProfileAside updateSm={updateSm} sm={sm} user={user} />
             </div>
             <div className="card-inner card-inner-lg">
               {sm && mobileView && <div className="toggle-overlay" onClick={() => updateSm(!sm)}></div>}
@@ -138,7 +204,7 @@ const UserProfileRegularPage = () => {
                   <div className="data-item">
                     <div className="data-col">
                       <span className="data-label">Email</span>
-                      <span className="data-value">info@softnio.com</span>
+                      <span className="data-value">{userInfo.email}</span>
                     </div>
                     <div className="data-col data-col-end">
                       <span className="data-more disable">

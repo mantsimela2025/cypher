@@ -115,20 +115,21 @@ const AdminUsers = () => {
       
       if (result.success) {
         // Transform API data to match the table format
-        const transformedData = result.data.users.map(user => ({
-          id: user.id,
-          name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          status: user.status,
-          authMethod: user.authMethod,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-          avatarBg: getAvatarColor(user.role),
-          checked: false,
-        }));
-
+        const transformedData = result.data.users.map(user => {
+          return {
+            id: user.id,
+            name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
+            username: user.username,
+            email: user.email,
+            role: user.role || 'user', // Default to 'user' if role is missing
+            status: user.status,
+            authMethod: user.authMethod || 'password',
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            avatarBg: getAvatarColor(user.role || 'user'),
+            checked: false,
+          };
+        });
         setData(transformedData);
         setTotalUsers(result.data.total);
       } else {
@@ -160,6 +161,24 @@ const AdminUsers = () => {
       suspended: 'danger',
     };
     return colorMap[status] || 'secondary';
+  };
+
+  // Get role badge color
+  const getRoleBadgeColor = (role) => {
+    const colorMap = {
+      admin: 'danger',
+      moderator: 'warning',
+      user: 'primary',
+    };
+    return colorMap[role] || 'primary';
+  };
+
+  // Format role display
+  const formatRole = (role) => {
+    if (!role || role.trim() === '') {
+      return 'User';
+    }
+    return role.charAt(0).toUpperCase() + role.slice(1);
   };
 
   // Format date
@@ -391,7 +410,7 @@ const AdminUsers = () => {
                   </div>
                 </div>
                 <div className="team-details">
-                  <p>{item.role.charAt(0).toUpperCase() + item.role.slice(1)} • {item.authMethod}</p>
+                  <p>{formatRole(item.role)} • {item.authMethod}</p>
                 </div>
                 <ul className="team-info">
                   <li>
@@ -400,11 +419,8 @@ const AdminUsers = () => {
                   </li>
                   <li>
                     <span>Role</span>
-                    <span className={`badge badge-dim ${
-                      item.role === 'admin' ? 'bg-danger' :
-                      item.role === 'moderator' ? 'bg-warning' : 'bg-primary'
-                    }`}>
-                      {item.role.charAt(0).toUpperCase() + item.role.slice(1)}
+                    <span className={`badge badge-dim bg-${getRoleBadgeColor(item.role)}`} style={{ color: 'white' }}>
+                      {formatRole(item.role)}
                     </span>
                   </li>
                   <li>
@@ -930,8 +946,8 @@ const AdminUsers = () => {
                       </div>
                     </DataTableRow>
                     <DataTableRow size="md">
-                      <span className={`badge badge-${item.role === 'admin' ? 'danger' : item.role === 'moderator' ? 'warning' : 'primary'}`}>
-                        {item.role}
+                      <span className={`badge badge-dim bg-${getRoleBadgeColor(item.role)}`} style={{ color: 'white' }}>
+                        {formatRole(item.role)}
                       </span>
                     </DataTableRow>
                     <DataTableRow size="sm">

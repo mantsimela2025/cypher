@@ -1,4 +1,4 @@
-const { pgTable, serial, varchar, text, timestamp, jsonb, integer, uuid, date } = require('drizzle-orm/pg-core');
+const { pgTable, serial, varchar, text, timestamp, jsonb, integer, uuid, date, boolean } = require('drizzle-orm/pg-core');
 const { systems } = require('./systems');
 const { assets } = require('./assets');
 const { vulnerabilities } = require('./vulnerabilities');
@@ -63,10 +63,23 @@ const vulnerabilityPoams = pgTable('vulnerability_poams', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+const poamSignatures = pgTable('poam_signatures', {
+  id: serial('id').primaryKey(),
+  poamId: integer('poam_id').references(() => poams.id, { onDelete: 'cascade' }).notNull(),
+  userId: integer('user_id').notNull(), // Reference to users table
+  role: text('role').notNull(),
+  signatureDate: timestamp('signature_date', { withTimezone: true }).defaultNow().notNull(),
+  verificationCode: text('verification_code').notNull(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  additionalNotes: text('additional_notes'),
+});
+
 module.exports = {
   poams,
   poamAssets,
   poamCves,
   poamMilestones,
   vulnerabilityPoams,
+  poamSignatures,
 };

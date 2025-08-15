@@ -117,6 +117,31 @@ const authController = {
       next(error);
     }
   },
+
+  // Validate token
+  validateToken: async (req, res, next) => {
+    try {
+      // If we reach here, the token is valid (authenticateToken middleware passed)
+      const user = req.user;
+
+      res.status(200).json({
+        success: true,
+        data: {
+          valid: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            role: user.role,
+            status: user.status,
+          }
+        },
+        message: 'Token is valid',
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = authController;

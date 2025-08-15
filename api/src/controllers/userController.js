@@ -128,6 +128,22 @@ const userController = {
       next(error);
     }
   },
+
+  // Get distribution groups a user belongs to
+  getUserDistributionGroups: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const DistributionGroupService = require('../services/DistributionGroupService');
+      const groups = await DistributionGroupService.getUserGroups(parseInt(id, 10));
+      res.status(200).json({
+        success: true,
+        data: groups,
+        message: `User belongs to ${groups.length} groups`,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = userController;

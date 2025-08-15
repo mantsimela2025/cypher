@@ -1,620 +1,830 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { getDataSources, getNlqConfig, updateNlqConfig, addDataSource, updateDataSource, deleteDataSource, testNlqQuery, getNlqLogs, getNlqLogDetail } from "./nlqAdminApi";
-
-function SchemaPromptTab() {
-  const [prompt, setPrompt] = useState("");
-  const [schemaContext, setSchemaContext] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getNlqConfig()
-      .then((data) => {
-        setPrompt(data.prompt || "");
-        setSchemaContext(
-          typeof data.schema_context === "string"
-            ? data.schema_context
-            : JSON.stringify(data.schema_context || {}, null, 2)
-        );
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    setSuccess(false);
-    try {
-      await updateNlqConfig({
-        prompt,
-        schema_context: schemaContext,
-      });
-      setSuccess(true);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div>
-      <h5>Schema & Prompt</h5>
-      {loading ? (
-        <div className="text-center my-4">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      ) : (
-        <form onSubmit={handleSave}>
-          <div className="mb-3">
-            <label className="form-label">System Prompt</label>
-            <textarea
-              className="form-control"
-              rows={3}
-              value={prompt}
-              onChange={e => setPrompt(e.target.value)}
-              placeholder="Edit system prompt here..."
-              disabled={saving}
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Schema Context (JSON)</label>
-            <textarea
-              className="form-control"
-              rows={5}
-              value={schemaContext}
-              onChange={e => setSchemaContext(e.target.value)}
-              placeholder="Edit schema context here..."
-              disabled={saving}
-            />
-          </div>
-          {error && <div className="alert alert-danger">{error}</div>}
-          {success && <div className="alert alert-success">Saved successfully!</div>}
-          <button className="btn btn-primary" type="submit" disabled={saving}>
-            {saving ? "Saving..." : "Save"}
-          </button>
-        </form>
-      )}
-    </div>
-  );
-}
-
-function DataSourcePanel({ show, mode, source, onClose, onSaved }) {
-  const [form, setForm] = useState({
-    name: "",
-    type: "table",
-    enabled: true,
-    schema: "{}",
-    description: "",
-    sample_data: "[]"
-  });
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [jsonError, setJsonError] = useState({ schema: null, sample_data: null });
-  const [nameError, setNameError] = useState(null);
-  const nameInputRef = React.useRef();
-
-  // For duplicate name check
-  const [allNames, setAllNames] = useState([]);
-  useEffect(() => {
-    if (window.dataSourcesForValidation) {
-      setAllNames(window.dataSourcesForValidation.map(ds => ds.name));
-    }
-  }, [show]);
-
-  useEffect(() => {
-    if (show && nameInputRef.current) {
-      nameInputRef.current.focus();
-    }
-    if (mode === "edit" && source) {
-      setForm({
-        name: source.name || "",
-        type: source.type || "table",
-        enabled: !!source.enabled,
-        schema: JSON.stringify(source.schema || {}, null, 2),
-        description: source.description || "",
-        sample_data: JSON.stringify(source.sample_data || [], null, 2)
-      });
-    } else {
-      setForm({
-        name: "",
-        type: "table",
-        enabled: true,
-        schema: "{}",
-        description: "",
-        sample_data: "[]"
-      });
-    }
-    setError(null);
-    setSuccess(false);
-    setJsonError({ schema: null, sample_data: null });
-    setNameError(null);
-  }, [show, mode, source]);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
-    if (name === "name") setNameError(null);
-    if (name === "schema" || name === "sample_data") setJsonError((err) => ({ ...err, [name]: null }));
-  };
-
-  const validateJson = (field, value) => {
-    try {
-      JSON.parse(value);
-      return null;
-    } catch {
-      return `Invalid JSON in ${field}`;
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    setSuccess(false);
-    // Validate required fields
-    if (!form.name.trim()) {
-      setNameError("Name is required");
-      setSaving(false);
-      return;
-    }
-    if (mode === "add" && allNames.includes(form.name.trim())) {
-      setNameError("A data source with this name already exists.");
-      setSaving(false);
-      return;
-    }
-    // Validate JSON fields
-    const schemaErr = validateJson("schema", form.schema);
-    const sampleErr = validateJson("sample_data", form.sample_data);
-    setJsonError({ schema: schemaErr, sample_data: sampleErr });
-    if (schemaErr || sampleErr) {
-      setSaving(false);
-      return;
-    }
-    try {
-      const payload = {
-        ...form,
-        schema: JSON.parse(form.schema),
-        sample_data: JSON.parse(form.sample_data)
-      };
-      if (mode === "add") {
-        await addDataSource(payload);
-      } else {
-        await updateDataSource(source.id, payload);
-      }
-      setSuccess(true);
-      setTimeout(() => {
-        onSaved();
-      }, 800);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div className={`offcanvas offcanvas-end${show ? " show" : ""}`} tabIndex="-1" style={{ visibility: show ? "visible" : "hidden", width: 420, zIndex: 2000 }}>
-      <div className="offcanvas-header">
-        <h5 className="offcanvas-title">{mode === "add" ? "Add Data Source" : "Edit Data Source"}</h5>
-        <button type="button" className="btn-close" onClick={onClose}></button>
-      </div>
-      <div className="offcanvas-body">
-        <form onSubmit={handleSubmit} autoComplete="off">
-          <div className="mb-3">
-            <label className="form-label">Name <span className="text-danger">*</span></label>
-            <input className="form-control" name="name" value={form.name} onChange={handleChange} required disabled={mode === "edit"} ref={nameInputRef} />
-            {nameError && <div className="text-danger small mt-1">{nameError}</div>}
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Type</label>
-            <select className="form-select" name="type" value={form.type} onChange={handleChange} required>
-              <option value="table">Table</option>
-              <option value="api">API</option>
-              <option value="service">Service</option>
-            </select>
-          </div>
-          <div className="form-check mb-3">
-            <input className="form-check-input" type="checkbox" name="enabled" checked={form.enabled} onChange={handleChange} id="enabledCheck" />
-            <label className="form-check-label" htmlFor="enabledCheck">Enabled</label>
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Schema (JSON) <span className="text-danger">*</span>
-              <span className="ms-1 text-muted" title='Describe the fields and types for this data source. Example: {"id":"uuid","name":"string"}'><i className="bi bi-info-circle"></i></span>
-            </label>
-            <textarea className="form-control" name="schema" rows={3} value={form.schema} onChange={handleChange} required />
-            {jsonError.schema && <div className="text-danger small mt-1">{jsonError.schema}</div>}
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Description</label>
-            <input className="form-control" name="description" value={form.description} onChange={handleChange} />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Sample Data (JSON Array)
-              <span className="ms-1 text-muted" title='Provide example records for LLM context. Example: [{"id":1,"name":"web-server-01"}]'><i className="bi bi-info-circle"></i></span>
-            </label>
-            <textarea className="form-control" name="sample_data" rows={2} value={form.sample_data} onChange={handleChange} />
-            {jsonError.sample_data && <div className="text-danger small mt-1">{jsonError.sample_data}</div>}
-          </div>
-          {error && <div className="alert alert-danger">{error}</div>}
-          {success && <div className="alert alert-success">Saved successfully!</div>}
-          <button className="btn btn-primary" type="submit" disabled={saving || !form.name.trim() || jsonError.schema || jsonError.sample_data || nameError}>
-            {saving ? "Saving..." : "Save"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function QueryTesterTab() {
-  const [question, setQuestion] = useState("");
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      const res = await testNlqQuery(question);
-      setResult(res);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <h5>Query Tester</h5>
-      <form className="mb-3" onSubmit={handleSubmit}>
-        <div className="input-group">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Ask a question..."
-            value={question}
-            onChange={e => setQuestion(e.target.value)}
-            disabled={loading}
-          />
-          <button className="btn btn-primary" type="submit" disabled={loading || !question.trim()}>
-            {loading ? "Testing..." : "Test Query"}
-          </button>
-        </div>
-      </form>
-      {error && <div className="alert alert-danger">{error}</div>}
-      {result && (
-        <div className="card mb-3">
-          <div className="card-body">
-            <div className="mb-2"><strong>LLM Reasoning:</strong><br />{result.interpreted || <span className="text-muted">(none)</span>}</div>
-            <div className="mb-2"><strong>Generated Query:</strong><br /><pre className="bg-light p-2 rounded">{result.generated_query || "(none)"}</pre></div>
-            <div className="mb-2"><strong>Result:</strong><br /><pre className="bg-light p-2 rounded">{JSON.stringify(result.result, null, 2)}</pre></div>
-            {result.error && <div className="alert alert-warning mt-2">{result.error}</div>}
-          </div>
-        </div>
-      )}
-      {!result && !error && <div className="alert alert-info">Results will appear here.</div>}
-    </div>
-  );
-}
-
-function LogsTab() {
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedLog, setSelectedLog] = useState(null);
-  const [logDetail, setLogDetail] = useState(null);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailError, setDetailError] = useState(null);
-  // Filters
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getNlqLogs()
-      .then(setLogs)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleRowClick = async (log) => {
-    setSelectedLog(log);
-    setDetailLoading(true);
-    setDetailError(null);
-    setLogDetail(null);
-    try {
-      const detail = await getNlqLogDetail(log.id);
-      setLogDetail(detail);
-    } catch (err) {
-      setDetailError(err.message);
-    } finally {
-      setDetailLoading(false);
-    }
-  };
-
-  const closeModal = () => {
-    setSelectedLog(null);
-    setLogDetail(null);
-    setDetailError(null);
-  };
-
-  // Filtering logic
-  const filteredLogs = logs.filter(log => {
-    const matchesSearch = !search || (log.question && log.question.toLowerCase().includes(search.toLowerCase()));
-    const matchesStatus = !statusFilter || (log.status && log.status === statusFilter);
-    return matchesSearch && matchesStatus;
-  });
-
-  return (
-    <div>
-      <h5>Logs</h5>
-      <div className="row mb-2">
-        <div className="col-md-4 mb-2">
-          <input
-            className="form-control"
-            placeholder="Search question..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="col-md-3 mb-2">
-          <select className="form-select" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-            <option value="">All Statuses</option>
-            <option value="success">Success</option>
-            <option value="error">Error</option>
-          </select>
-        </div>
-      </div>
-      {loading ? (
-        <div className="text-center my-4">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      ) : error ? (
-        <div className="alert alert-danger">{error}</div>
-      ) : (
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>User</th>
-              <th>Question</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredLogs.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="text-center text-muted">No logs found.</td>
-              </tr>
-            ) : (
-              filteredLogs.map((log) => (
-                <tr key={log.id} style={{ cursor: "pointer" }} onClick={() => handleRowClick(log)}>
-                  <td>{log.created_at ? new Date(log.created_at).toLocaleString() : ""}</td>
-                  <td>{log.user_id || "-"}</td>
-                  <td>{log.question}</td>
-                  <td>{log.status}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      )}
-      {/* Modal for log details */}
-      {selectedLog && (
-        <div className="modal fade show" style={{ display: "block", background: "rgba(0,0,0,0.3)" }} tabIndex="-1">
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Log Details</h5>
-                <button type="button" className="btn-close" onClick={closeModal}></button>
-              </div>
-              <div className="modal-body">
-                {detailLoading ? (
-                  <div className="text-center my-4">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Loading...</span>
-                    </div>
-                  </div>
-                ) : detailError ? (
-                  <div className="alert alert-danger">{detailError}</div>
-                ) : logDetail ? (
-                  <>
-                    <div><strong>Time:</strong> {logDetail.created_at ? new Date(logDetail.created_at).toLocaleString() : ""}</div>
-                    <div><strong>User:</strong> {logDetail.user_id || "-"}</div>
-                    <div><strong>Question:</strong> {logDetail.question}</div>
-                    <div><strong>Status:</strong> {logDetail.status}</div>
-                    <div className="mt-2"><strong>LLM Reasoning:</strong><br />{logDetail.interpreted || <span className="text-muted">(none)</span>}</div>
-                    <div className="mt-2"><strong>Generated Query:</strong><br /><pre className="bg-light p-2 rounded">{logDetail.generated_query || "(none)"}</pre></div>
-                    <div className="mt-2"><strong>Result:</strong><br /><pre className="bg-light p-2 rounded">{JSON.stringify(logDetail.result, null, 2)}</pre></div>
-                    {logDetail.error && <div className="alert alert-warning mt-2">{logDetail.error}</div>}
-                  </>
-                ) : null}
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={closeModal}>Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+import Content from "@/layout/content/Content";
+import Head from "@/layout/head/Head";
+import {
+  Block,
+  BlockBetween,
+  BlockDes,
+  BlockHead,
+  BlockHeadContent,
+  BlockTitle,
+  Icon,
+  Button,
+  ReactDataTable,
+} from "@/components/Component";
+import {
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Alert,
+  Spinner,
+} from "reactstrap";
+import classnames from "classnames";
+import SlideOutPanel from "@/components/partials/SlideOutPanel";
 
 const NlqAdmin = () => {
   const [activeTab, setActiveTab] = useState("dataSources");
+  
+  // Data Sources state
   const [dataSources, setDataSources] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [showPanel, setShowPanel] = useState(false);
-  const [panelMode, setPanelMode] = useState("add"); // 'add' or 'edit'
-  const [selectedSource, setSelectedSource] = useState(null);
-  const [deletingId, setDeletingId] = useState(null);
-  const [deleteError, setDeleteError] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [dataSourcesLoading, setDataSourcesLoading] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingDataSource, setEditingDataSource] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null, name: '' });
+  
+  // Schema/Prompt state
+  const [schemaConfig, setSchemaConfig] = useState({
+    prompt: '',
+    schema_context: ''
+  });
+  const [schemaLoading, setSchemaLoading] = useState(false);
+  const [schemaSaving, setSchemaSaving] = useState(false);
+  
+  // Query Tester state
+  const [testQuery, setTestQuery] = useState('');
+  const [testResult, setTestResult] = useState(null);
+  const [testLoading, setTestLoading] = useState(false);
+  
+  // Logs state
+  const [logs, setLogs] = useState([]);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logSearch, setLogSearch] = useState('');
+  const [logStatusFilter, setLogStatusFilter] = useState('');
+  const [selectedLog, setSelectedLog] = useState(null);
+  const [showLogModal, setShowLogModal] = useState(false);
+  
+  // Form state for data source add/edit
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'table',
+    enabled: true,
+    schema: '{}',
+    description: '',
+    sample_data: '[]'
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [formSaving, setFormSaving] = useState(false);
 
-  const fetchDataSources = () => {
-    setLoading(true);
-    setError(null);
-    getDataSources()
-      .then((data) => {
-        setDataSources(data);
-        window.dataSourcesForValidation = data; // for duplicate name check in panel
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  };
+  // Mock data for demonstration
+  const mockDataSources = [
+    {
+      id: 1,
+      name: 'Assets',
+      type: 'table',
+      enabled: true,
+      description: 'Asset inventory data',
+      schema: { id: 'uuid', name: 'string', type: 'string' },
+      sample_data: [{ id: '123', name: 'Server-01', type: 'server' }]
+    },
+    {
+      id: 2,
+      name: 'Vulnerabilities',
+      type: 'table',
+      enabled: true,
+      description: 'CVE and vulnerability data',
+      schema: { id: 'uuid', cve_id: 'string', severity: 'string' },
+      sample_data: [{ id: '456', cve_id: 'CVE-2024-0001', severity: 'high' }]
+    }
+  ];
 
   useEffect(() => {
     if (activeTab === "dataSources") {
-      fetchDataSources();
+      // Simulate loading data sources
+      setDataSourcesLoading(true);
+      setTimeout(() => {
+        setDataSources(mockDataSources);
+        setDataSourcesLoading(false);
+      }, 500);
     }
   }, [activeTab]);
 
-  const handleAdd = () => {
-    setPanelMode("add");
-    setSelectedSource(null);
-    setShowPanel(true);
+  // Data Sources handlers
+  const handleAddDataSource = () => {
+    setFormData({
+      name: '',
+      type: 'table',
+      enabled: true,
+      schema: '{}',
+      description: '',
+      sample_data: '[]'
+    });
+    setFormErrors({});
+    setShowAddModal(true);
   };
 
-  const handleEdit = (source) => {
-    setPanelMode("edit");
-    setSelectedSource(source);
-    setShowPanel(true);
+  const handleEditDataSource = (dataSource) => {
+    setFormData({
+      name: dataSource.name,
+      type: dataSource.type,
+      enabled: dataSource.enabled,
+      schema: JSON.stringify(dataSource.schema, null, 2),
+      description: dataSource.description,
+      sample_data: JSON.stringify(dataSource.sample_data, null, 2)
+    });
+    setEditingDataSource(dataSource);
+    setFormErrors({});
+    setShowEditModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this data source?")) return;
-    setDeleteLoading(true);
-    setDeleteError(null);
+  const handleDeleteDataSource = (dataSource) => {
+    setDeleteConfirm({ show: true, id: dataSource.id, name: dataSource.name });
+  };
+
+  const confirmDelete = () => {
+    setDataSources(prev => prev.filter(ds => ds.id !== deleteConfirm.id));
+    setDeleteConfirm({ show: false, id: null, name: '' });
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.name.trim()) errors.name = 'Name is required';
+    
     try {
-      await deleteDataSource(id);
-      fetchDataSources();
-    } catch (err) {
-      setDeleteError(err.message);
-    } finally {
-      setDeleteLoading(false);
+      JSON.parse(formData.schema);
+    } catch {
+      errors.schema = 'Invalid JSON format';
     }
+    
+    try {
+      JSON.parse(formData.sample_data);
+    } catch {
+      errors.sample_data = 'Invalid JSON format';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  return (
-    <div className="container my-5">
-      <div className="card shadow">
-        <div className="card-header bg-primary text-white">
-          <h4 className="mb-0">NLQ Admin Interface</h4>
+  const handleFormSubmit = () => {
+    if (!validateForm()) return;
+    
+    setFormSaving(true);
+    setTimeout(() => {
+      const newDataSource = {
+        id: showEditModal ? editingDataSource.id : Date.now(),
+        ...formData,
+        schema: JSON.parse(formData.schema),
+        sample_data: JSON.parse(formData.sample_data)
+      };
+      
+      if (showEditModal) {
+        setDataSources(prev => prev.map(ds => ds.id === editingDataSource.id ? newDataSource : ds));
+      } else {
+        setDataSources(prev => [...prev, newDataSource]);
+      }
+      
+      setShowAddModal(false);
+      setShowEditModal(false);
+      setFormSaving(false);
+    }, 1000);
+  };
+
+  const dataSourceColumns = [
+    {
+      name: "Name",
+      selector: (row) => row.name,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          <span className="fw-bold">{row.name}</span>
+          <div className="text-soft small">ID: {row.id}</div>
         </div>
-        <div className="card-body">
-          {/* Tabs */}
-          <ul className="nav nav-tabs mb-3">
-            <li className="nav-item">
-              <button className={`nav-link ${activeTab === "dataSources" ? "active" : ""}`} onClick={() => setActiveTab("dataSources")}>Data Sources</button>
-            </li>
-            <li className="nav-item">
-              <button className={`nav-link ${activeTab === "schemaPrompt" ? "active" : ""}`} onClick={() => setActiveTab("schemaPrompt")}>Schema/Prompt</button>
-            </li>
-            <li className="nav-item">
-              <button className={`nav-link ${activeTab === "queryTester" ? "active" : ""}`} onClick={() => setActiveTab("queryTester")}>Query Tester</button>
-            </li>
-            <li className="nav-item">
-              <button className={`nav-link ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>Logs</button>
-            </li>
-          </ul>
+      ),
+    },
+    {
+      name: "Type",
+      selector: (row) => row.type,
+      sortable: true,
+      cell: (row) => (
+        <span className="badge badge-dim bg-primary">{row.type}</span>
+      ),
+    },
+    {
+      name: "Status",
+      selector: (row) => row.enabled,
+      sortable: true,
+      cell: (row) => (
+        <span className={`badge badge-dim ${row.enabled ? 'bg-success' : 'bg-gray'}`}>
+          {row.enabled ? 'Enabled' : 'Disabled'}
+        </span>
+      ),
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
+      cell: (row) => row.description || <span className="text-soft">No description</span>,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <UncontrolledDropdown>
+          <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon btn-trigger">
+            <Icon name="more-h"></Icon>
+          </DropdownToggle>
+          <DropdownMenu end>
+            <ul className="link-list-opt no-bdr">
+              <li>
+                <DropdownItem onClick={() => handleEditDataSource(row)}>
+                  <Icon name="edit"></Icon>
+                  <span>Edit</span>
+                </DropdownItem>
+              </li>
+              <li className="divider"></li>
+              <li>
+                <DropdownItem onClick={() => handleDeleteDataSource(row)}>
+                  <Icon name="trash"></Icon>
+                  <span>Delete</span>
+                </DropdownItem>
+              </li>
+            </ul>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      ),
+      allowOverflow: true,
+      button: true,
+    },
+  ];
 
-          {/* Tab Content */}
-          {activeTab === "dataSources" && (
-            <div>
-              <h5>Data Sources</h5>
-              {loading ? (
-                <div className="text-center my-4">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : error ? (
-                <div className="alert alert-danger">{error}</div>
-              ) : (
-                <>
-                  <table className="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Enabled</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dataSources.length === 0 ? (
-                        <tr>
-                          <td colSpan={5} className="text-center text-muted">No data sources found.</td>
-                        </tr>
-                      ) : (
-                        dataSources.map((ds) => (
-                          <tr key={ds.id}>
-                            <td>{ds.name}</td>
-                            <td>{ds.type}</td>
-                            <td>{ds.enabled ? "Yes" : "No"}</td>
-                            <td>{ds.description}</td>
-                            <td>
-                              <button className="btn btn-sm btn-outline-primary me-2" onClick={() => handleEdit(ds)}>Edit</button>
-                              <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(ds.id)} disabled={deleteLoading && deletingId === ds.id}>Delete</button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                  {deleteError && <div className="alert alert-danger">{deleteError}</div>}
-                  <button className="btn btn-success" onClick={handleAdd}>Add Data Source</button>
-                </>
-              )}
-              {/* Slide-out panel for add/edit */}
-              <DataSourcePanel
-                show={showPanel}
-                mode={panelMode}
-                source={selectedSource}
-                onClose={() => setShowPanel(false)}
-                onSaved={() => {
-                  setShowPanel(false);
-                  fetchDataSources();
-                }}
-              />
-            </div>
-          )}
-
-          {activeTab === "schemaPrompt" && (
-            <SchemaPromptTab />
-          )}
-
-          {activeTab === "queryTester" && (
-            <QueryTesterTab />
-          )}
-
-          {activeTab === "logs" && (
-            <LogsTab />
-          )}
+  const renderDataSourcesTab = () => (
+    <div className="card card-bordered">
+      <div className="card-inner">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h5 className="mb-1">Data Sources</h5>
+            <p className="text-soft mb-0">Manage data sources for NLQ queries</p>
+          </div>
+          <Button color="primary" onClick={handleAddDataSource}>
+            <Icon name="plus"></Icon>
+            <span>Add Data Source</span>
+          </Button>
         </div>
+        
+        {dataSourcesLoading ? (
+          <div className="text-center py-5">
+            <Spinner color="primary" />
+            <div className="mt-3 text-soft">Loading data sources...</div>
+          </div>
+        ) : (
+          <ReactDataTable
+            data={dataSources}
+            columns={dataSourceColumns}
+            pagination
+            noDataComponent={
+              <div className="text-center py-5">
+                <Icon name="database" className="display-1 text-muted mb-3"></Icon>
+                <h5 className="mt-3">No data sources found</h5>
+                <p className="text-muted">Add your first data source to get started with NLQ.</p>
+                <Button color="primary" onClick={handleAddDataSource}>
+                  <Icon name="plus"></Icon>
+                  <span>Add Data Source</span>
+                </Button>
+              </div>
+            }
+            className="nk-tb-list"
+          />
+        )}
       </div>
     </div>
+  );
+
+  const handleSchemaSubmit = () => {
+    setSchemaSaving(true);
+    setTimeout(() => {
+      setSchemaSaving(false);
+      // Show success message
+    }, 1000);
+  };
+
+  const renderSchemaPromptTab = () => (
+    <div className="card card-bordered">
+      <div className="card-inner">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h5 className="mb-1">Schema & Prompt Configuration</h5>
+            <p className="text-soft mb-0">Configure system prompts and schema context</p>
+          </div>
+        </div>
+        
+        {schemaLoading ? (
+          <div className="text-center py-5">
+            <Spinner color="primary" />
+            <div className="mt-3 text-soft">Loading configuration...</div>
+          </div>
+        ) : (
+          <Form>
+            <FormGroup>
+              <Label>System Prompt</Label>
+              <Input
+                type="textarea"
+                rows={3}
+                value={schemaConfig.prompt}
+                onChange={(e) => setSchemaConfig(prev => ({ ...prev, prompt: e.target.value }))}
+                placeholder="Enter system prompt for the NLQ engine..."
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label>Schema Context (JSON)</Label>
+              <Input
+                type="textarea"
+                rows={5}
+                value={schemaConfig.schema_context}
+                onChange={(e) => setSchemaConfig(prev => ({ ...prev, schema_context: e.target.value }))}
+                placeholder="Enter schema context as JSON..."
+              />
+            </FormGroup>
+            <Button
+              color="primary"
+              onClick={handleSchemaSubmit}
+              disabled={schemaSaving}
+            >
+              {schemaSaving ? <><Spinner size="sm" className="me-2" />Saving...</> : 'Save Configuration'}
+            </Button>
+          </Form>
+        )}
+      </div>
+    </div>
+  );
+
+  const handleTestQuery = () => {
+    if (!testQuery.trim()) return;
+    
+    setTestLoading(true);
+    setTestResult(null);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setTestResult({
+        interpreted: "The user is asking for all assets with high severity vulnerabilities",
+        generated_query: "SELECT a.name, a.type, v.cve_id, v.severity FROM assets a JOIN vulnerabilities v ON a.id = v.asset_id WHERE v.severity = 'high'",
+        result: [
+          { name: 'Server-01', type: 'server', cve_id: 'CVE-2024-0001', severity: 'high' },
+          { name: 'Workstation-05', type: 'workstation', cve_id: 'CVE-2024-0002', severity: 'high' }
+        ]
+      });
+      setTestLoading(false);
+    }, 2000);
+  };
+
+  const renderQueryTesterTab = () => (
+    <div className="card card-bordered">
+      <div className="card-inner">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h5 className="mb-1">Query Tester</h5>
+            <p className="text-soft mb-0">Test NLQ queries in real-time</p>
+          </div>
+        </div>
+        
+        <FormGroup>
+          <div className="input-group">
+            <Input
+              type="text"
+              placeholder="Ask a question in natural language..."
+              value={testQuery}
+              onChange={(e) => setTestQuery(e.target.value)}
+              disabled={testLoading}
+            />
+            <Button
+              color="primary"
+              onClick={handleTestQuery}
+              disabled={testLoading || !testQuery.trim()}
+            >
+              {testLoading ? <><Spinner size="sm" className="me-2" />Testing...</> : 'Test Query'}
+            </Button>
+          </div>
+        </FormGroup>
+
+        {testResult && (
+          <div className="card mt-4">
+            <div className="card-inner">
+              <h6>LLM Reasoning:</h6>
+              <p className="text-soft">{testResult.interpreted}</p>
+              
+              <h6 className="mt-3">Generated Query:</h6>
+              <pre className="bg-light p-3 rounded">{testResult.generated_query}</pre>
+              
+              <h6 className="mt-3">Result:</h6>
+              <pre className="bg-light p-3 rounded">{JSON.stringify(testResult.result, null, 2)}</pre>
+            </div>
+          </div>
+        )}
+
+        {!testResult && !testLoading && (
+          <Alert color="info" className="mt-4">
+            <Icon name="info" className="me-2"></Icon>
+            Enter a natural language question above and click "Test Query" to see the results.
+          </Alert>
+        )}
+      </div>
+    </div>
+  );
+
+  const mockLogs = [
+    {
+      id: 1,
+      created_at: new Date().toISOString(),
+      user_id: 'user123',
+      question: 'Show me all critical vulnerabilities',
+      status: 'success',
+      interpreted: 'User wants to see vulnerabilities with critical severity',
+      generated_query: 'SELECT * FROM vulnerabilities WHERE severity = "critical"',
+      result: [{ count: 15 }]
+    },
+    {
+      id: 2,
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+      user_id: 'user456',
+      question: 'How many servers do we have?',
+      status: 'success',
+      interpreted: 'User wants count of assets with type server',
+      generated_query: 'SELECT COUNT(*) FROM assets WHERE type = "server"',
+      result: [{ count: 42 }]
+    }
+  ];
+
+  useEffect(() => {
+    if (activeTab === "logs") {
+      setLogsLoading(true);
+      setTimeout(() => {
+        setLogs(mockLogs);
+        setLogsLoading(false);
+      }, 500);
+    }
+  }, [activeTab]);
+
+  const filteredLogs = logs.filter(log => {
+    const matchesSearch = !logSearch || log.question.toLowerCase().includes(logSearch.toLowerCase());
+    const matchesStatus = !logStatusFilter || log.status === logStatusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const logColumns = [
+    {
+      name: "Time",
+      selector: (row) => row.created_at,
+      sortable: true,
+      cell: (row) => new Date(row.created_at).toLocaleString(),
+    },
+    {
+      name: "User",
+      selector: (row) => row.user_id,
+      cell: (row) => row.user_id || <span className="text-soft">-</span>,
+    },
+    {
+      name: "Question",
+      selector: (row) => row.question,
+      cell: (row) => (
+        <span className="text-truncate" style={{ maxWidth: '200px' }}>
+          {row.question}
+        </span>
+      ),
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      cell: (row) => (
+        <span className={`badge badge-dim ${row.status === 'success' ? 'bg-success' : 'bg-danger'}`}>
+          {row.status}
+        </span>
+      ),
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <Button size="sm" color="primary" outline onClick={() => {
+          setSelectedLog(row);
+          setShowLogModal(true);
+        }}>
+          <Icon name="eye"></Icon>
+          View
+        </Button>
+      ),
+    },
+  ];
+
+  const renderLogsTab = () => (
+    <div className="card card-bordered">
+      <div className="card-inner">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h5 className="mb-1">Query Logs</h5>
+            <p className="text-soft mb-0">View query history and performance metrics</p>
+          </div>
+        </div>
+        
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <FormGroup>
+              <Input
+                type="text"
+                placeholder="Search questions..."
+                value={logSearch}
+                onChange={(e) => setLogSearch(e.target.value)}
+              />
+            </FormGroup>
+          </div>
+          <div className="col-md-3">
+            <FormGroup>
+              <Input
+                type="select"
+                value={logStatusFilter}
+                onChange={(e) => setLogStatusFilter(e.target.value)}
+              >
+                <option value="">All Statuses</option>
+                <option value="success">Success</option>
+                <option value="error">Error</option>
+              </Input>
+            </FormGroup>
+          </div>
+        </div>
+        
+        {logsLoading ? (
+          <div className="text-center py-5">
+            <Spinner color="primary" />
+            <div className="mt-3 text-soft">Loading logs...</div>
+          </div>
+        ) : (
+          <ReactDataTable
+            data={filteredLogs}
+            columns={logColumns}
+            pagination
+            noDataComponent={
+              <div className="text-center py-5">
+                <Icon name="file-text" className="display-1 text-muted mb-3"></Icon>
+                <h5 className="mt-3">No query logs found</h5>
+                <p className="text-muted">Query logs will appear here once users start using NLQ.</p>
+              </div>
+            }
+            className="nk-tb-list"
+          />
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <React.Fragment>
+      <Head title="Admin - NLQ Management"></Head>
+      <Content>
+        <BlockHead size="sm">
+          <BlockBetween>
+            <BlockHeadContent>
+              <BlockTitle tag="h3" page>
+                Natural Language Query (NLQ) Administration
+              </BlockTitle>
+              <BlockDes className="text-soft">
+                <p>Manage and configure natural language query functionality.</p>
+              </BlockDes>
+            </BlockHeadContent>
+          </BlockBetween>
+        </BlockHead>
+        
+        <Block>
+          {/* Tab Navigation */}
+          <Nav tabs className="mt-n3">
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "dataSources" })}
+                onClick={() => setActiveTab("dataSources")}
+                style={{ cursor: "pointer" }}
+              >
+                <Icon name="database" /> <span>Data Sources</span>
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "schemaPrompt" })}
+                onClick={() => setActiveTab("schemaPrompt")}
+                style={{ cursor: "pointer" }}
+              >
+                <Icon name="setting" /> <span>Schema & Prompt</span>
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "queryTester" })}
+                onClick={() => setActiveTab("queryTester")}
+                style={{ cursor: "pointer" }}
+              >
+                <Icon name="play" /> <span>Query Tester</span>
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "logs" })}
+                onClick={() => setActiveTab("logs")}
+                style={{ cursor: "pointer" }}
+              >
+                <Icon name="file-text" /> <span>Logs</span>
+              </NavLink>
+            </NavItem>
+          </Nav>
+
+          {/* Tab Content */}
+          <TabContent activeTab={activeTab}>
+            <TabPane tabId="dataSources">
+              {activeTab === "dataSources" && renderDataSourcesTab()}
+            </TabPane>
+            <TabPane tabId="schemaPrompt">
+              {activeTab === "schemaPrompt" && renderSchemaPromptTab()}
+            </TabPane>
+            <TabPane tabId="queryTester">
+              {activeTab === "queryTester" && renderQueryTesterTab()}
+            </TabPane>
+            <TabPane tabId="logs">
+              {activeTab === "logs" && renderLogsTab()}
+            </TabPane>
+          </TabContent>
+        </Block>
+
+        {/* Data Source Add/Edit Slide-out Panel */}
+        <SlideOutPanel
+          isOpen={showAddModal || showEditModal}
+          onClose={() => {
+            setShowAddModal(false);
+            setShowEditModal(false);
+          }}
+          title={showEditModal ? 'Edit Data Source' : 'Add Data Source'}
+          width="600px"
+        >
+          <div className="p-4">
+            <Form>
+              <FormGroup>
+                <Label>Name <span className="text-danger">*</span></Label>
+                <Input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  disabled={showEditModal}
+                  invalid={!!formErrors.name}
+                />
+                {formErrors.name && <div className="invalid-feedback d-block">{formErrors.name}</div>}
+              </FormGroup>
+              <FormGroup>
+                <Label>Type</Label>
+                <Input
+                  type="select"
+                  value={formData.type}
+                  onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                >
+                  <option value="table">Table</option>
+                  <option value="api">API</option>
+                  <option value="service">Service</option>
+                </Input>
+              </FormGroup>
+              <FormGroup check>
+                <Input
+                  type="checkbox"
+                  id="enabled"
+                  checked={formData.enabled}
+                  onChange={(e) => setFormData(prev => ({ ...prev, enabled: e.target.checked }))}
+                />
+                <Label check htmlFor="enabled">Enabled</Label>
+              </FormGroup>
+              <FormGroup>
+                <Label>Description</Label>
+                <Input
+                  type="text"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Schema (JSON) <span className="text-danger">*</span></Label>
+                <Input
+                  type="textarea"
+                  rows={3}
+                  value={formData.schema}
+                  onChange={(e) => setFormData(prev => ({ ...prev, schema: e.target.value }))}
+                  invalid={!!formErrors.schema}
+                />
+                {formErrors.schema && <div className="invalid-feedback d-block">{formErrors.schema}</div>}
+              </FormGroup>
+              <FormGroup>
+                <Label>Sample Data (JSON Array)</Label>
+                <Input
+                  type="textarea"
+                  rows={2}
+                  value={formData.sample_data}
+                  onChange={(e) => setFormData(prev => ({ ...prev, sample_data: e.target.value }))}
+                  invalid={!!formErrors.sample_data}
+                />
+                {formErrors.sample_data && <div className="invalid-feedback d-block">{formErrors.sample_data}</div>}
+              </FormGroup>
+              <div className="d-flex gap-2 pt-3">
+                <Button color="secondary" onClick={() => {
+                  setShowAddModal(false);
+                  setShowEditModal(false);
+                }}>
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  onClick={handleFormSubmit}
+                  disabled={formSaving || !formData.name.trim()}
+                >
+                  {formSaving ? <><Spinner size="sm" className="me-2" />Saving...</> : 'Save'}
+                </Button>
+              </div>
+            </Form>
+          </div>
+        </SlideOutPanel>
+
+        {/* Delete Confirmation Slide-out Panel */}
+        <SlideOutPanel
+          isOpen={deleteConfirm.show}
+          onClose={() => setDeleteConfirm({ show: false, id: null, name: '' })}
+          title="Delete Data Source"
+          width="500px"
+        >
+          <div className="p-4">
+            <div className="d-flex align-items-center mb-3">
+              <Icon name="alert-triangle" className="text-warning fs-3 me-3"></Icon>
+              <div>
+                <h6 className="mb-1">Are you sure you want to delete this data source?</h6>
+                <p className="text-muted mb-0">
+                  Data Source: <strong>{deleteConfirm.name}</strong>
+                </p>
+              </div>
+            </div>
+            <p className="text-muted mb-4">
+              This action cannot be undone. The data source will be removed from all NLQ configurations.
+            </p>
+            <div className="d-flex gap-2">
+              <Button color="secondary" onClick={() => setDeleteConfirm({ show: false, id: null, name: '' })}>
+                Cancel
+              </Button>
+              <Button color="danger" onClick={confirmDelete}>
+                Delete Data Source
+              </Button>
+            </div>
+          </div>
+        </SlideOutPanel>
+
+        {/* Log Detail Slide-out Panel */}
+        <SlideOutPanel
+          isOpen={showLogModal}
+          onClose={() => setShowLogModal(false)}
+          title="Query Log Details"
+          width="800px"
+        >
+          <div className="p-4">
+            {selectedLog && (
+              <>
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <strong>Time:</strong> {new Date(selectedLog.created_at).toLocaleString()}
+                  </div>
+                  <div className="col-md-6">
+                    <strong>User:</strong> {selectedLog.user_id || '-'}
+                  </div>
+                </div>
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <strong>Status:</strong>{' '}
+                    <span className={`badge badge-dim ${selectedLog.status === 'success' ? 'bg-success' : 'bg-danger'}`}>
+                      {selectedLog.status}
+                    </span>
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <strong>Question:</strong>
+                  <p className="mt-1">{selectedLog.question}</p>
+                </div>
+                <div className="mb-3">
+                  <strong>LLM Reasoning:</strong>
+                  <p className="text-soft mt-1">{selectedLog.interpreted}</p>
+                </div>
+                <div className="mb-3">
+                  <strong>Generated Query:</strong>
+                  <pre className="bg-light p-3 rounded mt-1">{selectedLog.generated_query}</pre>
+                </div>
+                <div className="mb-3">
+                  <strong>Result:</strong>
+                  <pre className="bg-light p-3 rounded mt-1">{JSON.stringify(selectedLog.result, null, 2)}</pre>
+                </div>
+                <div className="pt-3">
+                  <Button color="secondary" onClick={() => setShowLogModal(false)}>
+                    Close
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </SlideOutPanel>
+      </Content>
+    </React.Fragment>
   );
 };
 

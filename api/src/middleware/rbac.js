@@ -66,6 +66,11 @@ const requirePermission = (requiredPermission) => {
         });
       }
 
+      // Skip permission check if auth is bypassed in development
+      if (req.authBypassed) {
+        return next();
+      }
+
       const userPermissions = await getUserPermissions(req.user.id);
       
       if (!userPermissions.has(requiredPermission)) {
@@ -97,9 +102,14 @@ const requireAnyPermission = (requiredPermissions) => {
         });
       }
 
+      // Skip permission check if auth is bypassed in development
+      if (req.authBypassed) {
+        return next();
+      }
+
       const userPermissions = await getUserPermissions(req.user.id);
       
-      const hasPermission = requiredPermissions.some(permission => 
+      const hasPermission = requiredPermissions.some(permission =>
         userPermissions.has(permission)
       );
 
@@ -132,9 +142,14 @@ const requireAllPermissions = (requiredPermissions) => {
         });
       }
 
+      // Skip permission check if auth is bypassed in development
+      if (req.authBypassed) {
+        return next();
+      }
+
       const userPermissions = await getUserPermissions(req.user.id);
       
-      const hasAllPermissions = requiredPermissions.every(permission => 
+      const hasAllPermissions = requiredPermissions.every(permission =>
         userPermissions.has(permission)
       );
 
@@ -165,6 +180,11 @@ const requireOwnershipOrPermission = (permission, getResourceUserId) => {
           success: false,
           message: 'Authentication required',
         });
+      }
+
+      // Skip permission check if auth is bypassed in development
+      if (req.authBypassed) {
+        return next();
       }
 
       // Check if user has the required permission (e.g., admin permission)
