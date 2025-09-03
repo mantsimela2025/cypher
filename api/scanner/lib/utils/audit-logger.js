@@ -6,23 +6,42 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const winston = require('winston');
 
-// Configure secure logging
-const secureLogger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'security-scanner' },
-  transports: [
-    new winston.transports.File({ 
-      filename: 'audit.log',
-      // Add file rotation and other secure features as needed
-    })
-  ]
-});
+// Simple secure logger to replace winston
+class SecureLogger {
+  constructor() {
+    this.logFile = path.join(process.cwd(), 'audit.log');
+  }
+
+  info(event, data = {}) {
+    this._writeLog('info', event, data);
+  }
+
+  error(event, data = {}) {
+    this._writeLog('error', event, data);
+  }
+
+  _writeLog(level, event, data) {
+    const timestamp = new Date().toISOString();
+    const logEntry = {
+      timestamp,
+      level,
+      service: 'security-scanner',
+      event,
+      ...data
+    };
+
+    const logLine = JSON.stringify(logEntry) + '\n';
+    
+    try {
+      fs.appendFileSync(this.logFile, logLine);
+    } catch (err) {
+      console.error(`Failed to write audit log: ${err.message}`);
+    }
+  }
+}
+
+const secureLogger = new SecureLogger();
 
 /**
  * Create an audit log for a security scanning operation

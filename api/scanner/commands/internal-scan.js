@@ -8,9 +8,26 @@ const path = require('path');
 const { promisify } = require('util');
 const { exec } = require('child_process');
 const execAsync = promisify(exec);
-const chalk = require('chalk');
+// Removed chalk dependency - using standard console logging
+const chalk = {
+  blue: (text) => `\x1b[34m${text}\x1b[0m`,
+  yellow: (text) => `\x1b[33m${text}\x1b[0m`,
+  red: (text) => `\x1b[31m${text}\x1b[0m`,
+  green: (text) => `\x1b[32m${text}\x1b[0m`,
+  cyan: (text) => `\x1b[36m${text}\x1b[0m`,
+  magenta: (text) => `\x1b[35m${text}\x1b[0m`,
+  gray: (text) => `\x1b[90m${text}\x1b[0m`
+};
 const semver = require('semver');
-const winston = require('winston');
+// Removed winston dependency - using standard console logging
+const winston = {
+  createLogger: () => ({
+    info: (msg) => console.log(`[INFO] ${msg}`),
+    error: (msg) => console.error(`[ERROR] ${msg}`),
+    warn: (msg) => console.warn(`[WARN] ${msg}`),
+    debug: (msg) => console.log(`[DEBUG] ${msg}`)
+  })
+};
 
 // Internal scanner modules
 const VulnerabilityScanner = require('../lib/scanners/vulnerability-scanner');

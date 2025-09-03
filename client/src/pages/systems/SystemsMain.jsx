@@ -25,11 +25,18 @@ import SystemsDataTable from "./components/SystemsDataTable";
 import SystemDetailsPanel from "./components/SystemDetailsPanel";
 import { systemsApi } from "@/utils/systemsApi";
 import { toast, ToastContainer } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
 
-const SystemsMainPage = () => {
+const SystemsMain = () => {
+  // ✅ Following API Development Best Practices Guide - Component Data Loading Pattern
   const [systems, setSystems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({});
+  const { isAuthenticated } = useAuth();
+
+  // UI State
   const [sm, updateSm] = useState(false);
   const [selectedSystems, setSelectedSystems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,7 +46,72 @@ const SystemsMainPage = () => {
     systemType: "",
     riskLevel: "",
     source: "",
+    search: "",
   });
+
+  // ✅ API Development Best Practices - loadData pattern
+  const loadSystems = async (params = {}) => {
+    if (!isAuthenticated) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('🌐 Fetching systems...');
+      
+      // Build query parameters
+      const queryParams = {
+        page: currentPage,
+        limit: itemPerPage,
+        ...filters,
+        ...params
+      };
+
+      console.log('📡 API params:', queryParams);
+      const response = await systemsApi.getSystems(queryParams);
+      console.log('📥 API response:', response);
+
+      if (response.success) {
+        setSystems(response.data || []);
+        setPagination(response.pagination || {});
+        console.log('✅ Systems loaded successfully:', response.data?.length || 0, 'systems');
+      } else {
+        throw new Error(response.message || 'Failed to fetch systems');
+      }
+    } catch (error) {
+      console.error('❌ Failed to load systems:', error);
+      setError(error.message);
+      
+      // Don't show error for session timeouts (handled by timeout manager)
+      if (!error.message.includes('Session expired')) {
+        setError('Failed to load systems. Please try again.');
+        toast.error(`Failed to load systems: ${error.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    if (!isAuthenticated) return;
+    
+    try {
+      console.log('📊 Fetching system stats...');
+      const response = await systemsApi.getSystemsStats();
+      
+      if (response.success) {
+        setStats(response.data || {});
+        console.log('✅ Stats loaded successfully:', response.data);
+      } else {
+        throw new Error(response.message || 'Failed to fetch stats');
+      }
+    } catch (error) {
+      console.error('❌ Failed to load stats:', error);
+      if (!error.message.includes('Session expired')) {
+        toast.error(`Failed to load system statistics: ${error.message}`);
+      }
+    }
+  };
 
   // System Details Panel state
   const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
@@ -88,6 +160,16 @@ const SystemsMainPage = () => {
     const diffInMonths = Math.floor(diffInDays / 30);
     return `${diffInMonths}mo ago`;
   };
+
+  // ✅ Effects following best practices
+  useEffect(() => {
+    loadSystems();
+    loadStats();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    loadSystems();
+  }, [currentPage, itemPerPage, filters]);
 
   // Define columns for ReactDataTable (matching the reference design)
   const systemsColumns = [
@@ -381,70 +463,22 @@ const SystemsMainPage = () => {
     },
   ];
 
-  // Fetch systems data
-  useEffect(() => {
-    // Test direct fetch first
-    console.log('Testing direct fetch to API...');
-    fetch('http://localhost:3001/api/v1/systems')
-      .then(response => {
-        console.log('Direct fetch response:', response);
-        return response.json();
-      })
-      .then(data => {
-        console.log('Direct fetch data:', data);
-      })
-      .catch(error => {
-        console.error('Direct fetch error:', error);
-      });
-
-    fetchSystems();
-    fetchStats();
-  }, [currentPage, itemPerPage, filters]);
-
-  const fetchSystems = async () => {
-    try {
-      setLoading(true);
-      const params = {
-        page: currentPage,
-        limit: itemPerPage,
-        ...filters,
-      };
-
-      console.log('Fetching systems with params:', params);
-      const data = await systemsApi.getSystems(params);
-      console.log('Systems API response:', data);
-
-      if (data.success) {
-        console.log('Setting systems data:', data.data);
-        setSystems(data.data);
-      } else {
-        console.error('API returned success: false');
-      }
-    } catch (error) {
-      console.error('Error fetching systems:', error);
-      toast.error('Failed to load systems. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  // Handle filter changes
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
-  const fetchStats = async () => {
-    try {
-      console.log('Fetching systems stats...');
-      const data = await systemsApi.getSystemsStats();
-      console.log('Stats API response:', data);
-
-      if (data.success) {
-        console.log('Setting stats data:', data.data);
-        setStats(data.data);
-      } else {
-        console.error('Stats API returned success: false');
-      }
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-      toast.error('Failed to load system statistics.');
-    }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
+
+  const handleItemPerPageChange = (itemsPerPage) => {
+    setItemPerPage(itemsPerPage);
+    setCurrentPage(1); // Reset to first page
+  };
+
+  // Old fetch functions removed - now using lazy loading hooks above
 
   // Handle row selection for ReactDataTable
   const handleRowSelected = (state) => {
@@ -507,6 +541,13 @@ const SystemsMainPage = () => {
     }
   };
 
+  // Refresh function
+  const handleRefresh = () => {
+    console.log('🔄 Manual refresh triggered');
+    loadSystems();
+    loadStats();
+  };
+
   return (
     <React.Fragment>
       <Head title="Systems Management" />
@@ -516,6 +557,9 @@ const SystemsMainPage = () => {
             <BlockHeadContent>
               <BlockTitle page tag="h3">
                 Systems Management
+                {loading && (
+                  <span className="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span>
+                )}
               </BlockTitle>
               <BlockDes className="text-soft">
                 <p>Manage and monitor your IT systems, security posture, and compliance status.</p>
@@ -531,6 +575,17 @@ const SystemsMainPage = () => {
                 </Button>
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
+                    <li>
+                      <Button
+                        color="light"
+                        size="sm"
+                        onClick={handleRefresh}
+                        disabled={loading}
+                      >
+                        <Icon name="reload"></Icon>
+                        <span>Refresh</span>
+                      </Button>
+                    </li>
                     <li>
                       <Button color="info" onClick={testApiCall}>
                         <Icon name="activity"></Icon>
@@ -586,7 +641,30 @@ const SystemsMainPage = () => {
         </BlockHead>
 
         {/* Stats Cards */}
-        <SystemsStatsCards stats={stats} />
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "150px" }}>
+            <div className="spinner-border text-primary" role="status">
+              <span className="sr-only">Loading system statistics...</span>
+            </div>
+            <span className="ml-2">Loading system statistics...</span>
+          </div>
+        ) : error ? (
+          <div className="text-center text-danger" style={{ minHeight: "150px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+            <Icon name="alert-circle" className="mb-2" style={{ fontSize: "2rem" }} />
+            <div>Failed to load system statistics</div>
+            <div className="text-muted small mb-3">{error}</div>
+            <Button color="primary" size="sm" onClick={handleRefresh}>
+              <Icon name="reload" className="mr-1" />
+              Retry
+            </Button>
+          </div>
+        ) : stats && Object.keys(stats).length > 0 ? (
+          <SystemsStatsCards stats={stats} />
+        ) : (
+          <div className="text-center text-muted" style={{ minHeight: "150px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            No system statistics available
+          </div>
+        )}
 
 
 
@@ -596,23 +674,57 @@ const SystemsMainPage = () => {
         <Block size="lg">
           <BlockHead>
             <BlockHeadContent>
-              <BlockTitle tag="h4">Systems Inventory</BlockTitle>
+              <BlockTitle tag="h4">Systems Data Table</BlockTitle>
               <p>
-                Complete list of all systems in your environment with advanced filtering and search capabilities.
+                Complete system inventory with advanced filtering capabilities.
               </p>
             </BlockHeadContent>
           </BlockHead>
 
-          {console.log('Rendering SystemsDataTable with systems:', systems, 'Loading:', loading)}
-          <SystemsDataTable
-            data={systems}
-            columns={systemsColumns}
-            loading={loading}
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={selectedSystems.length === 0}
-            onViewDetails={handleViewDetails}
-            className="nk-tb-list"
+          {/* Search and Filter */}
+          <SystemsSearchFilter
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onSearch={(searchTerm) => {
+              handleFiltersChange({ ...filters, search: searchTerm });
+            }}
           />
+
+          {/* Systems Data Table */}
+          {loading ? (
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+              <div className="spinner-border text-primary" role="status">
+                <span className="sr-only">Loading systems data...</span>
+              </div>
+              <span className="ml-2">Loading systems data...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center text-danger" style={{ minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+              <Icon name="alert-circle" className="mb-2" style={{ fontSize: "2rem" }} />
+              <div>Failed to load systems data</div>
+              <div className="text-muted small mb-3">{error}</div>
+              <Button color="primary" size="sm" onClick={handleRefresh}>
+                <Icon name="reload" className="mr-1" />
+                Retry
+              </Button>
+            </div>
+          ) : systems && systems.length > 0 ? (
+            <SystemsDataTable
+              data={systems}
+              columns={systemsColumns}
+              loading={loading}
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={selectedSystems.length === 0}
+              onViewDetails={handleViewDetails}
+              className="nk-tb-list"
+            />
+          ) : (
+            <div className="text-center text-muted" style={{ minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+              <Icon name="inbox" className="mb-2" style={{ fontSize: "2rem" }} />
+              <div>No systems found</div>
+              <small>Try adjusting your filters or add some systems to get started</small>
+            </div>
+          )}
         </Block>
       </Content>
       <ToastContainer />
@@ -628,4 +740,4 @@ const SystemsMainPage = () => {
   );
 };
 
-export default SystemsMainPage;
+export default SystemsMain;

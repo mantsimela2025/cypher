@@ -1,7 +1,6 @@
 const express = require('express');
 const settingsController = require('../controllers/settingsController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -101,7 +100,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.get('/', 
-  requirePermission('settings', 'view'),
+  requireRole(['admin', 'user']),
   settingsController.getAllSettings
 );
 
@@ -168,7 +167,7 @@ router.get('/',
  *         description: Setting key already exists
  */
 router.post('/', 
-  requirePermission('settings', 'create'),
+  requireRole(['admin']),
   settingsController.createSetting
 );
 
@@ -198,7 +197,7 @@ router.post('/',
  *         description: Insufficient permissions
  */
 router.get('/:id', 
-  requirePermission('settings', 'view'),
+  requireRole(['admin', 'user']),
   settingsController.getSettingById
 );
 
@@ -262,7 +261,7 @@ router.get('/:id',
  *         description: Setting not found
  */
 router.put('/:id', 
-  requirePermission('settings', 'edit'),
+  requireRole(['admin', 'user']),
   settingsController.updateSetting
 );
 
@@ -292,7 +291,7 @@ router.put('/:id',
  *         description: Setting not found
  */
 router.delete('/:id', 
-  requirePermission('settings', 'delete'),
+  requireRole(['admin']),
   settingsController.deleteSetting
 );
 
@@ -322,7 +321,7 @@ router.delete('/:id',
  *         description: Insufficient permissions
  */
 router.get('/key/:key', 
-  requirePermission('settings', 'view'),
+  requireRole(['admin', 'user']),
   settingsController.getSettingByKey
 );
 
@@ -371,7 +370,7 @@ router.get('/key/:key',
  *         description: Setting not found
  */
 router.put('/key/:key', 
-  requirePermission('settings', 'edit'),
+  requireRole(['admin', 'user']),
   settingsController.updateSettingByKey
 );
 
@@ -410,7 +409,7 @@ router.put('/key/:key',
  *         description: Insufficient permissions
  */
 router.get('/categories', 
-  requirePermission('settings', 'view'),
+  requireRole(['admin', 'user']),
   settingsController.getCategories
 );
 
@@ -482,7 +481,7 @@ router.get('/categories',
  *         description: Insufficient permissions
  */
 router.put('/bulk-update', 
-  requirePermission('settings', 'edit'),
+  requireRole(['admin', 'user']),
   settingsController.bulkUpdateSettings
 );
 

@@ -1,12 +1,87 @@
 const express = require('express');
 const documentsController = require('../controllers/documentsController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { documentController, uploadSingle, uploadMultiple } = require('../controllers/documentController');
+const documentSettingsService = require('../services/documentSettingsService');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
 // Apply authentication to all routes
 router.use(authenticateToken);
+
+// ==================== FILE UPLOAD ROUTES ====================
+
+/**
+ * @swagger
+ * /api/v1/documents/upload:
+ *   post:
+ *     summary: Upload single document with file
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: document
+ *         type: file
+ *         required: true
+ *         description: Document file to upload
+ *       - in: formData
+ *         name: folderId
+ *         type: string
+ *         format: uuid
+ *         description: Parent folder ID
+ *       - in: formData
+ *         name: tags
+ *         type: array
+ *         items:
+ *           type: string
+ *         description: Document tags
+ *     responses:
+ *       201:
+ *         description: Document uploaded successfully
+ *       400:
+ *         description: Invalid request data
+ *       413:
+ *         description: File too large
+ *       415:
+ *         description: Unsupported file type
+ */
+router.post('/upload',
+  requireRole(['admin', 'user']),
+  uploadSingle,
+  documentController.uploadDocument.bind(documentController)
+);
+
+/**
+ * @swagger
+ * /api/v1/documents/upload-multiple:
+ *   post:
+ *     summary: Upload multiple documents
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: documents
+ *         type: array
+ *         items:
+ *           type: file
+ *         required: true
+ *         description: Document files to upload
+ *     responses:
+ *       201:
+ *         description: Documents uploaded successfully
+ */
+router.post('/upload-multiple',
+  requireRole(['admin', 'user']),
+  uploadMultiple,
+  documentController.uploadMultipleDocuments.bind(documentController)
+);
 
 // ==================== CORE CRUD ROUTES ====================
 
@@ -78,7 +153,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.post('/',
-  requirePermission('documents:write'),
+  requireRole(['admin']),
   documentsController.createDocument
 );
 
@@ -185,7 +260,7 @@ router.post('/',
  *         description: Insufficient permissions
  */
 router.get('/',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getAllDocuments
 );
 
@@ -216,8 +291,93 @@ router.get('/',
  *         description: Insufficient permissions
  */
 router.get('/:documentId',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getDocumentById
+);
+
+/**
+ * @swagger
+ * /api/v1/documents/{documentId}/download-url:
+ *   get:
+ *     summary: Get signed download URL for document
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: documentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Document ID
+ *       - in: query
+ *         name: expires
+ *         schema:
+ *           type: integer
+ *           default: 3600
+ *         description: URL expiration time in seconds
+ *     responses:
+ *       200:
+ *         description: Download URL generated successfully
+ *       404:
+ *         description: Document not found
+ */
+router.get('/:documentId/download-url',
+  requireRole(['admin', 'user']),
+  documentController.getDownloadUrl.bind(documentController)
+);
+
+/**
+ * @swagger
+ * /api/v1/documents/{documentId}/email:
+ *   post:
+ *     summary: Email document to recipients
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: documentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Document ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - recipients
+ *             properties:
+ *               recipients:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: email
+ *                 description: Email addresses of recipients
+ *               subject:
+ *                 type: string
+ *                 description: Email subject
+ *               message:
+ *                 type: string
+ *                 description: Email message
+ *               includeLink:
+ *                 type: boolean
+ *                 default: true
+ *                 description: Include download link
+ *     responses:
+ *       200:
+ *         description: Document emailed successfully
+ *       404:
+ *         description: Document not found
+ */
+router.post('/:documentId/email',
+  requireRole(['admin', 'user']),
+  documentController.emailDocument.bind(documentController)
 );
 
 /**
@@ -271,7 +431,7 @@ router.get('/:documentId',
  *         description: Insufficient permissions
  */
 router.put('/:documentId',
-  requirePermission('documents:write'),
+  requireRole(['admin']),
   documentsController.updateDocument
 );
 
@@ -302,7 +462,7 @@ router.put('/:documentId',
  *         description: Insufficient permissions
  */
 router.delete('/:documentId',
-  requirePermission('documents:delete'),
+  requireRole(['admin']),
   documentsController.deleteDocument
 );
 
@@ -333,7 +493,7 @@ router.delete('/:documentId',
  *         description: Insufficient permissions
  */
 router.get('/:documentId/versions',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getDocumentVersions
 );
 
@@ -410,7 +570,7 @@ router.get('/:documentId/versions',
  *         description: Insufficient permissions
  */
 router.post('/:documentId/versions',
-  requirePermission('documents:write'),
+  requireRole(['admin']),
   documentsController.createDocumentVersion
 );
 
@@ -441,7 +601,7 @@ router.post('/:documentId/versions',
  *         description: Insufficient permissions
  */
 router.get('/:documentId/comments',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getDocumentComments
 );
 
@@ -485,7 +645,7 @@ router.get('/:documentId/comments',
  *         description: Insufficient permissions
  */
 router.post('/:documentId/comments',
-  requirePermission('documents:write'),
+  requireRole(['admin']),
   documentsController.addDocumentComment
 );
 
@@ -542,7 +702,7 @@ router.post('/:documentId/comments',
  *         description: Insufficient permissions
  */
 router.get('/:documentId/analytics',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getDocumentAnalytics
 );
 
@@ -571,7 +731,7 @@ router.get('/:documentId/analytics',
  *         description: Insufficient permissions
  */
 router.post('/:documentId/download',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.trackDocumentDownload
 );
 
@@ -600,7 +760,7 @@ router.post('/:documentId/download',
  *         description: Insufficient permissions
  */
 router.get('/:documentId/changes',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getDocumentChangeHistory
 );
 
@@ -660,7 +820,7 @@ router.get('/:documentId/changes',
  *         description: Insufficient permissions
  */
 router.post('/templates',
-  requirePermission('documents:write'),
+  requireRole(['admin']),
   documentsController.createDocumentTemplate
 );
 
@@ -699,7 +859,7 @@ router.post('/templates',
  *         description: Insufficient permissions
  */
 router.get('/templates',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getDocumentTemplates
 );
 
@@ -756,7 +916,7 @@ router.get('/templates',
  *         description: Insufficient permissions
  */
 router.get('/statistics',
-  requirePermission('documents:read'),
+  requireRole(['admin', 'user']),
   documentsController.getDocumentStatistics
 );
 
@@ -827,7 +987,7 @@ router.get('/statistics',
  *         description: Insufficient permissions
  */
 router.post('/bulk/delete',
-  requirePermission('documents:delete'),
+  requireRole(['admin']),
   documentsController.bulkDeleteDocuments
 );
 
@@ -872,7 +1032,7 @@ router.post('/bulk/delete',
  *         description: Insufficient permissions
  */
 router.put('/bulk/folder',
-  requirePermission('documents:write'),
+  requireRole(['admin']),
   documentsController.bulkUpdateFolder
 );
 
@@ -923,8 +1083,131 @@ router.put('/bulk/folder',
  *         description: Insufficient permissions
  */
 router.put('/bulk/tags',
-  requirePermission('documents:write'),
+  requireRole(['admin']),
   documentsController.bulkUpdateTags
+);
+
+// ==================== SETTINGS ROUTES ====================
+
+/**
+ * @swagger
+ * /api/v1/documents/settings:
+ *   get:
+ *     summary: Get document management settings
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Settings retrieved successfully
+ */
+router.get('/settings',
+  requireRole(['admin']),
+  async (req, res) => {
+    try {
+      const settings = await documentSettingsService.getSettings();
+      res.json({ success: true, data: settings });
+    } catch (error) {
+      console.error('Error getting settings:', error);
+      res.status(500).json({ error: 'Failed to get settings' });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/v1/documents/settings:
+ *   put:
+ *     summary: Update document management settings
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Settings updated successfully
+ */
+router.put('/settings',
+  requireRole(['admin']),
+  async (req, res) => {
+    try {
+      const result = await documentSettingsService.updateSettings(req.body, req.user.id);
+      res.json(result);
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      res.status(500).json({ error: 'Failed to update settings' });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/v1/documents/settings/test-s3:
+ *   post:
+ *     summary: Test S3 connection
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bucketName:
+ *                 type: string
+ *               region:
+ *                 type: string
+ *               accessKeyId:
+ *                 type: string
+ *               secretAccessKey:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: S3 connection test result
+ */
+router.post('/settings/test-s3',
+  requireRole(['admin']),
+  async (req, res) => {
+    try {
+      const result = await documentSettingsService.testS3Connection(req.body);
+      res.json(result);
+    } catch (error) {
+      console.error('Error testing S3:', error);
+      res.status(500).json({ error: 'Failed to test S3 connection' });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/v1/documents/settings/storage-usage:
+ *   get:
+ *     summary: Get storage usage statistics
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Storage usage retrieved successfully
+ */
+router.get('/settings/storage-usage',
+  requireRole(['admin']),
+  async (req, res) => {
+    try {
+      const usage = await documentSettingsService.getStorageUsage();
+      res.json({ success: true, data: usage });
+    } catch (error) {
+      console.error('Error getting storage usage:', error);
+      res.status(500).json({ error: 'Failed to get storage usage' });
+    }
+  }
 );
 
 module.exports = router;

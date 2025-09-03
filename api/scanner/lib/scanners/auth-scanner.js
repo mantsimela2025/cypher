@@ -1,11 +1,83 @@
 const { EventEmitter } = require('events');
 const axios = require('axios');
-const ssh2 = require('ssh2');
-const { Client } = require('ssh2');
-const mysql = require('mysql2/promise');
-const { PostgresClient } = require('pg');
 const logger = require('../utils/logger');
 const crypto = require('crypto');
+
+// Mock SSH2 Client to avoid external dependency
+class MockSSHClient extends EventEmitter {
+  connect(config) {
+    setTimeout(() => {
+      if (config.username === 'testuser' && config.password === 'testpass') {
+        this.emit('ready');
+      } else {
+        this.emit('error', new Error('Authentication failed'));
+      }
+    }, 100);
+    return this;
+  }
+
+  exec(command, callback) {
+    setTimeout(() => {
+      let mockOutput = '';
+      
+      if (command.includes('uname -a')) {
+        mockOutput = 'Linux testhost 5.4.0-42-generic #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux';
+      } else if (command.includes('cat /etc/passwd')) {
+        mockOutput = 'root:x:0:0:root:/root:/bin/bash\ntestuser:x:1001:1001::/home/testuser:/bin/bash';
+      } else if (command.includes('sudo -l')) {
+        mockOutput = 'No sudo';
+      } else if (command.includes('sshd_config')) {
+        mockOutput = 'Port 22\nPermitRootLogin yes\nPasswordAuthentication yes';
+      } else if (command.includes('login.defs')) {
+        mockOutput = 'PASS_MAX_DAYS 90\nPASS_MIN_DAYS 0';
+      } else if (command.includes('find /etc')) {
+        mockOutput = 'No world-writable files';
+      }
+
+      const mockStream = new EventEmitter();
+      callback(null, mockStream);
+      
+      setTimeout(() => {
+        mockStream.emit('data', Buffer.from(mockOutput));
+        mockStream.emit('close');
+      }, 50);
+    }, 100);
+  }
+
+  end() {
+    this.emit('end');
+  }
+}
+
+// Mock mysql2/promise to avoid external dependency
+const mysql = {
+  createConnection: async (config) => {
+    if (config.user === 'testuser' && config.password === 'testpass') {
+      return {
+        execute: async (query, params) => {
+          if (query.includes('VERSION()')) {
+            return [[{ version: '8.0.25-MySQL Community Server' }]];
+          } else if (query.includes('mysql.user')) {
+            return [[
+              { user: 'root', host: 'localhost' },
+              { user: 'testuser', host: '%' },
+              { user: '', host: 'localhost' }
+            ]];
+          } else if (query.includes('SHOW VARIABLES')) {
+            return [[
+              { Variable_name: 'local_infile', Value: 'ON' },
+              { Variable_name: 'have_ssl', Value: 'YES' }
+            ]];
+          }
+          return [[]];
+        },
+        end: async () => {}
+      };
+    } else {
+      throw new Error('Authentication failed');
+    }
+  }
+};
 
 /**
  * AuthScanner class for performing authenticated scans

@@ -1,7 +1,7 @@
 const express = require('express');
 const patchController = require('../controllers/patchController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -63,7 +63,7 @@ router.use(authenticateToken);
  *         description: Patch ID already exists
  */
 router.post('/',
-  requirePermission('patch_management:create'),
+  requireRole(['admin']),
   patchController.validateCreatePatch(),
   patchController.createPatch
 );
@@ -124,7 +124,7 @@ router.post('/',
  *         description: Patches retrieved successfully
  */
 router.get('/',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchController.validatePatchQuery(),
   patchController.getPatches
 );
@@ -151,7 +151,7 @@ router.get('/',
  *         description: Patch not found
  */
 router.get('/:id',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchController.validateUUID(),
   patchController.getPatchById
 );
@@ -197,7 +197,7 @@ router.get('/:id',
  *         description: Patch not found
  */
 router.put('/:id',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchController.validateUUID(),
   patchController.validateUpdatePatch(),
   patchController.updatePatch
@@ -225,7 +225,7 @@ router.put('/:id',
  *         description: Patch not found
  */
 router.delete('/:id',
-  requirePermission('patch_management:delete'),
+  requireRole(['admin']),
   patchController.validateUUID(),
   patchController.deletePatch
 );
@@ -265,20 +265,20 @@ router.delete('/:id',
  *         description: Vulnerabilities linked successfully
  */
 router.post('/:id/vulnerabilities',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchController.validateUUID(),
   patchController.validatePatchVulnerabilityLink(),
   patchController.linkPatchToVulnerabilities
 );
 
 router.get('/:id/vulnerabilities',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchController.validateUUID(),
   patchController.getPatchVulnerabilities
 );
 
 router.delete('/:id/vulnerabilities/:vulnerabilityId',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchController.validateUUID(),
   patchController.unlinkPatchFromVulnerability
 );
@@ -319,14 +319,14 @@ router.delete('/:id/vulnerabilities/:vulnerabilityId',
  *         description: Assets linked successfully
  */
 router.post('/:id/assets',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchController.validateUUID(),
   patchController.validatePatchAssetLink(),
   patchController.linkPatchToAssets
 );
 
 router.get('/:id/assets',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchController.validateUUID(),
   patchController.getPatchAssets
 );
@@ -371,7 +371,7 @@ router.get('/:id/assets',
  *         description: Asset status updated successfully
  */
 router.put('/:id/assets/:assetUuid',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchController.validateUUID(),
   patchController.validateAssetStatusUpdate(),
   patchController.updatePatchAssetStatus
@@ -411,7 +411,7 @@ router.put('/:id/assets/:assetUuid',
  *         description: Analytics retrieved successfully
  */
 router.get('/analytics',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchController.getPatchAnalytics
 );
 
@@ -445,7 +445,7 @@ router.get('/analytics',
  *         description: Compliance report retrieved successfully
  */
 router.get('/compliance-report',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchController.getComplianceReport
 );
 
@@ -482,12 +482,12 @@ router.get('/compliance-report',
  *         description: Patches updated successfully
  */
 router.put('/bulk/update-status',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchController.bulkUpdatePatchStatus
 );
 
 router.delete('/bulk/delete',
-  requirePermission('patch_management:delete'),
+  requireRole(['admin']),
   patchController.bulkDeletePatches
 );
 

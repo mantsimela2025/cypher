@@ -1,7 +1,7 @@
 const express = require('express');
 const nlqDataSourcesController = require('../controllers/nlqDataSourcesController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -12,31 +12,31 @@ router.use(authenticateToken);
 
 // Get all data sources
 router.get('/',
-  requirePermission('nl_query', 'read'),
+  requireRole(['admin', 'user']),
   nlqDataSourcesController.getAllDataSources
 );
 
 // Get a single data source by id
 router.get('/:id',
-  requirePermission('nl_query', 'read'),
+  requireRole(['admin', 'user']),
   nlqDataSourcesController.getDataSourceById
 );
 
 // Create a new data source
 router.post('/',
-  requirePermission('nl_query', 'create'),
+  requireRole(['admin']),
   nlqDataSourcesController.createDataSource
 );
 
 // Update a data source by id
 router.put('/:id',
-  requirePermission('nl_query', 'update'),
+  requireRole(['admin']),
   nlqDataSourcesController.updateDataSource
 );
 
 // Delete a data source by id
 router.delete('/:id',
-  requirePermission('nl_query', 'delete'),
+  requireRole(['admin']),
   nlqDataSourcesController.deleteDataSource
 );
 

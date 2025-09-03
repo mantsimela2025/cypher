@@ -18,11 +18,9 @@ const TooltipComponent = ({ iconClass, icon, id, direction, text, containerClass
         placement={direction}
         target={id}
         transition={{
-          timeout: {
-            enter: 150,
-            exit: 150
-          }
+          timeout: 250
         }}
+        fade={true}
       >
         {text}
       </UncontrolledTooltip>

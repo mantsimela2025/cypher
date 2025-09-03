@@ -4,7 +4,6 @@
  */
 
 const axios = require('axios');
-const cheerio = require('cheerio');
 const logger = require('../logger');
 const versionAnalyzer = require('./version-analyzer');
 const versionDb = require('../../data/version-database');

@@ -1,8 +1,8 @@
 const express = require('express');
 const { body, param, query, validationResult } = require('express-validator');
 const poamController = require('../controllers/poamController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -123,7 +123,7 @@ const handleValidationErrors = (req, res, next) => {
  *         description: Forbidden
  */
 router.get('/',
-  requirePermission('poam:read'),
+  requireRole(['admin', 'user']),
   [
     query('page').optional().isInt({ min: 1 }).toInt(),
     query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
@@ -162,7 +162,7 @@ router.get('/',
  *         description: POAM not found
  */
 router.get('/:id',
-  requirePermission('poam:read'),
+  requireRole(['admin', 'user']),
   [
     param('id').isInt({ min: 1 }).toInt()
   ],
@@ -233,7 +233,7 @@ router.get('/:id',
  *         description: Validation error
  */
 router.post('/',
-  requirePermission('poam:create'),
+  requireRole(['admin']),
   [
     body('vulnerabilityId').isInt({ min: 1 }).toInt(),
     body('title').isString().trim().isLength({ min: 1, max: 255 }),
@@ -315,7 +315,7 @@ router.post('/',
  *         description: POAM not found
  */
 router.put('/:id',
-  requirePermission('poam:update'),
+  requireRole(['admin']),
   [
     param('id').isInt({ min: 1 }).toInt(),
     body('title').optional().isString().trim().isLength({ min: 1, max: 255 }),
@@ -357,7 +357,7 @@ router.put('/:id',
  *         description: POAM not found
  */
 router.delete('/:id',
-  requirePermission('poam:delete'),
+  requireRole(['admin']),
   [
     param('id').isInt({ min: 1 }).toInt()
   ],
@@ -400,7 +400,7 @@ router.delete('/:id',
  *         description: POAM status updated successfully
  */
 router.patch('/:id/status',
-  requirePermission('poam:update'),
+  requireRole(['admin']),
   [
     param('id').isInt({ min: 1 }).toInt(),
     body('status').isIn(['Draft', 'Under Review', 'Approved', 'Rejected', 'Closed']),
@@ -446,7 +446,7 @@ router.patch('/:id/status',
  *         description: Vulnerability not found
  */
 router.post('/generate-from-vulnerability',
-  requirePermission('poam:create'),
+  requireRole(['admin']),
   [
     body('vulnerabilityId').isInt({ min: 1 }).toInt(),
     body('scheduledCompletionDate').isISO8601().toDate(),
@@ -478,7 +478,7 @@ router.post('/generate-from-vulnerability',
  *         description: POAM milestones retrieved successfully
  */
 router.get('/:id/milestones',
-  requirePermission('poam:read'),
+  requireRole(['admin', 'user']),
   [
     param('id').isInt({ min: 1 }).toInt()
   ],
@@ -524,7 +524,7 @@ router.get('/:id/milestones',
  *         description: Milestone added successfully
  */
 router.post('/:id/milestones',
-  requirePermission('poam:update'),
+  requireRole(['admin']),
   [
     param('id').isInt({ min: 1 }).toInt(),
     body('description').isString().trim().isLength({ min: 1 }),
@@ -554,7 +554,7 @@ router.post('/:id/milestones',
  *         description: Milestone updated successfully
  */
 router.put('/milestones/:milestoneId',
-  requirePermission('poam:update'),
+  requireRole(['admin']),
   [
     param('milestoneId').isInt({ min: 1 }).toInt(),
     body('description').optional().isString().trim().isLength({ min: 1 }),
@@ -584,7 +584,7 @@ router.put('/milestones/:milestoneId',
  *         description: Milestone deleted successfully
  */
 router.delete('/milestones/:milestoneId',
-  requirePermission('poam:delete'),
+  requireRole(['admin']),
   [
     param('milestoneId').isInt({ min: 1 }).toInt()
   ],
@@ -613,7 +613,7 @@ router.delete('/milestones/:milestoneId',
  *         description: POAM assets retrieved successfully
  */
 router.get('/:id/assets',
-  requirePermission('poam:read'),
+  requireRole(['admin', 'user']),
   [
     param('id').isInt({ min: 1 }).toInt()
   ],
@@ -652,7 +652,7 @@ router.get('/:id/assets',
  *         description: Asset associated with POAM successfully
  */
 router.post('/:id/assets',
-  requirePermission('poam:update'),
+  requireRole(['admin']),
   [
     param('id').isInt({ min: 1 }).toInt(),
     body('assetUuid').isUUID()
@@ -686,7 +686,7 @@ router.post('/:id/assets',
  *         description: Asset removed from POAM successfully
  */
 router.delete('/:id/assets/:assetUuid',
-  requirePermission('poam:update'),
+  requireRole(['admin']),
   [
     param('id').isInt({ min: 1 }).toInt(),
     param('assetUuid').isUUID()
@@ -710,7 +710,7 @@ router.delete('/:id/assets/:assetUuid',
  *         description: POAM summary statistics retrieved successfully
  */
 router.get('/summary',
-  requirePermission('poam:read'),
+  requireRole(['admin', 'user']),
   poamController.getPOAMSummary
 );
 
@@ -727,7 +727,7 @@ router.get('/summary',
  *         description: Overdue POAMs retrieved successfully
  */
 router.get('/overdue',
-  requirePermission('poam:read'),
+  requireRole(['admin', 'user']),
   poamController.getOverduePOAMs
 );
 
@@ -751,7 +751,7 @@ router.get('/overdue',
  *         description: POAMs due soon retrieved successfully
  */
 router.get('/due-soon',
-  requirePermission('poam:read'),
+  requireRole(['admin', 'user']),
   [
     query('days').optional().isInt({ min: 1 }).toInt()
   ],

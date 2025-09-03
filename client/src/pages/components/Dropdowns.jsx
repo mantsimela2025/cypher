@@ -181,7 +181,7 @@ const DropdownsPage = () => {
                 </UncontrolledDropdown>
               </li>
               <li className="preview-item">
-                <UncontrolledDropdown direction="right">
+                <UncontrolledDropdown direction="end">
                   <DropdownToggle className="btn-action" color="primary">
                     <span>Dropright Button</span>
                   </DropdownToggle>
@@ -212,7 +212,7 @@ const DropdownsPage = () => {
                 </UncontrolledDropdown>
               </li>
               <li className="preview-item">
-                <UncontrolledDropdown direction="right">
+                <UncontrolledDropdown direction="end">
                   <div className="btn-group">
                     <Button color="secondary">Action</Button>
                     <DropdownToggle className="dropdown-toggle-split" color="secondary">

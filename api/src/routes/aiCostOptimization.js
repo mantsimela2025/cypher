@@ -1,7 +1,6 @@
 const express = require('express');
 const aiCostOptimizationController = require('../controllers/aiCostOptimizationController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -109,7 +108,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.get('/recommendations', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.generateOptimizationRecommendations
 );
 
@@ -156,7 +155,7 @@ router.get('/recommendations',
  *         description: Cost anomaly detection completed successfully
  */
 router.get('/anomalies', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.detectCostAnomalies
 );
 
@@ -199,7 +198,7 @@ router.get('/anomalies',
  *         description: Cost optimization strategies generated successfully
  */
 router.get('/strategies', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.generateOptimizationStrategies
 );
 
@@ -248,7 +247,7 @@ router.get('/strategies',
  *         description: Predictive cost model generated successfully
  */
 router.get('/predictive-model/:assetUuid', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.generatePredictiveCostModel
 );
 
@@ -285,7 +284,7 @@ router.get('/predictive-model/:assetUuid',
  *         description: Vendor optimization analysis completed successfully
  */
 router.get('/vendor-optimization', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.getVendorOptimization
 );
 
@@ -320,7 +319,7 @@ router.get('/vendor-optimization',
  *         description: License optimization analysis completed successfully
  */
 router.get('/license-optimization', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.getLicenseOptimization
 );
 
@@ -361,7 +360,7 @@ router.get('/license-optimization',
  *         description: Operational efficiency analysis completed successfully
  */
 router.get('/operational-efficiency', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.getOperationalEfficiency
 );
 
@@ -406,7 +405,7 @@ router.get('/operational-efficiency',
  *         description: AI optimization dashboard generated successfully
  */
 router.get('/dashboard', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.getOptimizationDashboard
 );
 
@@ -423,7 +422,7 @@ router.get('/dashboard',
  *         description: AI cost optimization insights generated successfully
  */
 router.get('/insights', 
-  requirePermission('ai_cost_optimization', 'read'),
+  requireRole(['admin', 'user']),
   aiCostOptimizationController.getOptimizationInsights
 );
 

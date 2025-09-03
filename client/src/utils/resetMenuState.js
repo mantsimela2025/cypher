@@ -16,6 +16,7 @@ export const setDefaultMenuState = () => {
     "Vulnerability Mgmt": true,
     "Patch Management": true,
     "Scan Management": true,
+    "Compliance Management": false,
     "Policy Management": true,
     "Document Management": true,
     "DASHBOARD & METRICS": true,

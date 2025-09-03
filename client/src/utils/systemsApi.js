@@ -3,7 +3,47 @@
  * Handles all API calls related to systems management
  */
 
+import { apiClient } from './apiClient';
+import { cacheUtils } from './apiCache';
+
 const API_BASE_URL = 'http://localhost:3001/api/v1/systems';
+
+// Enhanced API request with automatic token refresh and cache management
+const makeApiRequest = async (endpoint, options = {}) => {
+  try {
+    console.log(`🌐 Making systems API request to: ${endpoint}`);
+
+    // Use apiClient which handles token refresh automatically
+    const response = await apiClient.get(endpoint, options);
+
+    console.log('✅ Systems API request successful');
+    return response;
+  } catch (error) {
+    console.error('❌ Systems API request failed:', error);
+
+    // Handle specific error cases
+    if (error.message.includes('Session expired') || error.message.includes('token')) {
+      console.log('🔄 Session expired, clearing cache and redirecting to login');
+      cacheUtils.clear(); // Clear all cached data
+      // The apiClient already handles logout and redirect
+    }
+
+    throw error;
+  }
+};
+
+// Legacy support - keeping for backward compatibility
+const getAuthToken = () => {
+  return localStorage.getItem('accessToken');
+};
+
+const createHeaders = () => {
+  const token = getAuthToken();
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+};
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
@@ -28,11 +68,30 @@ export const systemsApi = {
    * Get all systems with filtering and pagination
    */
   async getSystems(params = {}) {
-    const queryString = buildQueryString(params);
-    const url = queryString ? `${API_BASE_URL}?${queryString}` : API_BASE_URL;
-    
-    const response = await fetch(url);
-    return handleResponse(response);
+    try {
+      const queryString = buildQueryString(params);
+      const endpoint = queryString ? `/systems?${queryString}` : '/systems';
+
+      // Use enhanced API request with automatic token refresh
+      const result = await makeApiRequest(endpoint);
+
+      console.log('📊 Systems data received:', {
+        count: result.data?.length || 0,
+        pagination: result.pagination
+      });
+
+      return result;
+    } catch (error) {
+      console.error('❌ Failed to fetch systems:', error);
+
+      // If it's a session timeout, the apiClient already handled it
+      if (error.message.includes('Session expired')) {
+        throw error;
+      }
+
+      // For other errors, provide a user-friendly message
+      throw new Error(`Failed to load systems: ${error.message}`);
+    }
   },
 
   /**

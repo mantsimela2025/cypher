@@ -188,6 +188,14 @@ const menu = [
     ],
   },
   {
+    heading: "Compliance Management",
+  },
+  {
+    icon: "shield-check",
+    text: "Risk Mgmt Framework",
+    link: "/rmf",
+  },
+  {
     heading: "Policy Management",
   },
   {

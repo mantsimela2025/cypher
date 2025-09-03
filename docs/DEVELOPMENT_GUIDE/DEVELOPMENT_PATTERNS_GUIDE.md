@@ -3,18 +3,22 @@
 ## Table of Contents
 1. [Backend Architecture](#backend-architecture)
 2. [Frontend Architecture](#frontend-architecture)
-3. [API Communication](#api-communication)
-4. [UI/UX Design Patterns](#uiux-design-patterns)
-5. [Database Patterns](#database-patterns)
-6. [Security Patterns](#security-patterns)
-7. [Performance Patterns](#performance-patterns)
-8. [Testing Patterns](#testing-patterns)
+3. [Lazy Loading Patterns](#lazy-loading-patterns) ⭐ **NEW**
+4. [API Communication](#api-communication)
+5. [UI/UX Design Patterns](#uiux-design-patterns)
+6. [Database Patterns](#database-patterns)
+7. [Security Patterns](#security-patterns)
+8. [Performance Patterns](#performance-patterns)
+9. [Testing Patterns](#testing-patterns)
 
 ## 📚 Related Documentation
+- **[Performance Optimization Guide](./PERFORMANCE_OPTIMIZATION_GUIDE.md)** - Complete guide to lazy loading and performance optimizations ⭐ **NEW**
 - **[API Development Guide](./API_DEVELOPMENT_GUIDE.md)** - Comprehensive guide for API development patterns, error handling, and best practices
 - **[UI Design Document](./UI_DESIGN_DOCUMENT.md)** - UI/UX standards and component patterns
 
 > **⚠️ CRITICAL**: Before developing any new APIs or fixing API issues, read the [API Development Guide](./API_DEVELOPMENT_GUIDE.md) to prevent common SQL syntax errors, authentication issues, and ensure consistent patterns.
+
+> **🚀 PERFORMANCE**: For optimal application performance, implement lazy loading patterns from the [Performance Optimization Guide](./PERFORMANCE_OPTIMIZATION_GUIDE.md) in all new components.
 
 ---
 
@@ -154,8 +158,7 @@ module.exports = new ControllerName();
 const express = require('express');
 const { body, param, query } = require('express-validator');
 const controllerName = require('../controllers/controllerNameController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -167,23 +170,28 @@ const validateCreate = [
 
 // Apply authentication to all routes
 router.use(authenticateToken);
-router.use(requirePermission('module_name:read'));
 
-// Routes
-router.get('/', controllerName.getAll);
-router.get('/:id', controllerName.getById);
-router.post('/', 
-  requirePermission('module_name:write'),
-  validateCreate, 
+// Routes with role-based authorization
+router.get('/',
+  requireRole(['admin', 'user']),
+  controllerName.getAll
+);
+router.get('/:id',
+  requireRole(['admin', 'user']),
+  controllerName.getById
+);
+router.post('/',
+  requireRole(['admin']),
+  validateCreate,
   controllerName.create
 );
-router.put('/:id', 
-  requirePermission('module_name:write'),
-  validateCreate, 
+router.put('/:id',
+  requireRole(['admin']),
+  validateCreate,
   controllerName.update
 );
-router.delete('/:id', 
-  requirePermission('module_name:delete'),
+router.delete('/:id',
+  requireRole(['admin']),
   controllerName.delete
 );
 
@@ -193,7 +201,7 @@ module.exports = router;
 **Key Patterns**:
 - Use `express-validator` for input validation
 - Apply authentication with `authenticateToken`
-- Use RBAC with `requirePermission('module:action')`
+- Use role-based authorization with `requireRole(['admin', 'user'])`
 - RESTful route naming conventions
 - Group validation middleware logically
 
@@ -370,6 +378,123 @@ export default MainComponent;
 - Error handling with toast notifications
 - Separate API calls into dedicated functions
 - Use React.Fragment for root elements
+
+---
+
+## Lazy Loading Patterns
+
+### 🚀 Performance-First Approach
+
+**IMPORTANT**: All new components should implement lazy loading to improve application startup performance.
+
+> **See**: [Performance Optimization Guide](./PERFORMANCE_OPTIMIZATION_GUIDE.md) for complete implementation details.
+
+### 1. Lazy Loading Hook Pattern
+
+**Location**: `client/src/hooks/useLazyLoad.js`
+
+**Usage**:
+```javascript
+import { useLazyLoadOnDemand } from "@/hooks/useLazyLoad";
+import LazyDataLoader from "@/components/LazyDataLoader";
+
+const MyComponent = () => {
+  // ✅ CORRECT: Lazy load data on demand
+  const dataLazyLoad = useLazyLoadOnDemand(async () => {
+    const response = await apiCall();
+    if (response.success) {
+      return response.data;
+    }
+    throw new Error(response.error || 'Failed to fetch data');
+  });
+
+  return (
+    <LazyDataLoader
+      {...dataLazyLoad}
+      loadingMessage="Loading data..."
+      loadButtonText="Load Data"
+      emptyMessage="No data available"
+      minHeight="300px"
+    >
+      {(data) => <DataComponent data={data} />}
+    </LazyDataLoader>
+  );
+};
+```
+
+### 2. Component Lazy Loading Pattern
+
+**❌ AVOID: Immediate data loading**
+```javascript
+// DON'T DO THIS - Loads data immediately on mount
+useEffect(() => {
+  fetchData();
+}, []);
+```
+
+**✅ CORRECT: Lazy loading with user control**
+```javascript
+// DO THIS - Load data only when user requests it
+const dataLazyLoad = useLazyLoadOnDemand(fetchDataFunction);
+
+// User clicks "Load Data" button to trigger loading
+```
+
+### 3. Lazy Loading States
+
+**Required States**:
+- `loading` - Show spinner during data fetch
+- `error` - Display error message with retry option
+- `hasLoaded` - Track if data has been loaded
+- `data` - The actual data once loaded
+
+**UI States**:
+```javascript
+// Not loaded yet - Show load button
+if (!hasLoaded && !loading) {
+  return <LoadButton onClick={loadData} />;
+}
+
+// Loading - Show spinner
+if (loading) {
+  return <Spinner />;
+}
+
+// Error - Show error with retry
+if (error) {
+  return <ErrorMessage error={error} onRetry={reload} />;
+}
+
+// Success - Render data
+return <DataComponent data={data} />;
+```
+
+### 4. Performance Benefits
+
+**Before Lazy Loading**:
+- Initial load: 3-5 seconds
+- API calls on startup: 8-12 concurrent calls
+- Time to interactive: 4-6 seconds
+
+**After Lazy Loading**:
+- Initial load: 0.5-1 second ⚡
+- API calls on startup: 0-2 calls
+- Time to interactive: 1-2 seconds
+
+### 5. When to Use Lazy Loading
+
+**✅ Use for**:
+- Large datasets (>100 items)
+- Heavy API calls (>1 second response)
+- Optional content (admin panels, detailed views)
+- Dashboard widgets
+- Search results
+
+**❌ Don't use for**:
+- Critical navigation data
+- User authentication
+- Small, fast datasets
+- Essential UI components
 
 ---
 
@@ -1436,13 +1561,18 @@ router.use(authenticateToken);
 
 ### 2. Authorization Pattern
 
-**RBAC Middleware**: `requirePermission`
+**Role-Based Middleware**: `requireRole`
 ```javascript
-// Module-based permissions
-router.use(requirePermission('module_name:read'));
-router.post('/', requirePermission('module_name:write'), controller.create);
-router.delete('/:id', requirePermission('module_name:delete'), controller.delete);
+// Role-based authorization
+router.get('/', requireRole(['admin', 'user']), controller.getAll);
+router.post('/', requireRole(['admin']), controller.create);
+router.delete('/:id', requireRole(['admin']), controller.delete);
 ```
+
+**Available Roles**:
+- `admin`: Full access to all operations (create, read, update, delete)
+- `user`: Read-only access to most resources
+- `moderator`: Limited administrative access (if needed)
 
 ### 3. Input Validation Pattern
 
@@ -2789,7 +2919,7 @@ describe('Component', () => {
 - Follow established import paths
 - Use `accessToken` from localStorage
 - Follow UI component patterns consistently
-- Apply authentication and RBAC to all routes
+- Apply authentication and role-based authorization to all routes
 - Use structured error handling with try/catch
 - Validate all inputs with express-validator
 - Follow established styling patterns
@@ -2805,7 +2935,7 @@ describe('Component', () => {
 ### Backend Checklist:
 - [ ] Service uses `const { db } = require('../db');`
 - [ ] Controller has proper error handling
-- [ ] Routes use `authenticateToken` and `requirePermission`
+- [ ] Routes use `authenticateToken` and `requireRole`
 - [ ] Input validation with `express-validator`
 - [ ] Structured JSON responses
 

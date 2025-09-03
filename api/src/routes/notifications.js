@@ -1,7 +1,6 @@
 const express = require('express');
 const notificationController = require('../controllers/notificationController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -85,7 +84,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.post('/', 
-  requirePermission('notifications', 'create'),
+  requireRole(['admin']),
   notificationController.createNotification
 );
 
@@ -225,7 +224,7 @@ router.post('/',
  *         description: Unauthorized
  */
 router.get('/', 
-  requirePermission('notifications', 'read'),
+  requireRole(['admin', 'user']),
   notificationController.getUserNotifications
 );
 
@@ -253,7 +252,7 @@ router.get('/',
  *         description: Unauthorized
  */
 router.patch('/:notificationId/read', 
-  requirePermission('notifications', 'update'),
+  requireRole(['admin']),
   notificationController.markAsRead
 );
 
@@ -286,7 +285,7 @@ router.patch('/:notificationId/read',
  *         description: Unauthorized
  */
 router.patch('/read-all', 
-  requirePermission('notifications', 'update'),
+  requireRole(['admin']),
   notificationController.markAllAsRead
 );
 
@@ -314,7 +313,7 @@ router.patch('/read-all',
  *         description: Unauthorized
  */
 router.delete('/:notificationId', 
-  requirePermission('notifications', 'delete'),
+  requireRole(['admin']),
   notificationController.deleteNotification
 );
 
@@ -378,7 +377,7 @@ router.delete('/:notificationId',
  *         description: Unauthorized
  */
 router.get('/stats',
-  requirePermission('notifications', 'read'),
+  requireRole(['admin', 'user']),
   notificationController.getNotificationStats
 );
 
@@ -453,7 +452,7 @@ router.get('/stats',
  *         description: Insufficient permissions
  */
 router.post('/channels',
-  requirePermission('notifications', 'admin'),
+  requireRole(['admin']),
   notificationController.createChannel
 );
 
@@ -518,7 +517,7 @@ router.post('/channels',
  *         description: Unauthorized
  */
 router.get('/channels',
-  requirePermission('notifications', 'read'),
+  requireRole(['admin', 'user']),
   notificationController.getAllChannels
 );
 
@@ -581,7 +580,7 @@ router.get('/channels',
  *         description: Insufficient permissions
  */
 router.put('/channels/:channelId',
-  requirePermission('notifications', 'admin'),
+  requireRole(['admin']),
   notificationController.updateChannel
 );
 
@@ -611,7 +610,7 @@ router.put('/channels/:channelId',
  *         description: Insufficient permissions
  */
 router.delete('/channels/:channelId',
-  requirePermission('notifications', 'admin'),
+  requireRole(['admin']),
   notificationController.deleteChannel
 );
 
@@ -698,7 +697,7 @@ router.delete('/channels/:channelId',
  *         description: Insufficient permissions
  */
 router.post('/templates',
-  requirePermission('notifications', 'admin'),
+  requireRole(['admin']),
   notificationController.createTemplate
 );
 
@@ -777,7 +776,7 @@ router.post('/templates',
  *         description: Unauthorized
  */
 router.get('/templates',
-  requirePermission('notifications', 'read'),
+  requireRole(['admin', 'user']),
   notificationController.getAllTemplates
 );
 

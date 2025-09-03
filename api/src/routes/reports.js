@@ -1,7 +1,6 @@
 const express = require('express');
 const reportController = require('../controllers/reportController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -63,7 +62,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.post('/templates', 
-  requirePermission('reports', 'write'),
+  requireRole(['admin']),
   reportController.createTemplate
 );
 
@@ -131,7 +130,7 @@ router.post('/templates',
  *         description: Insufficient permissions
  */
 router.get('/templates', 
-  requirePermission('reports', 'read'),
+  requireRole(['admin', 'user']),
   reportController.getAllTemplates
 );
 
@@ -161,7 +160,7 @@ router.get('/templates',
  *         description: Insufficient permissions
  */
 router.get('/templates/:templateId', 
-  requirePermission('reports', 'read'),
+  requireRole(['admin', 'user']),
   reportController.getTemplateById
 );
 
@@ -213,7 +212,7 @@ router.get('/templates/:templateId',
  *         description: Insufficient permissions
  */
 router.put('/templates/:templateId', 
-  requirePermission('reports', 'write'),
+  requireRole(['admin']),
   reportController.updateTemplate
 );
 
@@ -245,7 +244,7 @@ router.put('/templates/:templateId',
  *         description: Insufficient permissions
  */
 router.delete('/templates/:templateId', 
-  requirePermission('reports', 'admin'),
+  requireRole(['admin']),
   reportController.deleteTemplate
 );
 
@@ -294,7 +293,7 @@ router.delete('/templates/:templateId',
  *         description: Insufficient permissions
  */
 router.post('/configurations', 
-  requirePermission('reports', 'write'),
+  requireRole(['admin']),
   reportController.createConfiguration
 );
 
@@ -356,7 +355,7 @@ router.post('/configurations',
  *         description: Insufficient permissions
  */
 router.get('/configurations', 
-  requirePermission('reports', 'read'),
+  requireRole(['admin', 'user']),
   reportController.getAllConfigurations
 );
 
@@ -386,7 +385,7 @@ router.get('/configurations',
  *         description: Insufficient permissions
  */
 router.get('/configurations/:configId',
-  requirePermission('reports', 'read'),
+  requireRole(['admin', 'user']),
   reportController.getConfigurationById
 );
 
@@ -465,7 +464,7 @@ router.get('/configurations/:configId',
  *         description: Insufficient permissions
  */
 router.post('/',
-  requirePermission('reports', 'write'),
+  requireRole(['admin']),
   reportController.generateReport
 );
 
@@ -551,7 +550,7 @@ router.post('/',
  *         description: Insufficient permissions
  */
 router.get('/',
-  requirePermission('reports', 'read'),
+  requireRole(['admin', 'user']),
   reportController.getAllReports
 );
 
@@ -581,7 +580,7 @@ router.get('/',
  *         description: Insufficient permissions
  */
 router.get('/:reportId',
-  requirePermission('reports', 'read'),
+  requireRole(['admin', 'user']),
   reportController.getReportById
 );
 
@@ -618,7 +617,7 @@ router.get('/:reportId',
  *         description: Insufficient permissions
  */
 router.get('/:reportId/download',
-  requirePermission('reports', 'read'),
+  requireRole(['admin', 'user']),
   reportController.downloadReport
 );
 
@@ -648,7 +647,7 @@ router.get('/:reportId/download',
  *         description: Insufficient permissions
  */
 router.delete('/:reportId',
-  requirePermission('reports', 'admin'),
+  requireRole(['admin']),
   reportController.deleteReport
 );
 

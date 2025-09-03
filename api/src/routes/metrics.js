@@ -1,7 +1,7 @@
 const express = require('express');
 const metricsController = require('../controllers/metricsController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -90,7 +90,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.post('/', 
-  requirePermission('metrics:create'),
+  requireRole(['admin']),
   metricsController.createMetric
 );
 
@@ -167,7 +167,7 @@ router.post('/',
  *         description: Unauthorized
  */
 router.get('/',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getAllMetrics
 );
 
@@ -195,7 +195,7 @@ router.get('/',
  *         description: Unauthorized
  */
 router.get('/:metricId', 
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getMetricById
 );
 
@@ -266,7 +266,7 @@ router.get('/:metricId',
  *         description: Unauthorized
  */
 router.put('/:metricId', 
-  requirePermission('metrics:update'),
+  requireRole(['admin']),
   metricsController.updateMetric
 );
 
@@ -294,7 +294,7 @@ router.put('/:metricId',
  *         description: Unauthorized
  */
 router.delete('/:metricId', 
-  requirePermission('metrics:delete'),
+  requireRole(['admin']),
   metricsController.deleteMetric
 );
 
@@ -326,7 +326,7 @@ router.delete('/:metricId',
  *         description: Unauthorized
  */
 router.post('/:metricId/calculate', 
-  requirePermission('metrics:update'),
+  requireRole(['admin']),
   metricsController.calculateMetric
 );
 
@@ -345,7 +345,7 @@ router.post('/:metricId/calculate',
  *         description: Unauthorized
  */
 router.post('/calculate/all',
-  requirePermission('metrics:update'),
+  requireRole(['admin']),
   metricsController.calculateAllMetrics
 );
 
@@ -366,7 +366,7 @@ router.post('/calculate/all',
  *         description: Unauthorized
  */
 router.get('/analytics/by-category',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getMetricsByCategory
 );
 
@@ -385,7 +385,7 @@ router.get('/analytics/by-category',
  *         description: Unauthorized
  */
 router.get('/analytics/by-type',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getMetricsByType
 );
 
@@ -433,7 +433,7 @@ router.get('/analytics/by-type',
  *         description: Unauthorized
  */
 router.get('/search',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.searchMetrics
 );
 
@@ -490,7 +490,7 @@ router.get('/search',
  *         description: Unauthorized
  */
 router.post('/chart-types',
-  requirePermission('metrics:create'),
+  requireRole(['admin']),
   metricsController.createChartType
 );
 
@@ -516,7 +516,7 @@ router.post('/chart-types',
  *         description: Unauthorized
  */
 router.get('/chart-types',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getAllChartTypes
 );
 
@@ -609,7 +609,7 @@ router.get('/chart-types',
  *         description: Unauthorized
  */
 router.post('/chart-configurations',
-  requirePermission('metrics:create'),
+  requireRole(['admin']),
   metricsController.createChartConfiguration
 );
 
@@ -635,7 +635,7 @@ router.post('/chart-configurations',
  *         description: Unauthorized
  */
 router.get('/chart-configurations',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getAllChartConfigurations
 );
 
@@ -656,7 +656,7 @@ router.get('/chart-configurations',
  *         description: Unauthorized
  */
 router.get('/chart-configurations/default',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getDefaultChartConfiguration
 );
 
@@ -733,7 +733,7 @@ router.get('/chart-configurations/default',
  *         description: Unauthorized
  */
 router.put('/chart-configurations/:configId',
-  requirePermission('metrics:update'),
+  requireRole(['admin']),
   metricsController.updateChartConfiguration
 );
 
@@ -768,7 +768,7 @@ router.put('/chart-configurations/:configId',
  *         description: Unauthorized
  */
 router.get('/dashboard-creator',
-  requirePermission('metrics:read'),
+  requireRole(['admin', 'user']),
   metricsController.getMetricsForDashboardCreator
 );
 

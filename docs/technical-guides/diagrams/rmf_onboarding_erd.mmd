@@ -1,0 +1,40 @@
+---
+title: RMF Onboarding ERD
+---
+
+erDiagram
+    RMF_PROJECTS ||--o{ RMF_STEPS : has
+    RMF_STEPS ||--o{ RMF_TASKS : has
+    RMF_TASKS ||--o{ RMF_QUESTIONNAIRE_RESPONSES : captures
+    RMF_QUESTIONNAIRES ||--o{ RMF_QUESTIONNAIRE_RESPONSES : defines
+
+    RMF_PROJECTS ||--o{ RMF_SYSTEM_INFORMATION_TYPES : classifies
+    RMF_INFORMATION_TYPES ||--o{ RMF_SYSTEM_INFORMATION_TYPES : catalogs
+    RMF_PROJECTS ||--|| RMF_CATEGORIZATION_RESULTS : concludes
+
+    RMF_PROJECTS ||--|| RMF_CONTROL_SELECTIONS : selects
+
+    RMF_STEPS ||--o{ RMF_STEP_ARTIFACTS : has
+    ARTIFACTS ||--o{ RMF_STEP_ARTIFACTS : linked
+
+    RMF_PROJECTS ||--o{ RMF_ASSESSMENTS : assessed_by
+    ARTIFACTS ||--o{ RMF_ASSESSMENTS : sar_artifact
+
+    RMF_PROJECTS ||--|| RMF_AUTHORIZATION_RECORDS : results_in
+    AUTHORIZATIONS_TO_OPERATE ||--o{ RMF_AUTHORIZATION_RECORDS : references
+
+    RMF_PROJECTS ||--|| RMF_MONITORING_PLANS : monitors
+
+    RMF_STEPS ||--o{ RMF_STEP_APPROVALS : approved_by
+
+    CONTROLS }o--o{ RMF_PROJECTS : context
+    CONTROL_COMPLIANCE_STATUS }o--o{ RMF_PROJECTS : context
+    CONTROL_EVIDENCE }o--o{ RMF_PROJECTS : context
+    CONTROL_FINDINGS }o--o{ RMF_PROJECTS : context
+    CONTROL_POAMS }o--o{ RMF_PROJECTS : context
+    SYSTEM_SECURITY_PLANS }o--o{ RMF_PROJECTS : context
+    ARTIFACTS }o--o{ RMF_PROJECTS : context
+
+%% Notes:
+%% - Relationship cardinalities denote primary usage; actual FK is from RMF_* tables to base tables
+%% - Uppercase names correspond to lower_snake_case actual table names

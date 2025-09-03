@@ -1,7 +1,6 @@
 const express = require('express');
 const policyController = require('../controllers/policyController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -68,7 +67,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.post('/', 
-  requirePermission('policies', 'write'),
+  requireRole(['admin']),
   policyController.createPolicy
 );
 
@@ -217,7 +216,7 @@ router.post('/',
  *         description: Insufficient permissions
  */
 router.get('/', 
-  requirePermission('policies', 'read'),
+  requireRole(['admin', 'user']),
   policyController.getAllPolicies
 );
 
@@ -247,7 +246,7 @@ router.get('/',
  *         description: Insufficient permissions
  */
 router.get('/:policyId', 
-  requirePermission('policies', 'read'),
+  requireRole(['admin', 'user']),
   policyController.getPolicyById
 );
 
@@ -311,7 +310,7 @@ router.get('/:policyId',
  *         description: Insufficient permissions
  */
 router.put('/:policyId', 
-  requirePermission('policies', 'write'),
+  requireRole(['admin']),
   policyController.updatePolicy
 );
 
@@ -341,7 +340,7 @@ router.put('/:policyId',
  *         description: Insufficient permissions
  */
 router.delete('/:policyId',
-  requirePermission('policies', 'admin'),
+  requireRole(['admin']),
   policyController.deletePolicy
 );
 
@@ -383,7 +382,7 @@ router.delete('/:policyId',
  *         description: Insufficient permissions
  */
 router.patch('/:policyId/approve',
-  requirePermission('policies', 'admin'),
+  requireRole(['admin']),
   policyController.approvePolicy
 );
 
@@ -423,7 +422,7 @@ router.patch('/:policyId/approve',
  *         description: Insufficient permissions
  */
 router.patch('/:policyId/publish',
-  requirePermission('policies', 'admin'),
+  requireRole(['admin']),
   policyController.publishPolicy
 );
 
@@ -528,7 +527,7 @@ router.patch('/:policyId/publish',
  *         description: AI generation failed
  */
 router.post('/ai/generate',
-  requirePermission('policies', 'write'),
+  requireRole(['admin']),
   policyController.generatePolicyWithAI
 );
 
@@ -598,7 +597,7 @@ router.post('/ai/generate',
  *         description: AI enhancement failed
  */
 router.post('/:policyId/ai/enhance',
-  requirePermission('policies', 'write'),
+  requireRole(['admin']),
   policyController.enhancePolicyWithAI
 );
 
@@ -672,7 +671,7 @@ router.post('/:policyId/ai/enhance',
  *         description: Insufficient permissions
  */
 router.get('/analytics',
-  requirePermission('policies', 'read'),
+  requireRole(['admin', 'user']),
   policyController.getPolicyAnalytics
 );
 
@@ -718,7 +717,7 @@ router.get('/analytics',
  *         description: Insufficient permissions
  */
 router.get('/ai/analytics',
-  requirePermission('policies', 'read'),
+  requireRole(['admin', 'user']),
   policyController.getAIGenerationAnalytics
 );
 

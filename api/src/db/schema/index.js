@@ -12,28 +12,9 @@ const { emailTemplates, emailTemplateTypeEnum, emailTemplateStatusEnum } = requi
 // Integration schemas
 const { systems, systemImpactLevels } = require('./systems');
 const { assets, assetSystems, systemAssets, assetTags, assetNetwork } = require('./assets');
-
-// Systems Management schemas
-const {
-  systemDiscoveryScans,
-  systemDiscoveryResults,
-  systemSecurityPosture,
-  systemConfigurationDrift,
-  crossSystemCorrelations,
-  enterpriseRiskAggregation,
-  attackSurfaceMapping,
-  systemThreatModeling,
-  businessImpactAnalysis,
-  systemComplianceMapping,
-  discoveryStatusEnum,
-  postureStatusEnum,
-  driftSeverityEnum,
-  riskLevelEnum,
-  environmentTypeEnum
-} = require('./systemsManagement');
 const { vulnerabilities, vulnerabilityReferences, vulnerabilityRiskScores } = require('./vulnerabilities');
 const { cves, cveMappings, vulnerabilityCves } = require('./cves');
-const { poams, poamAssets, poamCves, poamMilestones, vulnerabilityPoams, poamSignatures } = require('./poams');
+const { poams, poamAssets, poamCves, poamMilestones, vulnerabilityPoams } = require('./poams');
 const { controls, controlEvidence, controlFindings, controlInheritance, controlPoams, poamApprovalComments } = require('./controls');
 const { assetVulnerabilities, detectionStatusEnum } = require('./assetVulnerabilities');
 
@@ -138,16 +119,6 @@ const {
 } = require('./documents');
 const { syncJobs, syncServiceEnum } = require('./syncJobs');
 const { syncLogs, syncStatusEnum } = require('./syncLogs');
-const {
-  webhookConfigurations,
-  webhookLogs,
-  webhookDeliveries,
-  webhookSubscriptions,
-  webhookRateLimits,
-  webhookSecurity,
-  webhookServiceEnum,
-  webhookStatusEnum
-} = require('./webhooks');
 
 // Patch Management schemas
 const {
@@ -343,6 +314,227 @@ const { settings, settingDataTypeEnum } = require('./settings');
 // Distribution Groups schemas
 const { distributionGroups, distributionGroupMembers } = require('./distributionGroups');
 
+// System Management schemas
+const {
+  backupJobs,
+  batches,
+  deployments,
+  schedules,
+  jobExecutions,
+  backupTypeEnum,
+  backupStatusEnum,
+  batchStatusEnum,
+  deploymentStatusEnum,
+  deploymentTypeEnum
+} = require('./systemOperations');
+
+// Data Management schemas
+const {
+  errors,
+  dataQuality,
+  dataFreshness,
+  integrations,
+  importJobs,
+  exportJobs,
+  errorSeverityEnum,
+  integrationTypeEnum,
+  authTypeEnum
+} = require('./dataManagement');
+
+// Organization Tools schemas
+const {
+  tags,
+  tasks,
+  savedFilters,
+  customFields,
+  customFieldValues,
+  entitySynonyms,
+  entityTags,
+  taskStatusEnum,
+  taskPriorityEnum,
+  fieldTypeEnum
+} = require('./organizationTools');
+
+// Workflow Management schemas
+const {
+  workflows,
+  workflowNodes,
+  workflowEdges,
+  workflowInstances,
+  workflowExecutions,
+  workflowTriggers,
+  workflowStatusEnum: workflowMgmtStatusEnum,
+  workflowInstanceStatusEnum,
+  workflowExecutionStatusEnum,
+  triggerTypeEnum
+} = require('./workflowManagement');
+
+// Cost & Risk Management schemas
+const {
+  budgetImpact,
+  businessImpactCosts,
+  costBudgets,
+  costCenters,
+  riskAdjustmentFactors,
+  riskFactors,
+  riskModels,
+  riskScoreHistory,
+  impactLevelEnum,
+  riskLevelEnum,
+  costCategoryEnum,
+  budgetStatusEnum
+} = require('./costRiskManagement');
+
+// Advanced Security schemas
+const {
+  roleModulePermissions: advancedRoleModulePermissions,
+  roleNavigationPermissions,
+  sspControls,
+  sspPoamMappings,
+  complianceControls,
+  complianceFrameworks,
+  controlComplianceStatus,
+  complianceStatusEnum,
+  controlStatusEnum,
+  assessmentStatusEnum
+} = require('./advancedSecurity');
+
+// AI & NLQ Features schemas
+const {
+  nlqChatSessions,
+  nlqChatMessages,
+  nlqDataSources,
+  nlqFewShotExamples,
+  nlqPromptConfig,
+  nlqQueryLogs,
+  openaiUsage,
+  chatStatusEnum,
+  queryStatusEnum,
+  usageTypeEnum,
+  modelTypeEnum
+} = require('./aiNlqFeatures');
+
+// Webhooks & Integrations schemas
+const {
+  webhookConfigurations,
+  webhookDeliveries,
+  webhookLogs,
+  webhookRateLimits,
+  webhookSecurity,
+  webhookSubscriptions,
+  importHistory,
+  webhookStatusEnum,
+  deliveryStatusEnum: webhookDeliveryStatusEnum,
+  httpMethodEnum,
+  securityTypeEnum
+} = require('./webhooksIntegrations');
+
+// Dashboard Components schemas
+const {
+  dashboardThemes,
+  dashboardWidgets,
+  widgetTemplates,
+  themeTypeEnum,
+  widgetTypeEnum,
+  chartTypeEnum: widgetChartTypeEnum,
+  widgetSizeEnum
+} = require('./dashboardComponents');
+
+// Infrastructure & Assets schemas
+const {
+  cloudAssets,
+  cloudCostMapping,
+  softwareAssets,
+  softwareLifecycle,
+  networkDiagrams,
+  cloudProviderEnum,
+  assetStateEnum,
+  licenseTypeEnum,
+  diagramTypeEnum
+} = require('./infrastructureAssets');
+
+// Diagram Management schemas
+const {
+  diagrams,
+  diagramTemplates,
+  diagramProjects,
+  diagramSharedProjects,
+  diagramVersions,
+  diagramNodeLibrary,
+  digitalSignatures,
+  diagramStatusEnum,
+  sharePermissionEnum,
+  signatureStatusEnum
+} = require('./diagramManagement');
+
+// STIG & Security Management schemas
+const {
+  stigAssets,
+  stigAssetAssignments,
+  stigCollections,
+  stigDownloads,
+  stigMappings,
+  stigReviews,
+  stigRules,
+  attackSurfaceMapping,
+  stigStatusEnum: stigMgmtStatusEnum,
+  severityEnum,
+  mappingTypeEnum
+} = require('./stigSecurityManagement');
+
+// System Analysis schemas
+const {
+  systemComplianceMapping,
+  systemConfigurationDrift,
+  systemDiscoveryScans,
+  systemDiscoveryResults,
+  systemSecurityPosture,
+  systemThreatModeling,
+  sshConnectionProfiles,
+  discoveryStatusEnum,
+  complianceLevelEnum,
+  postureStatusEnum,
+  threatLevelEnum
+} = require('./systemAnalysis');
+
+// Compliance & Documentation schemas
+const {
+  informationClassificationItems,
+  securityClassificationGuide,
+  references,
+  planOfActionMilestones,
+  poamSignatures,
+  generatedReports,
+  classificationLevelEnum,
+  documentStatusEnum,
+  referenceTypeEnum
+} = require('./complianceDocumentation');
+
+// Patch, License & Miscellaneous schemas
+const {
+  patchApprovalHistory,
+  patchScheduleExecutions,
+  patchesOrphan,
+  licenseTypes,
+  licenses,
+  licenseCosts,
+  exploits,
+  businessImpactAnalysis,
+  conflictResolutions,
+  cpeMappings,
+  crossSystemCorrelations,
+  dataConflicts,
+  dataContexts,
+  enterpriseRiskAggregation,
+  remediationCostEntries,
+  vendorMap,
+  vulnerabilityDatabases: miscVulnerabilityDatabases,
+  approvalStatusEnum: patchApprovalStatusEnum,
+  executionStatusEnum,
+  exploitTypeEnum,
+  exploitStatusEnum
+} = require('./patchLicenseMisc');
+
 module.exports = {
   // User management
   users,
@@ -371,23 +563,6 @@ module.exports = {
   systemAssets,
   assetTags,
   assetNetwork,
-
-  // Systems Management
-  systemDiscoveryScans,
-  systemDiscoveryResults,
-  systemSecurityPosture,
-  systemConfigurationDrift,
-  crossSystemCorrelations,
-  enterpriseRiskAggregation,
-  attackSurfaceMapping,
-  systemThreatModeling,
-  businessImpactAnalysis,
-  systemComplianceMapping,
-  discoveryStatusEnum,
-  postureStatusEnum,
-  driftSeverityEnum,
-  riskLevelEnum,
-  environmentTypeEnum,
   vulnerabilities,
   vulnerabilityReferences,
   vulnerabilityRiskScores,
@@ -399,7 +574,6 @@ module.exports = {
   poamCves,
   poamMilestones,
   vulnerabilityPoams,
-  poamSignatures,
   controls,
   controlEvidence,
   controlFindings,
@@ -511,16 +685,6 @@ module.exports = {
   syncServiceEnum,
   syncLogs,
   syncStatusEnum,
-
-  // Webhook management
-  webhookConfigurations,
-  webhookLogs,
-  webhookDeliveries,
-  webhookSubscriptions,
-  webhookRateLimits,
-  webhookSecurity,
-  webhookServiceEnum,
-  webhookStatusEnum,
 
   // Policy and Procedure management
   policies,
@@ -687,4 +851,195 @@ module.exports = {
   noteCategoryEnum,
   visibilityLevelEnum,
   attachmentTypeEnum,
+
+  // System Management
+  backupJobs,
+  batches,
+  deployments,
+  schedules,
+  jobExecutions,
+  backupTypeEnum,
+  backupStatusEnum,
+  batchStatusEnum,
+  deploymentStatusEnum,
+  deploymentTypeEnum,
+
+  // Data Management
+  errors,
+  dataQuality,
+  dataFreshness,
+  integrations,
+  importJobs,
+  exportJobs,
+  errorSeverityEnum,
+  integrationTypeEnum,
+  authTypeEnum,
+
+  // Organization Tools
+  tags,
+  tasks,
+  savedFilters,
+  customFields,
+  customFieldValues,
+  entitySynonyms,
+  entityTags,
+  taskStatusEnum,
+  taskPriorityEnum,
+  fieldTypeEnum,
+
+  // Workflow Management
+  workflows,
+  workflowNodes,
+  workflowEdges,
+  workflowInstances,
+  workflowExecutions,
+  workflowTriggers,
+  workflowMgmtStatusEnum,
+  workflowInstanceStatusEnum,
+  workflowExecutionStatusEnum,
+  triggerTypeEnum,
+
+  // Cost & Risk Management
+  budgetImpact,
+  businessImpactCosts,
+  costBudgets,
+  costCenters,
+  riskAdjustmentFactors,
+  riskFactors,
+  riskModels,
+  riskScoreHistory,
+  impactLevelEnum,
+  riskLevelEnum,
+  costCategoryEnum,
+  budgetStatusEnum,
+
+  // Advanced Security
+  advancedRoleModulePermissions,
+  roleNavigationPermissions,
+  sspControls,
+  sspPoamMappings,
+  complianceControls,
+  complianceFrameworks,
+  controlComplianceStatus,
+  complianceStatusEnum,
+  controlStatusEnum,
+  assessmentStatusEnum,
+
+  // AI & NLQ Features
+  nlqChatSessions,
+  nlqChatMessages,
+  nlqDataSources,
+  nlqFewShotExamples,
+  nlqPromptConfig,
+  nlqQueryLogs,
+  openaiUsage,
+  chatStatusEnum,
+  queryStatusEnum,
+  usageTypeEnum,
+  modelTypeEnum,
+
+  // Webhooks & Integrations
+  webhookConfigurations,
+  webhookDeliveries,
+  webhookLogs,
+  webhookRateLimits,
+  webhookSecurity,
+  webhookSubscriptions,
+  importHistory,
+  webhookStatusEnum,
+  webhookDeliveryStatusEnum,
+  httpMethodEnum,
+  securityTypeEnum,
+
+  // Dashboard Components
+  dashboardThemes,
+  dashboardWidgets,
+  widgetTemplates,
+  themeTypeEnum,
+  widgetTypeEnum,
+  widgetChartTypeEnum,
+  widgetSizeEnum,
+
+  // Infrastructure & Assets
+  cloudAssets,
+  cloudCostMapping,
+  softwareAssets,
+  softwareLifecycle,
+  networkDiagrams,
+  cloudProviderEnum,
+  assetStateEnum,
+  licenseTypeEnum,
+  diagramTypeEnum,
+
+  // Diagram Management
+  diagrams,
+  diagramTemplates,
+  diagramProjects,
+  diagramSharedProjects,
+  diagramVersions,
+  diagramNodeLibrary,
+  digitalSignatures,
+  diagramStatusEnum,
+  sharePermissionEnum,
+  signatureStatusEnum,
+
+  // STIG & Security Management
+  stigAssets,
+  stigAssetAssignments,
+  stigCollections,
+  stigDownloads,
+  stigMappings,
+  stigReviews,
+  stigRules,
+  attackSurfaceMapping,
+  stigMgmtStatusEnum,
+  severityEnum,
+  mappingTypeEnum,
+
+  // System Analysis
+  systemComplianceMapping,
+  systemConfigurationDrift,
+  systemDiscoveryScans,
+  systemDiscoveryResults,
+  systemSecurityPosture,
+  systemThreatModeling,
+  sshConnectionProfiles,
+  discoveryStatusEnum,
+  complianceLevelEnum,
+  postureStatusEnum,
+  threatLevelEnum,
+
+  // Compliance & Documentation
+  informationClassificationItems,
+  securityClassificationGuide,
+  references,
+  planOfActionMilestones,
+  poamSignatures,
+  generatedReports,
+  classificationLevelEnum,
+  documentStatusEnum,
+  referenceTypeEnum,
+
+  // Patch, License & Miscellaneous
+  patchApprovalHistory,
+  patchScheduleExecutions,
+  patchesOrphan,
+  licenseTypes,
+  licenses,
+  licenseCosts,
+  exploits,
+  businessImpactAnalysis,
+  conflictResolutions,
+  cpeMappings,
+  crossSystemCorrelations,
+  dataConflicts,
+  dataContexts,
+  enterpriseRiskAggregation,
+  remediationCostEntries,
+  vendorMap,
+  miscVulnerabilityDatabases,
+  patchApprovalStatusEnum,
+  executionStatusEnum,
+  exploitTypeEnum,
+  exploitStatusEnum,
 };

@@ -84,7 +84,12 @@ const AccessRequests = () => {
       if (search) params.append('search', search);
       if (status) params.append('status', status);
 
+      console.log('🔍 Fetching access requests with params:', params.toString());
       const result = await apiClient.get(`/access-requests?${params.toString()}`);
+      console.log('📡 API Response:', result);
+      console.log('📡 API Response type:', typeof result);
+      console.log('📡 API Response success:', result?.success);
+      console.log('📡 API Response data:', result?.data);
 
       if (result.success) {
         // Transform API data to match the display format
@@ -118,9 +123,19 @@ const AccessRequests = () => {
         throw new Error(result.error || 'Failed to fetch access requests');
       }
     } catch (error) {
-      console.error('Error fetching access requests:', error);
-      setError(error.message);
-      toast.error(`Failed to load access requests: ${error.message}`);
+      console.error('❌ Error fetching access requests:', error);
+
+      // Provide more detailed error information
+      let errorMessage = 'Failed to fetch access requests';
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      if (error.response) {
+        errorMessage = `API Error: ${error.response.status} - ${error.response.statusText}`;
+      }
+
+      setError(errorMessage);
+      toast.error(`Failed to load access requests: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

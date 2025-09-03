@@ -1,7 +1,6 @@
 const express = require('express');
 const moduleController = require('../controllers/moduleController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -50,8 +49,8 @@ router.use(authenticateToken);
  *       409:
  *         description: Module with this name already exists
  */
-router.post('/', 
-  requirePermission('modules', 'admin'),
+router.post('/',
+  requireRole(['admin']),
   moduleController.createModule
 );
 
@@ -112,8 +111,8 @@ router.post('/',
  *       403:
  *         description: Insufficient permissions
  */
-router.get('/', 
-  requirePermission('modules', 'read'),
+router.get('/',
+  requireRole(['admin', 'user']),
   moduleController.getAllModules
 );
 
@@ -142,8 +141,8 @@ router.get('/',
  *       403:
  *         description: Insufficient permissions
  */
-router.get('/:moduleId', 
-  requirePermission('modules', 'read'),
+router.get('/:moduleId',
+  requireRole(['admin', 'user']),
   moduleController.getModuleById
 );
 
@@ -193,8 +192,8 @@ router.get('/:moduleId',
  *       409:
  *         description: Module with this name already exists
  */
-router.put('/:moduleId', 
-  requirePermission('modules', 'admin'),
+router.put('/:moduleId',
+  requireRole(['admin']),
   moduleController.updateModule
 );
 
@@ -225,8 +224,8 @@ router.put('/:moduleId',
  *       409:
  *         description: Cannot delete module - other modules depend on it
  */
-router.delete('/:moduleId', 
-  requirePermission('modules', 'admin'),
+router.delete('/:moduleId',
+  requireRole(['admin']),
   moduleController.deleteModule
 );
 
@@ -257,8 +256,8 @@ router.delete('/:moduleId',
  *       409:
  *         description: Cannot enable module - required dependencies are disabled
  */
-router.post('/:moduleId/toggle', 
-  requirePermission('modules', 'admin'),
+router.post('/:moduleId/toggle',
+  requireRole(['admin']),
   moduleController.toggleModuleStatus
 );
 
@@ -323,8 +322,8 @@ router.post('/:moduleId/toggle',
  *       403:
  *         description: Insufficient permissions
  */
-router.post('/navigation', 
-  requirePermission('modules', 'admin'),
+router.post('/navigation',
+  requireRole(['admin']),
   moduleController.createNavigation
 );
 
@@ -351,8 +350,8 @@ router.post('/navigation',
  *       403:
  *         description: Insufficient permissions
  */
-router.get('/:moduleId/navigation', 
-  requirePermission('modules', 'read'),
+router.get('/:moduleId/navigation',
+  requireRole(['admin', 'user']),
   moduleController.getModuleNavigation
 );
 
@@ -467,7 +466,7 @@ router.get('/navigation/user',
  *         description: Insufficient permissions
  */
 router.put('/roles/:roleId/modules/:moduleId/permissions',
-  requirePermission('modules', 'admin'),
+  requireRole(['admin']),
   moduleController.setRoleModulePermissions
 );
 
@@ -501,7 +500,7 @@ router.put('/roles/:roleId/modules/:moduleId/permissions',
  *         description: Insufficient permissions
  */
 router.get('/roles/:roleId/modules/:moduleId/permissions',
-  requirePermission('modules', 'read'),
+  requireRole(['admin', 'user']),
   moduleController.getRoleModulePermissions
 );
 

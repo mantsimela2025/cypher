@@ -84,6 +84,9 @@ const APIDocumentation = React.lazy(() => import("@/pages/admin/api-documentatio
 const EnvironmentSettings = React.lazy(() => import("@/pages/admin/environment-settings/EnvironmentSettings"));
 const SystemSettings = React.lazy(() => import("@/pages/admin/system-settings/SystemSettings"));
 
+// Document Management
+const DocumentManager = React.lazy(() => import("@/pages/documents/DocumentManager"));
+
 // Scan Management - Direct imports for better reliability
 const Scans = React.lazy(() => import("@/pages/scan-management/Scans"));
 const Results = React.lazy(() => import("@/pages/scan-management/Results"));
@@ -91,6 +94,9 @@ const ScanTerminal = React.lazy(() => import("@/pages/scan-management/ScanTermin
 const Templates = React.lazy(() => import("@/pages/scan-management/Templates"));
 const Schedule = React.lazy(() => import("@/pages/scan-management/Schedule"));
 const ScanSettings = React.lazy(() => import("@/pages/scan-management/Settings"));
+
+// Scanner Test Page
+const ScannerTest = React.lazy(() => import("@/pages/ScannerTest"));
 
 // Document Management - Direct imports for better reliability
 const DocumentLibrary = React.lazy(() => import("@/pages/document-management/DocumentLibrary"));
@@ -221,6 +227,12 @@ const Register = React.lazy(() => import("@/pages/auth/Register"));
 const ForgotPassword = React.lazy(() => import("@/pages/auth/ForgotPassword"));
 const Success = React.lazy(() => import("@/pages/auth/Success"));
 
+// RMF (Risk Management Framework) Pages
+const RMFDashboard = React.lazy(() => import("@/pages/rmf/RMFDashboard"));
+const RMFProjects = React.lazy(() => import("@/pages/rmf/RMFProjects"));
+const RMFNewProject = React.lazy(() => import("@/pages/rmf/RMFNewProject"));
+const RMFCategorizeStep = React.lazy(() => import("@/pages/rmf/steps/RMFCategorizeStep"));
+
 
 const ScrollToTop = (props) => {
   const location = useLocation();
@@ -267,6 +279,7 @@ const Pages = () => {
               <Route path="systems/compliance" element={<Suspense fallback={<PageLoader />}><SystemsMain /></Suspense>}></Route>
 
               {/*Asset Management*/}
+              <Route path="assets" element={<Suspense fallback={<PageLoader />}><AssetAnalytics /></Suspense>}></Route>
               <Route path="assets/analytics" element={<Suspense fallback={<PageLoader />}><AssetAnalytics /></Suspense>}></Route>
               <Route path="assets/inventory" element={<Suspense fallback={<PageLoader />}><AssetInventory /></Suspense>}></Route>
               <Route path="asset-inventory" element={<Suspense fallback={<PageLoader />}><AssetInventory /></Suspense>}></Route>
@@ -306,6 +319,16 @@ const Pages = () => {
               <Route path="admin/environment-settings" element={<Suspense fallback={<PageLoader />}><EnvironmentSettings /></Suspense>}></Route>
               <Route path="admin/system-settings" element={<Suspense fallback={<PageLoader />}><SystemSettings /></Suspense>}></Route>
 
+              {/*Document Management*/}
+              <Route path="documents" element={<Suspense fallback={<PageLoader />}><DocumentManager /></Suspense>}></Route>
+{/*RMF (Risk Management Framework)*/}
+<Route path="rmf" element={<Suspense fallback={<PageLoader />}><RMFDashboard /></Suspense>}></Route>
+<Route path="rmf/dashboard" element={<Suspense fallback={<PageLoader />}><RMFDashboard /></Suspense>}></Route>
+<Route path="rmf/projects" element={<Suspense fallback={<PageLoader />}><RMFProjects /></Suspense>}></Route>
+<Route path="rmf/projects/new" element={<Suspense fallback={<PageLoader />}><RMFNewProject /></Suspense>}></Route>
+<Route path="rmf/projects/:projectId/step/categorize" element={<Suspense fallback={<PageLoader />}><RMFCategorizeStep /></Suspense>}></Route>
+
+
               {/*Scan Management*/}
               <Route path="scan-management/scans" element={<Suspense fallback={<PageLoader />}><Scans /></Suspense>}></Route>
               <Route path="scan-management/results" element={<Suspense fallback={<PageLoader />}><Results /></Suspense>}></Route>
@@ -313,6 +336,9 @@ const Pages = () => {
               <Route path="scan-management/templates" element={<Suspense fallback={<PageLoader />}><Templates /></Suspense>}></Route>
               <Route path="scan-management/schedule" element={<Suspense fallback={<PageLoader />}><Schedule /></Suspense>}></Route>
               <Route path="scan-management/settings" element={<Suspense fallback={<PageLoader />}><ScanSettings /></Suspense>}></Route>
+              
+              {/*Scanner Test Page*/}
+              <Route path="scanner-test" element={<Suspense fallback={<PageLoader />}><ScannerTest /></Suspense>}></Route>
 
               {/*Policy Management*/}
               <Route path="policy-management/policies" element={<Suspense fallback={<PageLoader />}><Policies /></Suspense>}></Route>

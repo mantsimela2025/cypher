@@ -1,8 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const assetTagsController = require('../controllers/assetTagsController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -47,7 +46,7 @@ const validateAssetUuids = [
 
 // Apply authentication and permission middleware to all routes
 router.use(authenticateToken);
-router.use(requirePermission('asset_management:read'));
+router.use(requireRole(['admin', 'user']));
 
 // GET /api/v1/asset-tags/keys - Get all unique tag keys
 router.get('/keys', assetTagsController.getTagKeys);
@@ -69,21 +68,21 @@ router.get('/:assetUuid', assetTagsController.getAssetTags);
 
 // POST /api/v1/asset-tags/:assetUuid - Add a new tag to an asset
 router.post('/:assetUuid',
-  requirePermission('asset_management:write'),
+  requireRole(['admin']),
   validateAddTag,
   assetTagsController.addAssetTag
 );
 
 // POST /api/v1/asset-tags/:assetUuid/bulk - Bulk add tags to an asset
 router.post('/:assetUuid/bulk',
-  requirePermission('asset_management:write'),
+  requireRole(['admin']),
   validateBulkAddTags,
   assetTagsController.bulkAddTags
 );
 
 // DELETE /api/v1/asset-tags/tag/:tagId - Remove a specific tag
 router.delete('/tag/:tagId',
-  requirePermission('asset_management:write'),
+  requireRole(['admin']),
   assetTagsController.removeAssetTag
 );
 

@@ -1,7 +1,6 @@
 const express = require('express');
 const procedureController = require('../controllers/procedureController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -77,7 +76,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.post('/', 
-  requirePermission('procedures', 'write'),
+  requireRole(['admin']),
   procedureController.createProcedure
 );
 
@@ -173,7 +172,7 @@ router.post('/',
  *         description: Insufficient permissions
  */
 router.get('/', 
-  requirePermission('procedures', 'read'),
+  requireRole(['admin', 'user']),
   procedureController.getAllProcedures
 );
 
@@ -203,7 +202,7 @@ router.get('/',
  *         description: Insufficient permissions
  */
 router.get('/:procedureId', 
-  requirePermission('procedures', 'read'),
+  requireRole(['admin', 'user']),
   procedureController.getProcedureById
 );
 
@@ -273,7 +272,7 @@ router.get('/:procedureId',
  *         description: Insufficient permissions
  */
 router.put('/:procedureId', 
-  requirePermission('procedures', 'write'),
+  requireRole(['admin']),
   procedureController.updateProcedure
 );
 
@@ -303,7 +302,7 @@ router.put('/:procedureId',
  *         description: Insufficient permissions
  */
 router.delete('/:procedureId',
-  requirePermission('procedures', 'admin'),
+  requireRole(['admin']),
   procedureController.deleteProcedure
 );
 
@@ -345,7 +344,7 @@ router.delete('/:procedureId',
  *         description: Insufficient permissions
  */
 router.patch('/:procedureId/approve',
-  requirePermission('procedures', 'admin'),
+  requireRole(['admin']),
   procedureController.approveProcedure
 );
 
@@ -385,7 +384,7 @@ router.patch('/:procedureId/approve',
  *         description: Insufficient permissions
  */
 router.patch('/:procedureId/publish',
-  requirePermission('procedures', 'admin'),
+  requireRole(['admin']),
   procedureController.publishProcedure
 );
 
@@ -493,7 +492,7 @@ router.patch('/:procedureId/publish',
  *         description: AI generation failed
  */
 router.post('/ai/generate',
-  requirePermission('procedures', 'write'),
+  requireRole(['admin']),
   procedureController.generateProcedureWithAI
 );
 
@@ -567,7 +566,7 @@ router.post('/ai/generate',
  *         description: Insufficient permissions
  */
 router.get('/analytics',
-  requirePermission('procedures', 'read'),
+  requireRole(['admin', 'user']),
   procedureController.getProcedureAnalytics
 );
 

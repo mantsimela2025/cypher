@@ -1,7 +1,7 @@
 const express = require('express');
 const dashboardController = require('../controllers/dashboardController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -54,7 +54,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.post('/global', 
-  requirePermission('dashboards:admin'),
+  requireRole(['admin']),
   dashboardController.createGlobalDashboard
 );
 
@@ -114,7 +114,7 @@ router.post('/global',
  *         description: Unauthorized
  */
 router.get('/global', 
-  requirePermission('dashboards:read'),
+  requireRole(['admin', 'user']),
   dashboardController.getGlobalDashboards
 );
 
@@ -163,7 +163,7 @@ router.get('/global',
  *         description: Insufficient permissions
  */
 router.put('/global/:dashboardId', 
-  requirePermission('dashboards', 'admin'),
+  requireRole(['admin']),
   dashboardController.updateGlobalDashboard
 );
 
@@ -193,7 +193,7 @@ router.put('/global/:dashboardId',
  *         description: Insufficient permissions
  */
 router.delete('/global/:dashboardId', 
-  requirePermission('dashboards', 'admin'),
+  requireRole(['admin']),
   dashboardController.deleteGlobalDashboard
 );
 
@@ -237,7 +237,7 @@ router.delete('/global/:dashboardId',
  *         description: Unauthorized
  */
 router.post('/user', 
-  requirePermission('dashboards', 'create'),
+  requireRole(['admin']),
   dashboardController.createUserDashboard
 );
 
@@ -281,7 +281,7 @@ router.post('/user',
  *         description: Unauthorized
  */
 router.get('/user', 
-  requirePermission('dashboards', 'read'),
+  requireRole(['admin', 'user']),
   dashboardController.getUserDashboards
 );
 
@@ -325,7 +325,7 @@ router.get('/user',
  *         description: Unauthorized
  */
 router.put('/user/:dashboardId', 
-  requirePermission('dashboards', 'update'),
+  requireRole(['admin']),
   dashboardController.updateUserDashboard
 );
 
@@ -353,7 +353,7 @@ router.put('/user/:dashboardId',
  *         description: Unauthorized
  */
 router.delete('/user/:dashboardId',
-  requirePermission('dashboards:update'),
+  requireRole(['admin']),
   dashboardController.deleteDashboard
 );
 
@@ -430,7 +430,7 @@ router.delete('/user/:dashboardId',
  *         description: Unauthorized
  */
 router.post('/:dashboardId/metrics',
-  requirePermission('dashboards', 'update'),
+  requireRole(['admin']),
   dashboardController.addMetricToDashboard
 );
 
@@ -498,7 +498,7 @@ router.post('/:dashboardId/metrics',
  *         description: Unauthorized
  */
 router.get('/:dashboardId/metrics',
-  requirePermission('dashboards', 'read'),
+  requireRole(['admin', 'user']),
   dashboardController.getDashboardMetrics
 );
 
@@ -558,7 +558,7 @@ router.get('/:dashboardId/metrics',
  *         description: Unauthorized
  */
 router.put('/metrics/:dashboardMetricId',
-  requirePermission('dashboards', 'update'),
+  requireRole(['admin']),
   dashboardController.updateDashboardMetric
 );
 
@@ -586,7 +586,7 @@ router.put('/metrics/:dashboardMetricId',
  *         description: Unauthorized
  */
 router.delete('/metrics/:dashboardMetricId',
-  requirePermission('dashboards', 'update'),
+  requireRole(['admin']),
   dashboardController.removeMetricFromDashboard
 );
 
@@ -635,7 +635,7 @@ router.delete('/metrics/:dashboardMetricId',
  *         description: Unauthorized
  */
 router.post('/:dashboardId/share',
-  requirePermission('dashboards', 'admin'),
+  requireRole(['admin']),
   dashboardController.shareDashboard
 );
 
@@ -689,7 +689,7 @@ router.post('/:dashboardId/share',
  *         description: Unauthorized
  */
 router.get('/:dashboardId/shares',
-  requirePermission('dashboards', 'read'),
+  requireRole(['admin', 'user']),
   dashboardController.getDashboardShares
 );
 
@@ -717,7 +717,7 @@ router.get('/:dashboardId/shares',
  *         description: Unauthorized
  */
 router.delete('/shares/:shareId',
-  requirePermission('dashboards', 'admin'),
+  requireRole(['admin']),
   dashboardController.removeDashboardShare
 );
 
@@ -786,7 +786,7 @@ router.delete('/shares/:shareId',
  *         description: Unauthorized
  */
 router.get('/:dashboardId',
-  requirePermission('dashboards', 'read'),
+  requireRole(['admin', 'user']),
   dashboardController.getDashboardById
 );
 
@@ -851,7 +851,7 @@ router.get('/:dashboardId',
  *         description: Unauthorized
  */
 router.get('/',
-  requirePermission('dashboards', 'read'),
+  requireRole(['admin', 'user']),
   dashboardController.getAccessibleDashboards
 );
 
@@ -901,7 +901,7 @@ router.get('/',
  *         description: Unauthorized
  */
 router.post('/creator',
-  requirePermission('dashboards:create'),
+  requireRole(['admin']),
   dashboardController.createDashboardWithWidgets
 );
 
@@ -920,7 +920,7 @@ router.post('/creator',
  *         description: Unauthorized
  */
 router.get('/my-dashboards',
-  requirePermission('dashboards:read'),
+  requireRole(['admin', 'user']),
   dashboardController.getUserCreatedDashboards
 );
 
@@ -948,7 +948,7 @@ router.get('/my-dashboards',
  *         description: Unauthorized
  */
 router.get('/:dashboardId/edit',
-  requirePermission('dashboards', 'read'),
+  requireRole(['admin', 'user']),
   dashboardController.getDashboardForEditing
 );
 
@@ -988,7 +988,7 @@ router.get('/:dashboardId/edit',
  *         description: Unauthorized
  */
 router.put('/:dashboardId/widgets',
-  requirePermission('dashboards:update'),
+  requireRole(['admin']),
   dashboardController.updateDashboardWidgets
 );
 
@@ -1028,7 +1028,7 @@ router.put('/:dashboardId/widgets',
  *         description: Unauthorized
  */
 router.patch('/:dashboardId/publish',
-  requirePermission('dashboards', 'update'),
+  requireRole(['admin']),
   dashboardController.publishDashboard
 );
 
@@ -1056,7 +1056,7 @@ router.patch('/:dashboardId/publish',
  *         description: Unauthorized
  */
 router.delete('/:dashboardId',
-  requirePermission('dashboards:delete'),
+  requireRole(['admin']),
   dashboardController.deleteDashboard
 );
 

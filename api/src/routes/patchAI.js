@@ -1,7 +1,7 @@
 const express = require('express');
 const patchAIController = require('../controllers/patchAIController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -53,7 +53,7 @@ router.use(authenticateToken);
  *         description: Patches prioritized successfully
  */
 router.post('/prioritize',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.validatePrioritizationCriteria(),
   patchAIController.prioritizePatches
@@ -93,7 +93,7 @@ router.post('/prioritize',
  *         description: Prioritization recommendations retrieved successfully
  */
 router.get('/prioritization-recommendations',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getPrioritizationRecommendations
 );
 
@@ -137,7 +137,7 @@ router.get('/prioritization-recommendations',
  *         description: Risk assessment completed successfully
  */
 router.post('/risk-assessment/:id',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validateUUID(),
   patchAIController.validateRiskAssessmentParams(),
   patchAIController.assessPatchRisk
@@ -179,7 +179,7 @@ router.post('/risk-assessment/:id',
  *         description: Multiple patch risk assessment completed successfully
  */
 router.post('/risk-assessment/multiple',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.validateRiskAssessmentParams(),
   patchAIController.assessMultiplePatchRisk
@@ -217,7 +217,7 @@ router.post('/risk-assessment/multiple',
  *         description: Risk trends retrieved successfully
  */
 router.get('/risk-trends',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getRiskTrends
 );
 
@@ -273,7 +273,7 @@ router.get('/risk-trends',
  *         description: Deployment strategy recommended successfully
  */
 router.post('/deployment-strategy',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.validateAssetUuids(),
   patchAIController.validateDeploymentParams(),
@@ -308,7 +308,7 @@ router.post('/deployment-strategy',
  *         description: Deployment plan optimized successfully
  */
 router.post('/optimize-deployment',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.optimizeDeploymentPlan
 );
 
@@ -355,7 +355,7 @@ router.post('/optimize-deployment',
  *         description: Patch analysis completed successfully
  */
 router.get('/analyze/:id',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validateUUID(),
   patchAIController.validateAnalysisQuery(),
   patchAIController.analyzePatch
@@ -406,7 +406,7 @@ router.get('/analyze/:id',
  *         description: Patches analysis completed successfully
  */
 router.post('/analyze/multiple',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.validateAnalysisQuery(),
   patchAIController.analyzePatches
@@ -447,7 +447,7 @@ router.post('/analyze/multiple',
  *         description: Asset impact analysis completed successfully
  */
 router.post('/asset-impact',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.validateAssetUuids(),
   patchAIController.analyzeAssetImpact
@@ -478,7 +478,7 @@ router.post('/asset-impact',
  *         description: Asset risk profile retrieved successfully
  */
 router.get('/asset-risk-profile/:assetUuid',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getAssetRiskProfile
 );
 
@@ -511,7 +511,7 @@ router.get('/asset-risk-profile/:assetUuid',
  *         description: Vulnerability correlation completed successfully
  */
 router.post('/correlate-vulnerabilities',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.correlateVulnerabilities
 );
@@ -548,7 +548,7 @@ router.post('/correlate-vulnerabilities',
  *         description: Vulnerability trends retrieved successfully
  */
 router.get('/vulnerability-trends',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getVulnerabilityTrends
 );
 
@@ -590,7 +590,7 @@ router.get('/vulnerability-trends',
  *         description: Compliance analysis completed successfully
  */
 router.post('/compliance-analysis',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.validateComplianceFrameworks(),
   patchAIController.analyzeCompliance
@@ -618,7 +618,7 @@ router.post('/compliance-analysis',
  *         description: Invalid compliance framework
  */
 router.get('/compliance-gaps/:framework',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getComplianceGaps
 );
 
@@ -650,7 +650,7 @@ router.get('/compliance-gaps/:framework',
  *         description: Recommendation not found
  */
 router.get('/recommendation-explanation/:recommendationId',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getRecommendationExplanation
 );
 
@@ -685,7 +685,7 @@ router.get('/recommendation-explanation/:recommendationId',
  *         description: Action plan generated successfully
  */
 router.post('/action-plan',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.validatePatchIds(),
   patchAIController.generateActionPlan
 );
@@ -724,7 +724,7 @@ router.post('/action-plan',
  *         description: AI insights retrieved successfully
  */
 router.get('/insights',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getAIInsights
 );
 
@@ -752,7 +752,7 @@ router.get('/insights',
  *         description: Predictive analytics retrieved successfully
  */
 router.get('/predictive-analytics',
-  requirePermission('patch_management:ai_analyze'),
+  requireRole(['admin', 'user']),
   patchAIController.getPredictiveAnalytics
 );
 
@@ -792,7 +792,7 @@ router.get('/predictive-analytics',
  *         description: Feedback provided successfully
  */
 router.post('/feedback',
-  requirePermission('patch_management:ai_feedback'),
+  requireRole(['admin', 'user']),
   patchAIController.provideFeedback
 );
 
@@ -809,7 +809,7 @@ router.post('/feedback',
  *         description: Model metrics retrieved successfully
  */
 router.get('/model-metrics',
-  requirePermission('patch_management:ai_admin'),
+  requireRole(['admin']),
   patchAIController.getModelMetrics
 );
 
@@ -830,7 +830,7 @@ router.get('/model-metrics',
  *         description: AI service health check failed
  */
 router.get('/health',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchAIController.healthCheck
 );
 

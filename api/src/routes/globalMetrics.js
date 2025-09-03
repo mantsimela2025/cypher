@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const globalMetricsService = require('../services/globalMetricsService');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 // Apply authentication to all routes
 router.use(authenticateToken);
@@ -52,8 +51,8 @@ router.use(authenticateToken);
  *       401:
  *         description: Unauthorized
  */
-router.get('/vulnerability', 
-  requirePermission('metrics:read'),
+router.get('/vulnerability',
+  requireRole(['admin', 'user']),
   async (req, res) => {
     try {
       const forceRefresh = req.query.forceRefresh === 'true';
@@ -96,8 +95,8 @@ router.get('/vulnerability',
  *       401:
  *         description: Unauthorized
  */
-router.get('/system', 
-  requirePermission('metrics:read'),
+router.get('/system',
+  requireRole(['admin', 'user']),
   async (req, res) => {
     try {
       const forceRefresh = req.query.forceRefresh === 'true';
@@ -140,8 +139,8 @@ router.get('/system',
  *       401:
  *         description: Unauthorized
  */
-router.get('/asset', 
-  requirePermission('metrics:read'),
+router.get('/asset',
+  requireRole(['admin', 'user']),
   async (req, res) => {
     try {
       const forceRefresh = req.query.forceRefresh === 'true';
@@ -193,8 +192,8 @@ router.get('/asset',
  *       401:
  *         description: Unauthorized
  */
-router.get('/dashboard/:type', 
-  requirePermission('metrics:read'),
+router.get('/dashboard/:type',
+  requireRole(['admin', 'user']),
   async (req, res) => {
     try {
       const { type } = req.params;
@@ -254,8 +253,8 @@ router.get('/dashboard/:type',
  *       401:
  *         description: Unauthorized
  */
-router.get('/metric/:name', 
-  requirePermission('metrics:read'),
+router.get('/metric/:name',
+  requireRole(['admin', 'user']),
   async (req, res) => {
     try {
       const { name } = req.params;
@@ -309,8 +308,8 @@ router.get('/metric/:name',
  *       403:
  *         description: Insufficient permissions
  */
-router.post('/category/:category/refresh', 
-  requirePermission('metrics:update'),
+router.post('/category/:category/refresh',
+  requireRole(['admin']),
   async (req, res) => {
     try {
       const { category } = req.params;

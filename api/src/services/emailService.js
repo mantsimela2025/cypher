@@ -1,10 +1,10 @@
-const AWS = require('aws-sdk');
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const { db } = require('../db');
 const { users, emailLogs } = require('../db/schema');
 const { eq, desc, sql, and, gte, lte } = require('drizzle-orm');
 
-// Configure AWS SES
-const ses = new AWS.SES({
+// Configure AWS SES v3
+const sesClient = new SESClient({
   region: process.env.AWS_REGION || 'us-east-1',
 });
 
@@ -57,7 +57,8 @@ This email was sent for testing purposes.
         },
       };
 
-      const result = await ses.sendEmail(params).promise();
+      const command = new SendEmailCommand(params);
+      const result = await sesClient.send(command);
       console.log(`✅ Email sent successfully! Message ID: ${result.MessageId}`);
       
       // ✅ CORRECT: Log email to database
@@ -136,7 +137,8 @@ Time: ${new Date().toLocaleString()}
         },
       };
 
-      const result = await ses.sendEmail(params).promise();
+      const command = new SendEmailCommand(params);
+      const result = await sesClient.send(command);
       console.log(`✅ Notification email sent! Message ID: ${result.MessageId}`);
       
       // ✅ CORRECT: Log email to database
@@ -169,9 +171,14 @@ Time: ${new Date().toLocaleString()}
 
   async getSESQuota() {
     try {
-      const quota = await ses.getSendQuota().promise();
-      const statistics = await ses.getSendStatistics().promise();
-      
+      const { GetSendQuotaCommand, GetSendStatisticsCommand } = require('@aws-sdk/client-ses');
+
+      const quotaCommand = new GetSendQuotaCommand({});
+      const statisticsCommand = new GetSendStatisticsCommand({});
+
+      const quota = await sesClient.send(quotaCommand);
+      const statistics = await sesClient.send(statisticsCommand);
+
       return {
         quota: {
           max24HourSend: quota.Max24HourSend,
@@ -188,14 +195,19 @@ Time: ${new Date().toLocaleString()}
 
   async getVerifiedIdentities() {
     try {
-      const identities = await ses.listIdentities().promise();
-      const verificationAttributes = await ses.getIdentityVerificationAttributes({
-        Identities: identities.Identities,
-      }).promise();
+      const { ListIdentitiesCommand, GetIdentityVerificationAttributesCommand } = require('@aws-sdk/client-ses');
+
+      const listCommand = new ListIdentitiesCommand({});
+      const identities = await sesClient.send(listCommand);
+
+      const attributesCommand = new GetIdentityVerificationAttributesCommand({
+        Identities: identities.Identities || [],
+      });
+      const verificationAttributes = await sesClient.send(attributesCommand);
 
       return {
-        identities: identities.Identities,
-        verificationStatus: verificationAttributes.VerificationAttributes,
+        identities: identities.Identities || [],
+        verificationStatus: verificationAttributes.VerificationAttributes || {},
       };
     } catch (error) {
       console.error('❌ Error getting verified identities:', error);

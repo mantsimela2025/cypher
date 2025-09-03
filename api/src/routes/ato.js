@@ -1,7 +1,6 @@
 const express = require('express');
 const atoController = require('../controllers/atoController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -63,7 +62,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.post('/', 
-  requirePermission('ato', 'create'),
+  requireRole(['admin']),
   atoController.createATO
 );
 
@@ -137,7 +136,7 @@ router.post('/',
  *         description: Unauthorized
  */
 router.get('/', 
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.getAllATOs
 );
 
@@ -174,7 +173,7 @@ router.get('/',
  *         description: Unauthorized
  */
 router.get('/:atoId', 
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.getATOById
 );
 
@@ -225,7 +224,7 @@ router.get('/:atoId',
  *         description: Unauthorized
  */
 router.put('/:atoId', 
-  requirePermission('ato', 'update'),
+  requireRole(['admin']),
   atoController.updateATO
 );
 
@@ -264,7 +263,7 @@ router.put('/:atoId',
  *         description: Unauthorized
  */
 router.delete('/:atoId', 
-  requirePermission('ato', 'delete'),
+  requireRole(['admin']),
   atoController.deleteATO
 );
 
@@ -305,7 +304,7 @@ router.delete('/:atoId',
  *         description: Unauthorized
  */
 router.post('/:atoId/submit', 
-  requirePermission('ato', 'update'),
+  requireRole(['admin']),
   atoController.submitATO
 );
 
@@ -360,7 +359,7 @@ router.post('/:atoId/submit',
  *         description: Unauthorized
  */
 router.post('/:atoId/review', 
-  requirePermission('ato', 'approve'),
+  requireRole(['admin', 'user']),
   atoController.reviewATO
 );
 
@@ -407,7 +406,7 @@ router.post('/:atoId/review',
  *         description: Unauthorized
  */
 router.post('/:atoId/revoke',
-  requirePermission('ato', 'revoke'),
+  requireRole(['admin', 'user']),
   atoController.revokeATO
 );
 
@@ -465,7 +464,7 @@ router.post('/:atoId/revoke',
  *         description: Unauthorized
  */
 router.get('/:atoId/history',
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.getATOWorkflowHistory
 );
 
@@ -522,7 +521,7 @@ router.get('/:atoId/history',
  *         description: Unauthorized
  */
 router.post('/:atoId/documents',
-  requirePermission('ato', 'update'),
+  requireRole(['admin']),
   atoController.uploadATODocument
 );
 
@@ -574,7 +573,7 @@ router.post('/:atoId/documents',
  *         description: Unauthorized
  */
 router.get('/:atoId/documents',
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.getATODocuments
 );
 
@@ -601,7 +600,7 @@ router.get('/:atoId/documents',
  *         description: Unauthorized
  */
 router.delete('/documents/:documentId',
-  requirePermission('ato', 'delete'),
+  requireRole(['admin']),
   atoController.deleteATODocument
 );
 
@@ -656,7 +655,7 @@ router.delete('/documents/:documentId',
  *         description: Unauthorized
  */
 router.get('/dashboard/stats',
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.getATODashboardStats
 );
 
@@ -684,7 +683,7 @@ router.get('/dashboard/stats',
  *         description: Unauthorized
  */
 router.get('/expiring',
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.getExpiringATOs
 );
 
@@ -731,7 +730,7 @@ router.get('/expiring',
  *         description: Unauthorized
  */
 router.get('/metrics/workflow',
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.getWorkflowMetrics
 );
 
@@ -796,7 +795,7 @@ router.get('/metrics/workflow',
  *         description: Unauthorized
  */
 router.get('/search',
-  requirePermission('ato', 'read'),
+  requireRole(['admin', 'user']),
   atoController.searchATOs
 );
 

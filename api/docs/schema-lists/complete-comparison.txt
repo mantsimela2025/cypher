@@ -1,0 +1,340 @@
+# Database vs Drizzle Schema Comparison
+# Generated: 2025-08-17T15:33:13.097Z
+
+## Summary
+- Database Tables: 234
+- Drizzle Schemas: 176
+- Missing Schemas: 94
+- Coverage: 75%
+
+## All Database Tables (with schema status)
+  1. SequelizeMeta - ❌ MISSING_SCHEMA
+  2. access_requests - ✅ HAS_SCHEMA (accessRequests)
+  3. ai_assistance_requests - ✅ HAS_SCHEMA (aiAssistanceRequests)
+  4. app_modules - ✅ HAS_SCHEMA (appModules)
+  5. artifact_categories - ✅ HAS_SCHEMA (artifactCategories)
+  6. artifact_references - ✅ HAS_SCHEMA (artifactReferences)
+  7. artifact_tags - ✅ HAS_SCHEMA (artifactTags)
+  8. artifacts - ✅ HAS_SCHEMA (artifacts)
+  9. asset_cost_management - ✅ HAS_SCHEMA (assetCostManagement)
+ 10. asset_group_members - ✅ HAS_SCHEMA (assetGroupMembers)
+ 11. asset_groups - ✅ HAS_SCHEMA (assetGroups)
+ 12. asset_lifecycle - ✅ HAS_SCHEMA (assetLifecycle)
+ 13. asset_network - ✅ HAS_SCHEMA (assetNetwork)
+ 14. asset_operational_costs - ✅ HAS_SCHEMA (assetOperationalCosts)
+ 15. asset_risk_mapping - ✅ HAS_SCHEMA (assetRiskMapping)
+ 16. asset_systems - ✅ HAS_SCHEMA (assetSystems)
+ 17. asset_tags - ✅ HAS_SCHEMA (assetTags)
+ 18. asset_vulnerabilities - ✅ HAS_SCHEMA (assetVulnerabilities)
+ 19. assets - ✅ HAS_SCHEMA (assets)
+ 20. ato_documents - ✅ HAS_SCHEMA (atoDocuments)
+ 21. ato_workflow_history - ✅ HAS_SCHEMA (atoWorkflowHistory)
+ 22. attack_surface_mapping - ✅ HAS_SCHEMA (attackSurfaceMapping)
+ 23. audit_logs - ✅ HAS_SCHEMA (auditLogs)
+ 24. authorizations_to_operate - ✅ HAS_SCHEMA (authorizationsToOperate)
+ 25. backup_jobs - ❌ MISSING_SCHEMA
+ 26. batches - ❌ MISSING_SCHEMA
+ 27. budget_impact - ❌ MISSING_SCHEMA
+ 28. business_impact_analysis - ✅ HAS_SCHEMA (businessImpactAnalysis)
+ 29. business_impact_costs - ❌ MISSING_SCHEMA
+ 30. categories - ✅ HAS_SCHEMA (categories)
+ 31. cloud_assets - ❌ MISSING_SCHEMA
+ 32. cloud_cost_mapping - ❌ MISSING_SCHEMA
+ 33. compliance_controls - ❌ MISSING_SCHEMA
+ 34. compliance_frameworks - ❌ MISSING_SCHEMA
+ 35. conflict_resolutions - ❌ MISSING_SCHEMA
+ 36. control_compliance_status - ❌ MISSING_SCHEMA
+ 37. control_evidence - ✅ HAS_SCHEMA (controlEvidence)
+ 38. control_findings - ✅ HAS_SCHEMA (controlFindings)
+ 39. control_inheritance - ✅ HAS_SCHEMA (controlInheritance)
+ 40. control_poams - ✅ HAS_SCHEMA (controlPoams)
+ 41. controls - ✅ HAS_SCHEMA (controls)
+ 42. cost_budgets - ❌ MISSING_SCHEMA
+ 43. cost_centers - ❌ MISSING_SCHEMA
+ 44. cpe_mappings - ❌ MISSING_SCHEMA
+ 45. cross_system_correlations - ✅ HAS_SCHEMA (crossSystemCorrelations)
+ 46. custom_field_values - ❌ MISSING_SCHEMA
+ 47. custom_fields - ❌ MISSING_SCHEMA
+ 48. cve_mappings - ✅ HAS_SCHEMA (cveMappings)
+ 49. cves - ✅ HAS_SCHEMA (cves)
+ 50. dashboard_metrics - ✅ HAS_SCHEMA (dashboardMetrics)
+ 51. dashboard_shares - ✅ HAS_SCHEMA (dashboardShares)
+ 52. dashboard_themes - ❌ MISSING_SCHEMA
+ 53. dashboard_widgets - ❌ MISSING_SCHEMA
+ 54. dashboards - ✅ HAS_SCHEMA (dashboards)
+ 55. data_conflicts - ❌ MISSING_SCHEMA
+ 56. data_contexts - ❌ MISSING_SCHEMA
+ 57. data_freshness - ❌ MISSING_SCHEMA
+ 58. data_quality - ❌ MISSING_SCHEMA
+ 59. deployments - ❌ MISSING_SCHEMA
+ 60. diagram_node_library - ❌ MISSING_SCHEMA
+ 61. diagram_projects - ❌ MISSING_SCHEMA
+ 62. diagram_shared_projects - ❌ MISSING_SCHEMA
+ 63. diagram_templates - ❌ MISSING_SCHEMA
+ 64. diagram_versions - ❌ MISSING_SCHEMA
+ 65. diagrams - ❌ MISSING_SCHEMA
+ 66. digital_signatures - ❌ MISSING_SCHEMA
+ 67. distribution_group_members - ✅ HAS_SCHEMA (distributionGroupMembers)
+ 68. distribution_groups - ✅ HAS_SCHEMA (distributionGroups)
+ 69. document_analytics - ✅ HAS_SCHEMA (documentAnalytics)
+ 70. document_changes - ✅ HAS_SCHEMA (documentChanges)
+ 71. document_comments - ✅ HAS_SCHEMA (documentComments)
+ 72. document_favorites - ✅ HAS_SCHEMA (documentFavorites)
+ 73. document_shares - ✅ HAS_SCHEMA (documentShares)
+ 74. document_templates - ✅ HAS_SCHEMA (documentTemplates)
+ 75. document_versions - ✅ HAS_SCHEMA (documentVersions)
+ 76. documents - ✅ HAS_SCHEMA (documents)
+ 77. email_logs - ✅ HAS_SCHEMA (emailLogs)
+ 78. email_templates - ✅ HAS_SCHEMA (emailTemplates)
+ 79. enterprise_risk_aggregation - ✅ HAS_SCHEMA (enterpriseRiskAggregation)
+ 80. entity_synonyms - ❌ MISSING_SCHEMA
+ 81. entity_tags - ❌ MISSING_SCHEMA
+ 82. errors - ❌ MISSING_SCHEMA
+ 83. exploits - ❌ MISSING_SCHEMA
+ 84. export_jobs - ❌ MISSING_SCHEMA
+ 85. folders - ✅ HAS_SCHEMA (folders)
+ 86. generated_reports - ❌ MISSING_SCHEMA
+ 87. import_history - ❌ MISSING_SCHEMA
+ 88. import_jobs - ❌ MISSING_SCHEMA
+ 89. information_classification_items - ❌ MISSING_SCHEMA
+ 90. integrations - ❌ MISSING_SCHEMA
+ 91. job_executions - ❌ MISSING_SCHEMA
+ 92. license_costs - ❌ MISSING_SCHEMA
+ 93. license_types - ❌ MISSING_SCHEMA
+ 94. licenses - ❌ MISSING_SCHEMA
+ 95. metrics - ✅ HAS_SCHEMA (metrics)
+ 96. module_analytics - ✅ HAS_SCHEMA (moduleAnalytics)
+ 97. module_audit_log - ✅ HAS_SCHEMA (moduleAuditLog)
+ 98. module_dependencies - ✅ HAS_SCHEMA (moduleDependencies)
+ 99. module_navigation - ✅ HAS_SCHEMA (moduleNavigation)
+100. module_settings - ✅ HAS_SCHEMA (moduleSettings)
+101. network_diagrams - ❌ MISSING_SCHEMA
+102. nl_queries - ✅ HAS_SCHEMA (nlQueries)
+103. nlq_chat_messages - ❌ MISSING_SCHEMA
+104. nlq_chat_sessions - ❌ MISSING_SCHEMA
+105. nlq_data_sources - ❌ MISSING_SCHEMA
+106. nlq_few_shot_examples - ❌ MISSING_SCHEMA
+107. nlq_prompt_config - ❌ MISSING_SCHEMA
+108. nlq_query_logs - ❌ MISSING_SCHEMA
+109. notification_channels - ✅ HAS_SCHEMA (notificationChannels)
+110. notification_deliveries - ✅ HAS_SCHEMA (notificationDeliveries)
+111. notification_subscriptions - ✅ HAS_SCHEMA (notificationSubscriptions)
+112. notification_templates - ✅ HAS_SCHEMA (notificationTemplates)
+113. notifications - ✅ HAS_SCHEMA (notifications)
+114. openai_usage - ❌ MISSING_SCHEMA
+115. patch_approval_history - ❌ MISSING_SCHEMA
+116. patch_approvals - ✅ HAS_SCHEMA (patchApprovals)
+117. patch_job_dependencies - ✅ HAS_SCHEMA (patchJobDependencies)
+118. patch_job_logs - ✅ HAS_SCHEMA (patchJobLogs)
+119. patch_job_targets - ✅ HAS_SCHEMA (patchJobTargets)
+120. patch_jobs - ✅ HAS_SCHEMA (patchJobs)
+121. patch_notes - ✅ HAS_SCHEMA (patchNotes)
+122. patch_schedule_executions - ❌ MISSING_SCHEMA
+123. patch_schedules - ✅ HAS_SCHEMA (patchSchedules)
+124. patches - ✅ HAS_SCHEMA (patches)
+125. patches_orphan - ❌ MISSING_SCHEMA
+126. permissions - ❌ MISSING_SCHEMA
+127. plan_of_action_milestones - ❌ MISSING_SCHEMA
+128. poam_approval_comments - ✅ HAS_SCHEMA (poamApprovalComments)
+129. poam_assets - ✅ HAS_SCHEMA (poamAssets)
+130. poam_cves - ✅ HAS_SCHEMA (poamCves)
+131. poam_milestones - ✅ HAS_SCHEMA (poamMilestones)
+132. poam_signatures - ✅ HAS_SCHEMA (poamSignatures)
+133. poams - ✅ HAS_SCHEMA (poams)
+134. policies - ✅ HAS_SCHEMA (policies)
+135. policy_procedures - ✅ HAS_SCHEMA (policyProcedures)
+136. policy_workflow_history - ✅ HAS_SCHEMA (policyWorkflowHistory)
+137. policy_workflow_policies - ✅ HAS_SCHEMA (policyWorkflowPolicies)
+138. policy_workflows - ✅ HAS_SCHEMA (policyWorkflows)
+139. procedures - ✅ HAS_SCHEMA (procedures)
+140. query_templates - ✅ HAS_SCHEMA (queryTemplates)
+141. references - ❌ MISSING_SCHEMA
+142. remediation_cost_entries - ❌ MISSING_SCHEMA
+143. report_configurations - ✅ HAS_SCHEMA (reportConfigurations)
+144. report_schedules - ✅ HAS_SCHEMA (reportSchedules)
+145. report_templates - ✅ HAS_SCHEMA (reportTemplates)
+146. reports - ✅ HAS_SCHEMA (reports)
+147. risk_adjustment_factors - ❌ MISSING_SCHEMA
+148. risk_factors - ❌ MISSING_SCHEMA
+149. risk_models - ❌ MISSING_SCHEMA
+150. risk_score_history - ❌ MISSING_SCHEMA
+151. role_module_permissions - ❌ MISSING_SCHEMA
+152. role_navigation_permissions - ❌ MISSING_SCHEMA
+153. role_permissions - ❌ MISSING_SCHEMA
+154. roles - ❌ MISSING_SCHEMA
+155. saved_filters - ❌ MISSING_SCHEMA
+156. scan_findings - ✅ HAS_SCHEMA (scanFindings)
+157. scan_jobs - ✅ HAS_SCHEMA (scanJobs)
+158. scan_policies - ✅ HAS_SCHEMA (scanPolicies)
+159. scan_reports - ✅ HAS_SCHEMA (scanReports)
+160. scan_results - ✅ HAS_SCHEMA (scanResults)
+161. scan_schedules - ✅ HAS_SCHEMA (scanSchedules)
+162. scan_targets - ✅ HAS_SCHEMA (scanTargets)
+163. scan_templates - ✅ HAS_SCHEMA (scanTemplates)
+164. schedules - ❌ MISSING_SCHEMA
+165. security_classification_guide - ❌ MISSING_SCHEMA
+166. session - ✅ HAS_SCHEMA (sessions)
+167. settings - ✅ HAS_SCHEMA (settings)
+168. siem_alerts - ✅ HAS_SCHEMA (siemAlerts)
+169. siem_analytics - ✅ HAS_SCHEMA (siemAnalytics)
+170. siem_dashboards - ✅ HAS_SCHEMA (siemDashboards)
+171. siem_events - ✅ HAS_SCHEMA (siemEvents)
+172. siem_incidents - ✅ HAS_SCHEMA (siemIncidents)
+173. siem_log_sources - ✅ HAS_SCHEMA (siemLogSources)
+174. siem_rules - ✅ HAS_SCHEMA (siemRules)
+175. siem_threat_intelligence - ✅ HAS_SCHEMA (siemThreatIntelligence)
+176. software_assets - ❌ MISSING_SCHEMA
+177. software_lifecycle - ❌ MISSING_SCHEMA
+178. ssh_connection_profiles - ❌ MISSING_SCHEMA
+179. ssp_controls - ❌ MISSING_SCHEMA
+180. ssp_poam_mappings - ❌ MISSING_SCHEMA
+181. stig_ai_assistance - ✅ HAS_SCHEMA (stigAiAssistance)
+182. stig_assessments - ✅ HAS_SCHEMA (stigAssessments)
+183. stig_asset_assignments - ❌ MISSING_SCHEMA
+184. stig_assets - ❌ MISSING_SCHEMA
+185. stig_checklists - ✅ HAS_SCHEMA (stigChecklists)
+186. stig_collections - ❌ MISSING_SCHEMA
+187. stig_downloads - ❌ MISSING_SCHEMA
+188. stig_fix_status - ✅ HAS_SCHEMA (stigFixStatus)
+189. stig_library - ✅ HAS_SCHEMA (stigLibrary)
+190. stig_mappings - ❌ MISSING_SCHEMA
+191. stig_reviews - ❌ MISSING_SCHEMA
+192. stig_rules - ❌ MISSING_SCHEMA
+193. stig_scan_results - ✅ HAS_SCHEMA (stigScanResults)
+194. system_assets - ✅ HAS_SCHEMA (systemAssets)
+195. system_compliance_mapping - ✅ HAS_SCHEMA (systemComplianceMapping)
+196. system_configuration_drift - ✅ HAS_SCHEMA (systemConfigurationDrift)
+197. system_discovery_results - ✅ HAS_SCHEMA (systemDiscoveryResults)
+198. system_discovery_scans - ✅ HAS_SCHEMA (systemDiscoveryScans)
+199. system_impact_levels - ✅ HAS_SCHEMA (systemImpactLevels)
+200. system_security_posture - ✅ HAS_SCHEMA (systemSecurityPosture)
+201. system_threat_modeling - ✅ HAS_SCHEMA (systemThreatModeling)
+202. systems - ✅ HAS_SCHEMA (systems)
+203. tags - ❌ MISSING_SCHEMA
+204. tasks - ❌ MISSING_SCHEMA
+205. user_dashboards - ✅ HAS_SCHEMA (userDashboards)
+206. user_module_preferences - ✅ HAS_SCHEMA (userModulePreferences)
+207. user_preferences - ✅ HAS_SCHEMA (userPreferences)
+208. user_roles - ❌ MISSING_SCHEMA
+209. users - ✅ HAS_SCHEMA (users)
+210. vendor_map - ❌ MISSING_SCHEMA
+211. vulnerabilities - ✅ HAS_SCHEMA (vulnerabilities)
+212. vulnerability_cost_analysis - ✅ HAS_SCHEMA (vulnerabilityCostAnalysis)
+213. vulnerability_cost_factors - ✅ HAS_SCHEMA (vulnerabilityCostFactors)
+214. vulnerability_cost_history - ✅ HAS_SCHEMA (vulnerabilityCostHistory)
+215. vulnerability_cost_models - ✅ HAS_SCHEMA (vulnerabilityCostModels)
+216. vulnerability_cves - ✅ HAS_SCHEMA (vulnerabilityCves)
+217. vulnerability_databases - ❌ MISSING_SCHEMA
+218. vulnerability_patches - ✅ HAS_SCHEMA (vulnerabilityPatches)
+219. vulnerability_poams - ✅ HAS_SCHEMA (vulnerabilityPoams)
+220. vulnerability_references - ✅ HAS_SCHEMA (vulnerabilityReferences)
+221. vulnerability_risk_scores - ✅ HAS_SCHEMA (vulnerabilityRiskScores)
+222. webhook_configurations - ✅ HAS_SCHEMA (webhookConfigurations)
+223. webhook_deliveries - ✅ HAS_SCHEMA (webhookDeliveries)
+224. webhook_logs - ✅ HAS_SCHEMA (webhookLogs)
+225. webhook_rate_limits - ✅ HAS_SCHEMA (webhookRateLimits)
+226. webhook_security - ✅ HAS_SCHEMA (webhookSecurity)
+227. webhook_subscriptions - ✅ HAS_SCHEMA (webhookSubscriptions)
+228. widget_templates - ❌ MISSING_SCHEMA
+229. workflow_edges - ❌ MISSING_SCHEMA
+230. workflow_executions - ❌ MISSING_SCHEMA
+231. workflow_instances - ❌ MISSING_SCHEMA
+232. workflow_nodes - ❌ MISSING_SCHEMA
+233. workflow_triggers - ❌ MISSING_SCHEMA
+234. workflows - ❌ MISSING_SCHEMA
+
+## Missing Schemas (Priority List)
+  1. SequelizeMeta
+  2. backup_jobs
+  3. batches
+  4. budget_impact
+  5. business_impact_costs
+  6. cloud_assets
+  7. cloud_cost_mapping
+  8. compliance_controls
+  9. compliance_frameworks
+ 10. conflict_resolutions
+ 11. control_compliance_status
+ 12. cost_budgets
+ 13. cost_centers
+ 14. cpe_mappings
+ 15. custom_field_values
+ 16. custom_fields
+ 17. dashboard_themes
+ 18. dashboard_widgets
+ 19. data_conflicts
+ 20. data_contexts
+ 21. data_freshness
+ 22. data_quality
+ 23. deployments
+ 24. diagram_node_library
+ 25. diagram_projects
+ 26. diagram_shared_projects
+ 27. diagram_templates
+ 28. diagram_versions
+ 29. diagrams
+ 30. digital_signatures
+ 31. entity_synonyms
+ 32. entity_tags
+ 33. errors
+ 34. exploits
+ 35. export_jobs
+ 36. generated_reports
+ 37. import_history
+ 38. import_jobs
+ 39. information_classification_items
+ 40. integrations
+ 41. job_executions
+ 42. license_costs
+ 43. license_types
+ 44. licenses
+ 45. network_diagrams
+ 46. nlq_chat_messages
+ 47. nlq_chat_sessions
+ 48. nlq_data_sources
+ 49. nlq_few_shot_examples
+ 50. nlq_prompt_config
+ 51. nlq_query_logs
+ 52. openai_usage
+ 53. patch_approval_history
+ 54. patch_schedule_executions
+ 55. patches_orphan
+ 56. permissions
+ 57. plan_of_action_milestones
+ 58. references
+ 59. remediation_cost_entries
+ 60. risk_adjustment_factors
+ 61. risk_factors
+ 62. risk_models
+ 63. risk_score_history
+ 64. role_module_permissions
+ 65. role_navigation_permissions
+ 66. role_permissions
+ 67. roles
+ 68. saved_filters
+ 69. schedules
+ 70. security_classification_guide
+ 71. software_assets
+ 72. software_lifecycle
+ 73. ssh_connection_profiles
+ 74. ssp_controls
+ 75. ssp_poam_mappings
+ 76. stig_asset_assignments
+ 77. stig_assets
+ 78. stig_collections
+ 79. stig_downloads
+ 80. stig_mappings
+ 81. stig_reviews
+ 82. stig_rules
+ 83. tags
+ 84. tasks
+ 85. user_roles
+ 86. vendor_map
+ 87. vulnerability_databases
+ 88. widget_templates
+ 89. workflow_edges
+ 90. workflow_executions
+ 91. workflow_instances
+ 92. workflow_nodes
+ 93. workflow_triggers
+ 94. workflows

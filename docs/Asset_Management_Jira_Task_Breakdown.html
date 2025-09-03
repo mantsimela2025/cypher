@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management - Complete Jira Task Breakdown</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c5282;
+            border-bottom: 3px solid #2c5282;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #4a5568;
+            margin-top: 30px;
+        }
+        h4 {
+            color: #718096;
+            margin-top: 25px;
+        }
+        h5 {
+            color: #a0aec0;
+            margin-top: 20px;
+        }
+        .epic-info {
+            background-color: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .task-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .labels {
+            background-color: #e6fffa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+        }
+        .definition-done {
+            background-color: #f0fff4;
+            border-left: 4px solid #38a169;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .acceptance-criteria {
+            background-color: #fffaf0;
+            border-left: 4px solid #ed8936;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .technical-requirements {
+            background-color: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .dependencies {
+            background-color: #fef5e7;
+            border-left: 4px solid #f6ad55;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .subtask {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fafafa;
+            border-radius: 5px;
+        }
+        .task-list {
+            list-style-type: disc;
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .task-list li {
+            margin: 5px 0;
+            padding: 2px 0;
+        }
+        .timeline-section {
+            background-color: #f8f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .metrics-section {
+            background-color: #fff5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .risk-section {
+            background-color: #fffbf0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        hr {
+            border: none;
+            height: 2px;
+            background-color: #e2e8f0;
+            margin: 40px 0;
+        }
+        strong {
+            color: #2d3748;
+        }
+        em {
+            font-style: italic;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Asset Management - Complete Jira Task Breakdown</h1>
+
+<h2>Epic: Asset Management System Implementation</h2>
+
+<div class="epic-info">
+    <p><strong>Epic Key:</strong> AM-EPIC-001</p>
+    <p><strong>Epic Summary:</strong> Implement comprehensive asset management system with full CRUD operations, advanced filtering, cost tracking, and lifecycle management</p>
+    <p><strong>Business Value:</strong> Enable organizations to track, manage, and optimize their IT assets with automated discovery, cost analysis, and compliance reporting</p>
+    <p><strong>Labels:</strong> <span class="labels">asset-management, core-feature, epic</span></p>
+</div>
+
+<hr>
+
+<h2>Story 1: Database Design & Schema Implementation</h2>
+
+<div class="task-section">
+    <h3>Task AM-001: Design Asset Management Database Schema</h3>
+    <p><strong>Labels:</strong> <span class="labels">database, schema, drizzle, critical-path</span></p>
+
+    <h4>Description:</h4>
+    <p>Design and implement comprehensive database schema for asset management including assets, asset groups, lifecycle tracking, cost management, and audit trails using Drizzle ORM.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>Entity Relationship Diagram (ERD) created and approved</li>
+            <li>All asset-related tables defined in Drizzle schema</li>
+            <li>Foreign key relationships properly established</li>
+            <li>Indexes created for performance optimization</li>
+            <li>Audit trail fields added to all relevant tables</li>
+            <li>Schema validates without errors</li>
+            <li>Migration scripts generated successfully</li>
+        </ul>
+    </div>
+
+    <div class="technical-requirements">
+        <h4>Technical Requirements:</h4>
+        <ul class="task-list">
+            <li>Use Drizzle ORM with PostgreSQL</li>
+            <li>Implement soft delete pattern</li>
+            <li>Add created/updated timestamps and user tracking</li>
+            <li>Support for asset relationships and dependencies</li>
+            <li>Flexible metadata storage using JSONB fields</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-001-1: Create Core Asset Schema</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Define `assets` table with core fields (id, name, assetType, status, etc.)</li>
+            <li>Add asset identification fields (hostname, ipAddress, serialNumber, assetTag)</li>
+            <li>Implement location and ownership tracking fields</li>
+            <li>Add technical specifications fields (osType, osVersion, manufacturer)</li>
+            <li>Create Zod validation schemas for insert/select types</li>
+            <li>Test schema creation and validation</li>
+        </ul>
+
+        <div class="definition-done">
+            <p><strong>Definition of Done:</strong></p>
+            <ul class="task-list">
+                <li>Assets table created in `shared/schema.ts`</li>
+                <li>Insert/Select types exported with proper TypeScript types</li>
+                <li>Validation schemas working for all fields</li>
+                <li>Database migration runs successfully</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-001-2: Implement Asset Groups and Relationships</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `asset_groups` table for logical grouping</li>
+            <li>Implement `asset_group_members` junction table</li>
+            <li>Add support for hierarchical asset relationships</li>
+            <li>Create asset dependency tracking tables</li>
+            <li>Add cascade delete policies</li>
+            <li>Test relationship integrity constraints</li>
+        </ul>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-001-3: Add Asset Lifecycle and Cost Tracking</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `asset_lifecycle` table for status tracking</li>
+            <li>Implement `asset_costs` table for financial data</li>
+            <li>Add depreciation and warranty tracking</li>
+            <li>Create maintenance and incident logging tables</li>
+            <li>Add compliance and certificate tracking</li>
+            <li>Test all lifecycle state transitions</li>
+        </ul>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>Database connection established</li>
+            <li>Drizzle configuration completed</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All asset-related tables created and documented</li>
+            <li>Schema passes validation and linting</li>
+            <li>Migration scripts tested in development environment</li>
+            <li>ERD documentation updated and approved</li>
+            <li>Code review completed and merged</li>
+        </ul>
+    </div>
+</div>
+
+<h2>Story 2: Backend Storage Layer Implementation</h2>
+
+<div class="task-section">
+    <h3>Task AM-002: Implement Asset Storage Layer</h3>
+    <p><strong>Labels:</strong> <span class="labels">backend, storage, repository, critical-path</span></p>
+
+    <h4>Description:</h4>
+    <p>Implement comprehensive storage layer for asset management with CRUD operations, advanced querying, filtering, pagination, and transaction support.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>Complete CRUD operations implemented</li>
+            <li>Advanced filtering and search functionality</li>
+            <li>Pagination and sorting support</li>
+            <li>Bulk operations for efficiency</li>
+            <li>Transaction support for complex operations</li>
+            <li>Audit logging for all changes</li>
+            <li>Error handling and validation</li>
+            <li>Unit tests with 90%+ coverage</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-002-1: Implement Core Asset CRUD Operations</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `IAssetStorage` interface in `server/storage.ts`</li>
+            <li>Implement `getAsset(id: number)` method</li>
+            <li>Implement `createAsset(asset: InsertAsset)` method</li>
+            <li>Implement `updateAsset(id: number, updates: Partial&lt;InsertAsset&gt;)` method</li>
+            <li>Implement `deleteAsset(id: number)` method (soft delete)</li>
+            <li>Add input validation using Zod schemas</li>
+            <li>Implement proper error handling</li>
+            <li>Write unit tests for all CRUD operations</li>
+        </ul>
+
+        <div class="definition-done">
+            <p><strong>Definition of Done:</strong></p>
+            <ul class="task-list">
+                <li>All CRUD methods implemented and tested</li>
+                <li>Proper TypeScript typing throughout</li>
+                <li>Error handling covers all edge cases</li>
+                <li>Unit tests achieve 95% code coverage</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-002-2: Implement Advanced Query and Filtering</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `AssetFilter` interface with comprehensive filter options</li>
+            <li>Implement `listAssets(filter?: AssetFilter, pagination?: PaginationOptions)` method</li>
+            <li>Add support for text search across multiple fields</li>
+            <li>Implement asset type and status filtering</li>
+            <li>Add date range filtering for created/updated dates</li>
+            <li>Support complex query combinations (AND/OR operations)</li>
+            <li>Add sorting by multiple fields</li>
+            <li>Implement full-text search capabilities</li>
+        </ul>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-002-3: Implement Asset Group Management</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create asset group CRUD operations</li>
+            <li>Implement `addAssetToGroup(groupId, assetId)` method</li>
+            <li>Implement `removeAssetFromGroup(groupId, assetId)` method</li>
+            <li>Add `getAssetGroups(assetId)` method</li>
+            <li>Add `getAssetGroupMembers(groupId)` method</li>
+            <li>Support bulk group operations</li>
+            <li>Add group permission validation</li>
+        </ul>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>AM-001 (Database Schema) completed</li>
+            <li>Storage interface structure established</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All storage methods implemented and documented</li>
+            <li>Comprehensive error handling in place</li>
+            <li>Unit tests passing with high coverage</li>
+            <li>Integration tests verify database operations</li>
+            <li>Code review approved and merged</li>
+            <li>Performance benchmarks meet requirements</li>
+        </ul>
+    </div>
+</div>
+
+<hr>
+
+<h2>Story 3: Service Layer Implementation</h2>
+
+<div class="task-section">
+    <h3>Task AM-003: Implement Asset Management Services</h3>
+    <p><strong>Labels:</strong> <span class="labels">backend, services, business-logic</span></p>
+
+    <h4>Description:</h4>
+    <p>Implement comprehensive service layer for asset management including business logic, validation, notifications, and integration with external systems.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>Business logic validation implemented</li>
+            <li>Asset lifecycle management automated</li>
+            <li>Cost calculation and tracking services</li>
+            <li>Integration with external asset discovery tools</li>
+            <li>Notification services for asset events</li>
+            <li>Audit logging for all operations</li>
+            <li>Comprehensive error handling</li>
+            <li>Service layer unit tests with 85%+ coverage</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-003-1: Create Core Asset Service</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `AssetService` class extending `BaseService`</li>
+            <li>Implement asset creation with business validation</li>
+            <li>Add automatic asset tagging and categorization</li>
+            <li>Implement asset status management workflows</li>
+            <li>Add duplicate detection and prevention</li>
+            <li>Create asset relationship management</li>
+            <li>Add bulk import/export functionality</li>
+            <li>Implement asset archival and recovery</li>
+        </ul>
+
+        <div class="acceptance-criteria">
+            <p><strong>Acceptance Criteria:</strong></p>
+            <ul class="task-list">
+                <li>Service validates all business rules before database operations</li>
+                <li>Automatic asset numbering and tagging works correctly</li>
+                <li>Duplicate prevention catches common scenarios</li>
+                <li>Status transitions follow defined workflows</li>
+                <li>Bulk operations handle errors gracefully</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-003-2: Implement Asset Discovery Service</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `AssetDiscoveryService` for automated discovery</li>
+            <li>Implement network scanning capabilities</li>
+            <li>Add cloud asset discovery (AWS, Azure, GCP)</li>
+            <li>Create asset matching and reconciliation logic</li>
+            <li>Implement discovery scheduling and automation</li>
+            <li>Add discovery result processing and validation</li>
+            <li>Create discovery audit trails</li>
+            <li>Add manual asset verification workflows</li>
+        </ul>
+
+        <div class="acceptance-criteria">
+            <p><strong>Acceptance Criteria:</strong></p>
+            <ul class="task-list">
+                <li>Network discovery identifies active assets accurately</li>
+                <li>Cloud integration discovers resources from major providers</li>
+                <li>Asset reconciliation prevents duplicates</li>
+                <li>Discovery results can be reviewed before import</li>
+                <li>Scheduling system runs discoveries automatically</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-003-3: Implement Cost Management Service</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `AssetCostService` for financial tracking</li>
+            <li>Implement depreciation calculation algorithms</li>
+            <li>Add total cost of ownership (TCO) calculations</li>
+            <li>Create cost allocation and chargeback functionality</li>
+            <li>Implement budget tracking and alerts</li>
+            <li>Add cost optimization recommendations</li>
+            <li>Create financial reporting capabilities</li>
+            <li>Implement cost trending and forecasting</li>
+        </ul>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>AM-002 (Storage Layer) completed</li>
+            <li>External API integrations configured</li>
+            <li>Business rules documented and approved</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All service methods implemented with proper error handling</li>
+            <li>Business logic validation comprehensive and tested</li>
+            <li>Integration tests verify external system connections</li>
+            <li>Performance meets service level requirements</li>
+            <li>Security review completed</li>
+            <li>Documentation updated with service APIs</li>
+        </ul>
+    </div>
+</div>
+
+<hr>
+
+<h2>Story 4: Controller and API Endpoint Implementation</h2>
+
+<div class="task-section">
+    <h3>Task AM-004: Implement Asset Management API Controllers</h3>
+    <p><strong>Labels:</strong> <span class="labels">backend, controllers, api, rest</span></p>
+
+    <h4>Description:</h4>
+    <p>Implement RESTful API controllers for asset management with proper HTTP status codes, request/response validation, pagination, and comprehensive error handling.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>RESTful API endpoints for all asset operations</li>
+            <li>Proper HTTP status codes and response formats</li>
+            <li>Request/response validation using Zod</li>
+            <li>Pagination and filtering support in GET endpoints</li>
+            <li>Bulk operations endpoints</li>
+            <li>File upload support for asset images/documents</li>
+            <li>Comprehensive error handling with detailed messages</li>
+            <li>API integration tests with 90%+ coverage</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-004-1: Implement Core Asset CRUD Endpoints</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `assetController.ts` with base controller structure</li>
+            <li>Implement `GET /api/assets` with filtering and pagination</li>
+            <li>Implement `GET /api/assets/:id` for single asset retrieval</li>
+            <li>Implement `POST /api/assets` for asset creation</li>
+            <li>Implement `PUT /api/assets/:id` for asset updates</li>
+            <li>Implement `DELETE /api/assets/:id` for asset deletion</li>
+            <li>Add request validation using Zod schemas</li>
+            <li>Implement proper error handling and status codes</li>
+            <li>Add response formatting and standardization</li>
+        </ul>
+
+        <div class="code-block">
+            <p><strong>API Specification:</strong></p>
+            <pre>
+// GET /api/assets
+interface AssetListResponse {
+  assets: Asset[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  filters?: AssetFilter;
+}
+
+// POST /api/assets
+interface CreateAssetRequest {
+  name: string;
+  assetType: string;
+  hostname?: string;
+  ipAddress?: string;
+  // ... other asset fields
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-004-2: Implement Asset Group Management Endpoints</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Implement `GET /api/asset-groups` endpoint</li>
+            <li>Implement `POST /api/asset-groups` for group creation</li>
+            <li>Implement `PUT /api/asset-groups/:id` for group updates</li>
+            <li>Implement `DELETE /api/asset-groups/:id` for group deletion</li>
+            <li>Implement `POST /api/asset-groups/:id/members` to add assets</li>
+            <li>Implement `DELETE /api/asset-groups/:groupId/members/:assetId`</li>
+            <li>Add group membership validation</li>
+            <li>Implement bulk group operations</li>
+        </ul>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-004-3: Implement Advanced Asset Operations</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Implement `POST /api/assets/bulk-import` for CSV/Excel import</li>
+            <li>Implement `GET /api/assets/export` for data export</li>
+            <li>Implement `POST /api/assets/:id/duplicate` for asset cloning</li>
+            <li>Implement `POST /api/assets/bulk-update` for batch operations</li>
+            <li>Implement `GET /api/assets/:id/history` for audit trail</li>
+            <li>Add file upload endpoints for asset documents</li>
+            <li>Implement asset discovery trigger endpoints</li>
+        </ul>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>AM-003 (Service Layer) completed</li>
+            <li>Authentication middleware implemented</li>
+            <li>File upload infrastructure configured</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All API endpoints implemented and documented</li>
+            <li>Request/response validation comprehensive</li>
+            <li>Error handling provides meaningful messages</li>
+            <li>Integration tests cover all endpoints</li>
+            <li>API documentation generated automatically</li>
+            <li>Security review completed</li>
+            <li>Performance benchmarks meet requirements</li>
+        </ul>
+    </div>
+</div>
+
+
+<h2>Story 5: Frontend Foundation Implementation</h2>
+
+<div class="task-section">
+    <h3>Task AM-005: Implement Asset Management Frontend Foundation</h3>
+
+    <h4>Description:</h4>
+    <p>Implement frontend foundation for asset management including React components, API integration, state management, and routing infrastructure.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>React components for asset management UI</li>
+            <li>TanStack Query integration for API state management</li>
+            <li>TypeScript interfaces matching backend models</li>
+            <li>Routing setup for asset management pages</li>
+            <li>Error handling and loading states</li>
+            <li>Responsive design implementation</li>
+            <li>Component unit tests with 80%+ coverage</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-005-1: Setup Asset Management API Integration</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `assetApi.ts` with all API client functions</li>
+            <li>Implement TanStack Query hooks for asset operations</li>
+            <li>Create TypeScript interfaces matching backend schemas</li>
+            <li>Add error handling and retry logic</li>
+            <li>Implement optimistic updates for better UX</li>
+            <li>Create query invalidation strategies</li>
+            <li>Add loading state management</li>
+            <li>Implement caching strategies for asset data</li>
+        </ul>
+
+        <div class="code-block">
+            <p><strong>API Hooks Implementation:</strong></p>
+            <pre>
+// Asset query hooks
+export const useAssets = (filter?: AssetFilter) => { ... }
+export const useAsset = (id: number) => { ... }
+export const useCreateAsset = () => { ... }
+export const useUpdateAsset = () => { ... }
+export const useDeleteAsset = () => { ... }
+
+// Asset group hooks
+export const useAssetGroups = () => { ... }
+export const useAssetGroupMembers = (groupId: number) => { ... }
+            </pre>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-005-2: Create Core Asset Components</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create `AssetList` component with filtering and pagination</li>
+            <li>Create `AssetCard` component for grid/card view</li>
+            <li>Create `AssetDetails` component for single asset view</li>
+            <li>Create `AssetForm` component for create/edit operations</li>
+            <li>Implement `AssetSearch` component with advanced filtering</li>
+            <li>Create `AssetGroupManager` component</li>
+            <li>Add `AssetBulkOperations` component</li>
+            <li>Implement responsive design for all components</li>
+        </ul>
+
+        <div class="code-block">
+            <p><strong>Component Structure:</strong></p>
+            <pre>
+// Core components
+AssetList.tsx - Main listing with filters
+AssetCard.tsx - Individual asset display
+AssetDetails.tsx - Detailed asset view
+AssetForm.tsx - Create/edit form
+AssetSearch.tsx - Advanced search interface
+AssetGroupManager.tsx - Group management
+            </pre>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-005-3: Implement Asset Management Routing</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Setup routing structure in `App.tsx`</li>
+            <li>Create asset management route guards</li>
+            <li>Implement breadcrumb navigation</li>
+            <li>Add deep linking for asset filters</li>
+            <li>Create navigation components</li>
+            <li>Add route-based state management</li>
+            <li>Implement browser history integration</li>
+            <li>Add route transition animations</li>
+        </ul>
+
+        <div class="code-block">
+            <p><strong>Route Structure:</strong></p>
+            <pre>
+/assets - Asset list view
+/assets/:id - Asset detail view
+/assets/:id/edit - Asset edit form
+/assets/create - Asset creation form
+/assets/groups - Asset group management
+/assets/import - Bulk import interface
+            </pre>
+        </div>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>AM-004 (API Controllers) completed</li>
+            <li>Frontend foundation setup completed</li>
+            <li>UI component library configured</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All asset management pages functional</li>
+            <li>API integration working correctly</li>
+            <li>Components responsive on all screen sizes</li>
+            <li>Error states handled gracefully</li>
+            <li>Loading states provide good user feedback</li>
+            <li>Unit tests cover critical functionality</li>
+            <li>Code review completed and approved</li>
+        </ul>
+    </div>
+</div>
+
+<hr>
+
+<h2>Story 6: Advanced Frontend Features</h2>
+
+<div class="task-section">
+    <h3>Task AM-006: Implement Advanced Asset Management Features</h3>
+    <p><strong>Labels:</strong> <span class="labels">frontend, advanced-features, ux</span></p>
+
+    <h4>Description:</h4>
+    <p>Implement advanced frontend features including bulk operations, data visualization, export/import functionality, and enhanced user experience features.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>Bulk operations interface with selection management</li>
+            <li>Data visualization charts and graphs</li>
+            <li>Import/export functionality with progress tracking</li>
+            <li>Advanced filtering with saved filters</li>
+            <li>Asset relationship visualization</li>
+            <li>Keyboard shortcuts for power users</li>
+            <li>Drag and drop functionality</li>
+            <li>Print-friendly views</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-006-1: Implement Bulk Operations Interface</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create multi-select functionality for asset lists</li>
+            <li>Implement bulk action toolbar</li>
+            <li>Add bulk edit modal with form validation</li>
+            <li>Create bulk delete confirmation dialog</li>
+            <li>Implement bulk group assignment</li>
+            <li>Add bulk export selection</li>
+            <li>Create progress indicators for bulk operations</li>
+            <li>Add undo functionality for bulk changes</li>
+        </ul>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-006-2: Create Data Visualization Components</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create asset distribution charts (by type, status, location)</li>
+            <li>Implement cost visualization dashboards</li>
+            <li>Add asset lifecycle timeline visualization</li>
+            <li>Create asset relationship network diagrams</li>
+            <li>Implement trend analysis charts</li>
+            <li>Add interactive dashboard widgets</li>
+            <li>Create printable report layouts</li>
+            <li>Add export functionality for visualizations</li>
+        </ul>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-006-3: Implement Import/Export Features</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create CSV/Excel import interface with drag-drop</li>
+            <li>Implement import preview and validation</li>
+            <li>Add field mapping interface for imports</li>
+            <li>Create export options with format selection</li>
+            <li>Implement progress tracking for large operations</li>
+            <li>Add error handling for import failures</li>
+            <li>Create import/export history tracking</li>
+            <li>Add template download functionality</li>
+        </ul>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>AM-005 (Frontend Foundation) completed</li>
+            <li>Chart library integrated</li>
+            <li>File handling utilities implemented</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All advanced features implemented and tested</li>
+            <li>User experience is intuitive and efficient</li>
+            <li>Performance is acceptable for large datasets</li>
+            <li>Error handling covers edge cases</li>
+            <li>Documentation updated with new features</li>
+            <li>Accessibility requirements met</li>
+        </ul>
+    </div>
+</div>
+
+<hr>
+
+<h2>Story 7: Testing Implementation</h2>
+
+<div class="task-section">
+    <h3>Task AM-007: Implement Comprehensive Testing Suite</h3>
+    <p><strong>Labels:</strong> <span class="labels">testing, quality-assurance, automation</span></p>
+
+    <h4>Description:</h4>
+    <p>Implement comprehensive testing suite covering unit tests, integration tests, and end-to-end tests for the asset management system.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>Unit tests with 85%+ code coverage</li>
+            <li>Integration tests for API endpoints</li>
+            <li>End-to-end tests for critical user journeys</li>
+            <li>Performance tests for large datasets</li>
+            <li>Security tests for authentication and authorization</li>
+            <li>Automated test execution in CI/CD pipeline</li>
+            <li>Test documentation and reporting</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-007-1: Implement Backend Unit Tests</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create unit tests for storage layer methods</li>
+            <li>Write service layer unit tests with mocking</li>
+            <li>Implement controller unit tests with request mocking</li>
+            <li>Add validation testing for all Zod schemas</li>
+            <li>Create error handling test scenarios</li>
+            <li>Test edge cases and boundary conditions</li>
+            <li>Add performance benchmarking tests</li>
+            <li>Implement test data factories and fixtures</li>
+        </ul>
+
+        <div class="code-block">
+            <p><strong>Test Coverage Requirements:</strong></p>
+            <pre>
+- Storage layer: 95% coverage
+- Service layer: 90% coverage
+- Controllers: 85% coverage
+- Utilities: 95% coverage
+            </pre>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-007-2: Implement Frontend Unit Tests</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create component unit tests using React Testing Library</li>
+            <li>Test custom hooks and API integration</li>
+            <li>Implement form validation testing</li>
+            <li>Add user interaction testing (clicks, inputs, etc.)</li>
+            <li>Test error state handling</li>
+            <li>Create snapshot tests for UI components</li>
+            <li>Add accessibility testing with axe-core</li>
+            <li>Test responsive design behavior</li>
+        </ul>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-007-3: Implement Integration and E2E Tests</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create API integration tests with real database</li>
+            <li>Implement end-to-end user journey tests</li>
+            <li>Add cross-browser compatibility tests</li>
+            <li>Create performance tests for large asset datasets</li>
+            <li>Implement security penetration tests</li>
+            <li>Add mobile responsiveness tests</li>
+            <li>Create data integrity tests</li>
+            <li>Add backup and recovery testing</li>
+        </ul>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>All previous stories completed</li>
+            <li>Testing infrastructure setup</li>
+            <li>Test data generation utilities</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All test suites running successfully</li>
+            <li>Code coverage targets met</li>
+            <li>CI/CD pipeline includes automated testing</li>
+            <li>Performance benchmarks documented</li>
+            <li>Security tests pass requirements</li>
+            <li>Test documentation complete</li>
+        </ul>
+    </div>
+</div>
+
+<hr>
+
+<h2>Story 8: Documentation and Deployment</h2>
+
+<div class="task-section">
+    <h3>Task AM-008: Documentation and Production Deployment</h3>
+    <p><strong>Labels:</strong> <span class="labels">documentation, deployment, production</span></p>
+
+    <h4>Description:</h4>
+    <p>Create comprehensive documentation and deploy the asset management system to production with proper monitoring and maintenance procedures.</p>
+
+    <div class="acceptance-criteria">
+        <h4>Acceptance Criteria:</h4>
+        <ul class="task-list">
+            <li>API documentation with Swagger/OpenAPI</li>
+            <li>User documentation and help guides</li>
+            <li>Admin documentation for configuration</li>
+            <li>Deployment documentation and runbooks</li>
+            <li>Production monitoring and alerting</li>
+            <li>Backup and disaster recovery procedures</li>
+            <li>Performance optimization documentation</li>
+        </ul>
+    </div>
+
+    <h4>Subtasks:</h4>
+
+    <div class="subtask">
+        <h5>AM-008-1: Create API Documentation</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Generate Swagger/OpenAPI documentation</li>
+            <li>Add comprehensive endpoint descriptions</li>
+            <li>Create request/response examples</li>
+            <li>Add authentication and authorization documentation</li>
+            <li>Create integration guides for external systems</li>
+            <li>Document rate limiting and usage policies</li>
+            <li>Add troubleshooting and FAQ sections</li>
+            <li>Create interactive API explorer interface</li>
+        </ul>
+
+        <div class="definition-done">
+            <p><strong>Definition of Done:</strong></p>
+            <ul class="task-list">
+                <li>Swagger UI accessible and functional</li>
+                <li>All endpoints documented with examples</li>
+                <li>Authentication flows clearly explained</li>
+                <li>Integration guides tested by external developers</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-008-2: Create User Documentation</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Create user onboarding guide</li>
+            <li>Write comprehensive user manual</li>
+            <li>Add video tutorials for common workflows</li>
+            <li>Create FAQ and troubleshooting section</li>
+            <li>Document keyboard shortcuts and power user features</li>
+            <li>Add mobile app usage guidelines</li>
+            <li>Create role-based permission guides</li>
+            <li>Write data import/export procedures</li>
+        </ul>
+    </div>
+
+    <div class="subtask">
+        <h5>AM-008-3: Production Deployment and Monitoring</h5>
+        
+        <p><strong>Tasks:</strong></p>
+        <ul class="task-list">
+            <li>Setup production environment infrastructure</li>
+            <li>Configure automated deployment pipeline</li>
+            <li>Implement monitoring and alerting systems</li>
+            <li>Setup log aggregation and analysis</li>
+            <li>Create backup and disaster recovery procedures</li>
+            <li>Configure performance monitoring dashboards</li>
+            <li>Setup security monitoring and intrusion detection</li>
+            <li>Create maintenance and update procedures</li>
+        </ul>
+
+        <div class="definition-done">
+            <p><strong>Definition of Done:</strong></p>
+            <ul class="task-list">
+                <li>Production environment fully operational</li>
+                <li>Monitoring alerts configured and tested</li>
+                <li>Backup procedures documented and tested</li>
+                <li>Performance baselines established</li>
+                <li>Security monitoring active</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="dependencies">
+        <h4>Dependencies:</h4>
+        <ul class="task-list">
+            <li>All previous stories completed</li>
+            <li>Production infrastructure provisioned</li>
+            <li>Documentation platform configured</li>
+        </ul>
+    </div>
+
+    <div class="definition-done">
+        <h4>Definition of Done:</h4>
+        <ul class="task-list">
+            <li>All documentation complete and accessible</li>
+            <li>Production deployment successful</li>
+            <li>Monitoring and alerting operational</li>
+            <li>User training materials available</li>
+            <li>Support procedures documented</li>
+            <li>Performance meets production requirements</li>
+        </ul>
+    </div>
+</div>
+
+<hr>
+
+<div class="timeline-section">
+    <h2>Implementation Timeline</h2>
+
+    <h3>Phase 1: Foundation (Weeks 1-2)</h3>
+    <ul class="task-list">
+        <li><strong>Week 1:</strong> Database schema design and implementation (AM-001)</li>
+        <li><strong>Week 2:</strong> Storage layer implementation (AM-002)</li>
+    </ul>
+
+    <h3>Phase 2: Backend Services (Weeks 3-4)</h3>
+    <ul class="task-list">
+        <li><strong>Week 3:</strong> Service layer implementation (AM-003)</li>
+        <li><strong>Week 4:</strong> API controllers and endpoints (AM-004)</li>
+    </ul>
+
+    <h3>Phase 3: Frontend Development (Weeks 5-6)</h3>
+    <ul class="task-list">
+        <li><strong>Week 5:</strong> Frontend foundation and core components (AM-005)</li>
+        <li><strong>Week 6:</strong> Advanced frontend features (AM-006)</li>
+    </ul>
+
+    <h3>Phase 4: Quality & Deployment (Weeks 7-8)</h3>
+    <ul class="task-list">
+        <li><strong>Week 7:</strong> Comprehensive testing implementation (AM-007)</li>
+        <li><strong>Week 8:</strong> Documentation and production deployment (AM-008)</li>
+    </ul>
+</div>
+
+<div class="metrics-section">
+    <h2>Success Metrics</h2>
+
+    <h3>Technical Metrics</h3>
+    <ul class="task-list">
+        <li><strong>Performance:</strong> API response times &lt; 200ms for 95% of requests</li>
+        <li><strong>Reliability:</strong> 99.9% uptime in production</li>
+        <li><strong>Code Quality:</strong> 85%+ test coverage across all layers</li>
+        <li><strong>Security:</strong> Zero critical security vulnerabilities</li>
+    </ul>
+
+    <h3>Business Metrics</h3>
+    <ul class="task-list">
+        <li><strong>User Adoption:</strong> 90% of target users active within 30 days</li>
+        <li><strong>Efficiency Gains:</strong> 50% reduction in asset tracking time</li>
+        <li><strong>Data Accuracy:</strong> 95% asset information accuracy rate</li>
+        <li><strong>Cost Savings:</strong> 20% reduction in asset management overhead</li>
+    </ul>
+</div>
+
+<div class="risk-section">
+    <h2>Risk Assessment</h2>
+
+    <h3>High-Risk Items</h3>
+    <ul class="task-list">
+        <li><strong>Database Performance:</strong> Large asset datasets may impact query performance
+            <ul class="task-list">
+                <li><strong>Mitigation:</strong> Implement proper indexing and query optimization</li>
+            </ul>
+        </li>
+        <li><strong>Integration Complexity:</strong> External system integrations may be challenging
+            <ul class="task-list">
+                <li><strong>Mitigation:</strong> Create abstraction layers and thorough testing</li>
+            </ul>
+        </li>
+        <li><strong>User Adoption:</strong> Complex interface may hinder user adoption
+            <ul class="task-list">
+                <li><strong>Mitigation:</strong> Focus on UX design and comprehensive user training</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>Medium-Risk Items</h3>
+    <ul class="task-list">
+        <li><strong>Data Migration:</strong> Existing asset data migration complexity
+            <ul class="task-list">
+                <li><strong>Mitigation:</strong> Create robust import/export tools and validation</li>
+            </ul>
+        </li>
+        <li><strong>Scalability:</strong> System performance under high user load
+            <ul class="task-list">
+                <li><strong>Mitigation:</strong> Implement performance testing and monitoring</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<h2>Assumptions</h2>
+<ol class="task-list">
+    <li><strong>Infrastructure:</strong> Cloud infrastructure (AWS/Azure/GCP) available</li>
+    <li><strong>Integration:</strong> Existing systems have APIs available for integration</li>
+    <li><strong>Resources:</strong> Development team has required technical expertise</li>
+    <li><strong>Timeline:</strong> No major scope changes during implementation</li>
+    <li><strong>Data:</strong> Asset data is available in importable formats</li>
+</ol>
+
+<h2>Out of Scope</h2>
+<ol class="task-list">
+    <li><strong>Mobile Applications:</strong> Native iOS/Android apps not included</li>
+    <li><strong>Advanced Analytics:</strong> Machine learning and predictive analytics</li>
+    <li><strong>IoT Integration:</strong> Direct sensor and IoT device integration</li>
+    <li><strong>Custom Reporting:</strong> Advanced custom report builder</li>
+    <li><strong>Multi-tenancy:</strong> Support for multiple organizations/tenants</li>
+</ol>
+
+<hr>
+
+<p><em>This document represents the complete breakdown of the Asset Management system implementation. All tasks should be completed in order, with dependencies respected. Regular review and adjustment of priorities may be necessary based on development progress and changing requirements.</em></p>
+
+<hr>
+
+</body>
+</html>

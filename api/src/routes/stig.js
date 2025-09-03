@@ -1,7 +1,6 @@
 const express = require('express');
 const stigController = require('../controllers/stigController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -104,7 +103,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.post('/library', 
-  requirePermission('stig', 'write'),
+  requireRole(['admin']),
   stigController.createStigLibraryEntry
 );
 
@@ -185,7 +184,7 @@ router.post('/library',
  *         description: Insufficient permissions
  */
 router.get('/library', 
-  requirePermission('stig', 'read'),
+  requireRole(['admin', 'user']),
   stigController.getAllStigLibraryEntries
 );
 
@@ -215,7 +214,7 @@ router.get('/library',
  *         description: Insufficient permissions
  */
 router.get('/library/:stigId', 
-  requirePermission('stig', 'read'),
+  requireRole(['admin', 'user']),
   stigController.getStigLibraryEntryById
 );
 
@@ -284,7 +283,7 @@ router.get('/library/:stigId',
  *         description: Insufficient permissions
  */
 router.put('/library/:stigId', 
-  requirePermission('stig', 'write'),
+  requireRole(['admin']),
   stigController.updateStigLibraryEntry
 );
 
@@ -316,7 +315,7 @@ router.put('/library/:stigId',
  *         description: Insufficient permissions
  */
 router.delete('/library/:stigId', 
-  requirePermission('stig', 'admin'),
+  requireRole(['admin']),
   stigController.deleteStigLibraryEntry
 );
 
@@ -350,7 +349,7 @@ router.delete('/library/:stigId',
  *         description: Insufficient permissions
  */
 router.post('/import/xml', 
-  requirePermission('stig', 'admin'),
+  requireRole(['admin']),
   stigController.uploadXml,
   stigController.importStigFromXml
 );
@@ -394,7 +393,7 @@ router.post('/import/xml',
  *         description: Insufficient permissions
  */
 router.post('/download/disa',
-  requirePermission('stig', 'admin'),
+  requireRole(['admin']),
   stigController.downloadStigFromDisa
 );
 
@@ -477,7 +476,7 @@ router.post('/download/disa',
  *         description: Insufficient permissions
  */
 router.post('/checklists',
-  requirePermission('stig', 'write'),
+  requireRole(['admin']),
   stigController.createStigChecklist
 );
 
@@ -556,7 +555,7 @@ router.post('/checklists',
  *         description: Insufficient permissions
  */
 router.get('/checklists',
-  requirePermission('stig', 'read'),
+  requireRole(['admin', 'user']),
   stigController.getAllStigChecklists
 );
 
@@ -586,7 +585,7 @@ router.get('/checklists',
  *         description: Insufficient permissions
  */
 router.get('/checklists/:checklistId',
-  requirePermission('stig', 'read'),
+  requireRole(['admin', 'user']),
   stigController.getStigChecklistById
 );
 
@@ -658,7 +657,7 @@ router.get('/checklists/:checklistId',
  *         description: Insufficient permissions
  */
 router.put('/checklists/:checklistId',
-  requirePermission('stig', 'write'),
+  requireRole(['admin']),
   stigController.updateStigChecklist
 );
 
@@ -688,7 +687,7 @@ router.put('/checklists/:checklistId',
  *         description: Insufficient permissions
  */
 router.delete('/checklists/:checklistId',
-  requirePermission('stig', 'admin'),
+  requireRole(['admin']),
   stigController.deleteStigChecklist
 );
 
@@ -732,7 +731,7 @@ router.delete('/checklists/:checklistId',
  *         description: Insufficient permissions
  */
 router.post('/checklists/:checklistId/assign',
-  requirePermission('stig', 'write'),
+  requireRole(['admin']),
   stigController.assignStigChecklist
 );
 
@@ -827,7 +826,7 @@ router.post('/checklists/:checklistId/assign',
  *         description: Insufficient permissions
  */
 router.get('/analytics',
-  requirePermission('stig', 'read'),
+  requireRole(['admin', 'user']),
   stigController.getStigAnalytics
 );
 

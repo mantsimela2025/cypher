@@ -1,0 +1,153 @@
+### RMF API Smoke Tests
+# Usage: Install VS Code REST Client extension, set variables, and run requests.
+# Set the base URL and token here or use environment variables.
+@baseUrl = http://localhost:3000/api/v1
+@token = Bearer REPLACE_WITH_JWT
+
+### 1) Create RMF Project
+POST {{baseUrl}}/rmf/projects
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "title": "RMF Smoke Test Project",
+  "environment": "cloud",
+  "description": "Created by rmf_smoke.http"
+}
+
+### 2) List Projects (confirm created)
+GET {{baseUrl}}/rmf/projects?page=1&limit=10
+Authorization: {{token}}
+
+### 3) Get Project by ID
+# Replace :id with the project id from step 1 response
+GET {{baseUrl}}/rmf/projects/1
+Authorization: {{token}}
+
+### 4) List Steps for Project
+GET {{baseUrl}}/rmf/projects/1/steps
+Authorization: {{token}}
+
+### 5) Create a Task under the Categorize Step
+# Replace :categorizeStepId with the rmf_steps.id where step === "categorize"
+POST {{baseUrl}}/rmf/steps/1/tasks
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "key": "project_identification",
+  "title": "Project Identification",
+  "description": "Provide identifiers and summary"
+}
+
+### 6) List Questionnaires (should include seeds)
+GET {{baseUrl}}/rmf/questionnaires
+Authorization: {{token}}
+
+### 7) Create Questionnaire Response for Task
+# Replace :taskId and :questionnaireId (e.g., HVA)
+POST {{baseUrl}}/rmf/tasks/1/questionnaires/1/responses
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "responses_json": { "is_hva": true, "rationale": "Mission critical" },
+  "status": "submitted"
+}
+
+### 8) Add System Information Type (e.g., PII)
+POST {{baseUrl}}/rmf/projects/1/information-types
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "information_type_id": 1,
+  "confidentiality": "high",
+  "integrity": "medium",
+  "availability": "low",
+  "rationale_text": "Contains PII"
+}
+
+### 9) Set Categorization Result
+PUT {{baseUrl}}/rmf/projects/1/categorization
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "overall_confidentiality": "high",
+  "overall_integrity": "medium",
+  "overall_availability": "low",
+  "overall_category": "moderate",
+  "determination_method": "FIPS 199 aggregation",
+  "notes": "Initial determination"
+}
+
+### 10) Set Control Selection
+PUT {{baseUrl}}/rmf/projects/1/control-selection
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "baseline": "moderate",
+  "overlays_json": ["Privacy"],
+  "tailoring_rationale": "Added AC-2(3) for external users"
+}
+
+### 11) Create Assessment
+POST {{baseUrl}}/rmf/projects/1/assessments
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "assessment_type": "vuln_scan",
+  "scope_json": { "assets": [1,2,3] },
+  "started_at": "{{$datetime iso8601}}"
+}
+
+### 12) List Assessments
+GET {{baseUrl}}/rmf/projects/1/assessments
+Authorization: {{token}}
+
+### 13) Update Assessment (replace :assessmentId)
+PATCH {{baseUrl}}/rmf/assessments/1
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "status": "in_progress",
+  "summary": "Scan initiated"
+}
+
+### 14) Upsert Authorization Record
+PUT {{baseUrl}}/rmf/projects/1/authorization
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "decision": "full",
+  "decision_status": "approved",
+  "decision_date": "2025-07-01",
+  "expires_at": "2028-07-01",
+  "risk_summary": "Residual risk acceptable"
+}
+
+### 15) Get Authorization Record
+GET {{baseUrl}}/rmf/projects/1/authorization
+Authorization: {{token}}
+
+### 16) Upsert Monitoring Plan
+PUT {{baseUrl}}/rmf/projects/1/monitoring-plan
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "control_sampling_plan_json": { "AC-2": "quarterly", "CM-2": "monthly" },
+  "scan_frequency": "monthly",
+  "metrics_json": { "open_findings": 12 },
+  "escalation_rules_json": { "sev1": "immediate" },
+  "last_reviewed_at": "{{$datetime iso8601}}"
+}
+
+### 17) Get Monitoring Plan
+GET {{baseUrl}}/rmf/projects/1/monitoring-plan
+Authorization: {{token}}

@@ -197,7 +197,7 @@ const Appbar = () => {
               </ul>
             </div>
           </SimpleBar>
-          <UncontrolledDropdown className="nk-sidebar-profile nk-sidebar-profile-fixed" direction="right">
+          <UncontrolledDropdown className="nk-sidebar-profile nk-sidebar-profile-fixed" direction="end">
             <DropdownToggle
               tag="a"
               href="#toggle"

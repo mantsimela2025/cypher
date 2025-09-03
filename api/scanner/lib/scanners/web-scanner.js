@@ -1,6 +1,92 @@
 const { EventEmitter } = require('events');
 const axios = require('axios');
-const cheerio = require('cheerio');
+
+// Simple HTML parser to replace cheerio functionality
+class SimpleHTMLParser {
+  constructor(html) {
+    this.html = html || '';
+  }
+
+  static load(html) {
+    return new SimpleHTMLParser(html);
+  }
+
+  find(selector) {
+    const results = [];
+    
+    // Handle meta tag selectors with content attribute
+    if (selector.includes('meta[name=') && selector.includes('[content*=')) {
+      const nameMatch = selector.match(/meta\[name="([^"]+)"\]\[content\*="([^"]+)"\]/);
+      if (nameMatch) {
+        const name = nameMatch[1];
+        const content = nameMatch[2];
+        const regex = new RegExp(`<meta[^>]+name\\s*=\\s*["']${name}["'][^>]+content\\s*=\\s*["'][^"']*${content}[^"']*["'][^>]*>`, 'gi');
+        const matches = this.html.match(regex) || [];
+        matches.forEach(match => results.push(new HTMLElement(match)));
+      }
+    }
+    // Handle simple meta tag selectors
+    else if (selector.includes('meta[name=')) {
+      const nameMatch = selector.match(/meta\[name="([^"]+)"\]/);
+      if (nameMatch) {
+        const name = nameMatch[1];
+        const regex = new RegExp(`<meta[^>]+name\\s*=\\s*["']${name}["'][^>]*>`, 'gi');
+        const matches = this.html.match(regex) || [];
+        matches.forEach(match => results.push(new HTMLElement(match)));
+      }
+    }
+    
+    return new ElementCollection(results);
+  }
+
+  // Alias for find
+  $(selector) {
+    return this.find(selector);
+  }
+
+  html() {
+    return this.html;
+  }
+}
+
+class HTMLElement {
+  constructor(html, innerHtml = null) {
+    this.html = html;
+    this.innerHtml = innerHtml;
+  }
+
+  attr(name) {
+    const regex = new RegExp(`${name}\\s*=\\s*["']([^"']*)["']`, 'i');
+    const match = this.html.match(regex);
+    return match ? match[1] : null;
+  }
+
+  html() {
+    return this.innerHtml || this.html;
+  }
+}
+
+class ElementCollection {
+  constructor(elements = []) {
+    this.elements = elements;
+    this.length = elements.length;
+  }
+
+  first() {
+    return this.elements[0] || new HTMLElement('');
+  }
+
+  attr(name) {
+    return this.first().attr(name);
+  }
+
+  each(callback) {
+    this.elements.forEach((element, index) => {
+      callback.call(element, index, element);
+    });
+    return this;
+  }
+}
 const url = require('url');
 const crypto = require('crypto');
 const logger = require('../utils/logger');

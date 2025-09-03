@@ -28,33 +28,78 @@ const AdminRoles = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemPerPage] = useState(10);
 
-  // Fetch roles from API
+  // Static roles data for simple role-based system
   const fetchRoles = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch('http://localhost:3001/api/v1/roles', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      // Simulate API delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Static roles for the simple role-based system
+      const staticRoles = [
+        {
+          id: 1,
+          name: 'admin',
+          description: 'Full system access with all administrative privileges',
+          isSystem: true,
+          userCount: 0, // Will be populated from users API
+          createdAt: '2024-01-01T00:00:00Z',
+          updatedAt: '2024-01-01T00:00:00Z'
         },
-      });
+        {
+          id: 2,
+          name: 'user',
+          description: 'Standard user access with read permissions and limited write access',
+          isSystem: true,
+          userCount: 0, // Will be populated from users API
+          createdAt: '2024-01-01T00:00:00Z',
+          updatedAt: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: 3,
+          name: 'moderator',
+          description: 'Limited administrative access for content moderation and user support',
+          isSystem: true,
+          userCount: 0, // Will be populated from users API
+          createdAt: '2024-01-01T00:00:00Z',
+          updatedAt: '2024-01-01T00:00:00Z'
+        }
+      ];
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Fetch user counts for each role
+      try {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch('http://localhost:3001/api/v1/users?limit=1000', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.success && userData.data) {
+            // Count users by role
+            const roleCounts = userData.data.reduce((acc, user) => {
+              acc[user.role] = (acc[user.role] || 0) + 1;
+              return acc;
+            }, {});
+
+            // Update role counts
+            staticRoles.forEach(role => {
+              role.userCount = roleCounts[role.name] || 0;
+            });
+          }
+        }
+      } catch (userError) {
+        console.warn('Could not fetch user counts:', userError);
       }
 
-      const data = await response.json();
-
-      if (data.success) {
-        setRoles(data.data);
-      } else {
-        throw new Error(data.message || 'Failed to fetch roles');
-      }
+      setRoles(staticRoles);
     } catch (error) {
-      console.error('Error fetching roles:', error);
+      console.error('Error loading roles:', error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -76,37 +121,77 @@ const AdminRoles = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  // Helper function to get role permissions
+  const getRolePermissions = (roleName) => {
+    switch (roleName) {
+      case 'admin':
+        return [
+          '• Full CRUD access to all resources',
+          '• User management and administration',
+          '• System configuration and settings',
+          '• Access to all admin panels',
+          '• Can create, edit, and delete any content'
+        ];
+      case 'user':
+        return [
+          '• Read access to most resources',
+          '• Can update own profile',
+          '• Can generate reports',
+          '• Can view dashboards and analytics',
+          '• Limited write access to personal data'
+        ];
+      case 'moderator':
+        return [
+          '• Limited administrative access',
+          '• Content moderation capabilities',
+          '• User support functions',
+          '• Read access to most resources',
+          '• Some write access for moderation tasks'
+        ];
+      default:
+        return ['• Custom role permissions'];
+    }
+  };
+
   // Handler functions for dropdown actions
   const handleEditRole = (roleId) => {
-    console.log('Edit role:', roleId);
-    // TODO: Implement edit role functionality
-    // This could open a modal or navigate to an edit page
+    const role = roles.find(r => r.id === roleId);
+    if (role?.isSystem) {
+      alert('System roles cannot be edited. These are built-in roles required for the application to function properly.');
+    } else {
+      console.log('Edit role:', roleId);
+      // TODO: Implement edit role functionality for custom roles
+    }
   };
 
   const handleViewRole = (roleId) => {
-    console.log('View role:', roleId);
-    // TODO: Implement view role details functionality
-    // This could open a modal with role details
+    const role = roles.find(r => r.id === roleId);
+    if (role) {
+      const permissions = getRolePermissions(role.name);
+      alert(`Role: ${role.name}\n\nDescription: ${role.description}\n\nPermissions:\n${permissions.join('\n')}\n\nUsers with this role: ${role.userCount}`);
+    }
   };
 
   const handleManagePermissions = (roleId) => {
-    console.log('Manage permissions for role:', roleId);
-    // TODO: Implement permissions management functionality
-    // This could open a permissions management modal
+    const role = roles.find(r => r.id === roleId);
+    if (role?.isSystem) {
+      alert('System role permissions are fixed and cannot be modified. Use the simple role-based system:\n\n• admin: Full access to all operations\n• user: Read access + limited write access\n• moderator: Limited administrative access');
+    } else {
+      console.log('Manage permissions for role:', roleId);
+      // TODO: Implement permission management for custom roles
+    }
   };
 
   const handleDeleteRole = (roleId) => {
-    console.log('Delete role:', roleId);
-    // TODO: Implement delete role functionality
-    // This should show a confirmation dialog before deleting
     const role = roles.find(r => r.id === roleId);
-    const roleName = role ? role.name : 'this role';
-
-    if (window.confirm(`Are you sure you want to delete "${roleName}"? This action cannot be undone and will affect all users assigned to this role.`)) {
-      // Implement actual delete logic here
-      console.log('Role deletion confirmed for:', roleName);
-      // You could call an API here to delete the role
-      // deleteRoleAPI(roleId).then(() => fetchRoles());
+    if (role?.isSystem) {
+      alert('System roles cannot be deleted. These roles are required for the application to function properly.');
+    } else {
+      const roleName = role ? role.name : 'this role';
+      if (window.confirm(`Are you sure you want to delete "${roleName}"? This action cannot be undone and will affect all users assigned to this role.`)) {
+        console.log('Role deletion confirmed for:', roleName);
+        // TODO: Implement delete role functionality for custom roles
+      }
     }
   };
 

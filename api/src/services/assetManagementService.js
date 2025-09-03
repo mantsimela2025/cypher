@@ -7,6 +7,14 @@ const {
   assets,
   assetNetwork
 } = require('../db/schema');
+const {
+  assetDetailView,
+  assetNetworkDetailView,
+  assetVulnerabilitiesSummaryView,
+  assetCostSummaryView,
+  assetTagsView,
+  assetCompleteDetailView
+} = require('../db/schema/assetDetailViews');
 const { eq, and, gte, lte, like, desc, asc, sql, or } = require('drizzle-orm');
 
 class AssetManagementService {
@@ -257,8 +265,8 @@ class AssetManagementService {
                      COALESCE(${assetOperationalCosts.laborCost}, 0) +
                      COALESCE(${assetOperationalCosts.otherCosts}, 0)`,
       // Join asset info
-      assetHostname: assets.hostname,
-      assetIpv4: assets.ipv4
+      assetHostname: assets.hostname
+      // Removed assetIpv4: assets.ipv4 - field doesn't exist in assets table
     })
     .from(assetOperationalCosts)
     .leftJoin(assets, eq(assetOperationalCosts.assetUuid, assets.assetUuid));
@@ -378,6 +386,39 @@ class AssetManagementService {
         pages: Math.ceil(count / limit)
       }
     };
+  }
+
+  async getRiskMappingById(id) {
+    const [result] = await db.select()
+      .from(assetRiskMapping)
+      .leftJoin(assets, eq(assetRiskMapping.assetUuid, assets.assetUuid))
+      .where(eq(assetRiskMapping.id, id));
+
+    return result;
+  }
+
+  async updateRiskMapping(id, data, userId) {
+    const updateData = {
+      ...data,
+      verifiedBy: userId,
+      verifiedAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    const [result] = await db.update(assetRiskMapping)
+      .set(updateData)
+      .where(eq(assetRiskMapping.id, id))
+      .returning();
+
+    return result;
+  }
+
+  async deleteRiskMapping(id) {
+    const [result] = await db.delete(assetRiskMapping)
+      .where(eq(assetRiskMapping.id, id))
+      .returning();
+
+    return result;
   }
 
   async getRiskMappingById(id) {
@@ -574,6 +615,198 @@ class AssetManagementService {
     }
     if (filters.yearTo) {
       conditions.push(lte(assetOperationalCosts.yearMonth, filters.yearTo));
+    }
+    
+    return conditions;
+  }
+
+  // ==================== ASSET DETAIL VIEWS ====================
+
+  /**
+   * Get comprehensive asset details using the asset_complete_detail_view
+   */
+  async getAssetCompleteDetail(assetUuid) {
+    try {
+      const [result] = await db.select()
+        .from(assetCompleteDetailView)
+        .where(eq(assetCompleteDetailView.asset_uuid, assetUuid))
+        .limit(1);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching asset complete details:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get basic asset details using the asset_detail_view
+   */
+  async getAssetBasicDetail(assetUuid) {
+    try {
+      const [result] = await db.select()
+        .from(assetDetailView)
+        .where(eq(assetDetailView.asset_uuid, assetUuid))
+        .limit(1);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching asset basic details:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get asset network details using the asset_network_detail_view
+   */
+  async getAssetNetworkDetail(assetUuid) {
+    try {
+      const [result] = await db.select()
+        .from(assetNetworkDetailView)
+        .where(eq(assetNetworkDetailView.asset_uuid, assetUuid))
+        .limit(1);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching asset network details:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get asset vulnerabilities summary using the asset_vulnerabilities_summary_view
+   */
+  async getAssetVulnerabilitiesSummary(assetUuid) {
+    try {
+      const [result] = await db.select()
+        .from(assetVulnerabilitiesSummaryView)
+        .where(eq(assetVulnerabilitiesSummaryView.asset_uuid, assetUuid))
+        .limit(1);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching asset vulnerabilities summary:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get asset cost summary using the asset_cost_summary_view
+   */
+  async getAssetCostSummary(assetUuid) {
+    try {
+      const [result] = await db.select()
+        .from(assetCostSummaryView)
+        .where(eq(assetCostSummaryView.asset_uuid, assetUuid))
+        .limit(1);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching asset cost summary:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get asset tags using the asset_tags_view
+   */
+  async getAssetTagsDetail(assetUuid) {
+    try {
+      const results = await db.select()
+        .from(assetTagsView)
+        .where(eq(assetTagsView.asset_uuid, assetUuid));
+      
+      return results;
+    } catch (error) {
+      console.error('Error fetching asset tags:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get paginated list of assets with basic details
+   */
+  async getAssetsWithDetails(filters = {}, pagination = {}) {
+    try {
+      const { page = 1, limit = 50, sortBy = 'hostname', sortOrder = 'asc' } = pagination;
+      const offset = (page - 1) * limit;
+
+      let query = db.select().from(assetDetailView);
+
+      // Apply filters
+      const conditions = this._buildAssetDetailFilters(filters);
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      // Apply sorting - defaulting to hostname since it's available in the view
+      const orderFn = sortOrder === 'asc' ? asc : desc;
+      const sortColumn = sql.identifier(sortBy);
+      
+      const results = await query
+        .orderBy(orderFn(sortColumn))
+        .limit(limit)
+        .offset(offset);
+
+      // Get total count
+      const [{ count }] = await db.select({ count: sql`count(*)` })
+        .from(assetDetailView)
+        .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+      return {
+        data: results,
+        pagination: {
+          page,
+          limit,
+          total: parseInt(count),
+          pages: Math.ceil(count / limit)
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching assets with details:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Build filters for asset detail views
+   */
+  _buildAssetDetailFilters(filters) {
+    const conditions = [];
+    
+    if (filters.hostname) {
+      conditions.push(like(assetDetailView.hostname, `%${filters.hostname}%`));
+    }
+    if (filters.ipAddress) {
+      conditions.push(or(
+        like(assetDetailView.ipv4_address, `%${filters.ipAddress}%`),
+        like(assetDetailView.ipv6_address, `%${filters.ipAddress}%`)
+      ));
+    }
+    if (filters.operatingSystem) {
+      conditions.push(like(assetDetailView.operating_system, `%${filters.operatingSystem}%`));
+    }
+    if (filters.assetType) {
+      conditions.push(eq(assetDetailView.asset_type, filters.assetType));
+    }
+    if (filters.criticality) {
+      conditions.push(eq(assetDetailView.criticality, filters.criticality));
+    }
+    if (filters.location) {
+      conditions.push(like(assetDetailView.location, `%${filters.location}%`));
+    }
+    if (filters.status) {
+      conditions.push(eq(assetDetailView.status, filters.status));
+    }
+    if (filters.environment) {
+      conditions.push(eq(assetDetailView.environment, filters.environment));
+    }
+    if (filters.hasVulnerabilities !== undefined) {
+      if (filters.hasVulnerabilities) {
+        conditions.push(sql`${assetDetailView.vulnerability_count} > 0`);
+      } else {
+        conditions.push(sql`${assetDetailView.vulnerability_count} = 0 OR ${assetDetailView.vulnerability_count} IS NULL`);
+      }
     }
     
     return conditions;

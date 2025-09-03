@@ -38,46 +38,44 @@ export const AssetOverviewChart = ({ data }) => {
       displayColors: false,
     },
     scales: {
-      yAxes: [
-        {
-          display: true,
-          stacked: true,
-          position: "left",
-          ticks: {
-            beginAtZero: true,
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 10,
-            callback: function (value, index, values) {
-              return value + " " + data.dataUnit;
-            },
-            min: 0,
-            stepSize: 500,
+      y: {
+        display: true,
+        stacked: true,
+        position: "left",
+        ticks: {
+          beginAtZero: true,
+          color: "#9eaecf",
+          font: {
+            size: 11,
           },
-          gridLines: {
-            color: "#e5ecf8",
-            tickMarkLength: 0,
-            zeroLineColor: "#e5ecf8",
+          padding: 10,
+          callback: function (value, index, values) {
+            return value + " " + data.dataUnit;
           },
+          min: 0,
+          stepSize: 500,
         },
-      ],
-      xAxes: [
-        {
-          display: true,
-          stacked: true,
-          ticks: {
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 5,
-          },
-          gridLines: {
-            color: "transparent",
-            tickMarkLength: 10,
-            zeroLineColor: "transparent",
-            offsetGridLines: true,
-          },
+        grid: {
+          color: "#e5ecf8",
+          tickMarkLength: 0,
         },
-      ],
+      },
+      x: {
+        display: true,
+        stacked: true,
+        ticks: {
+          color: "#9eaecf",
+          font: {
+            size: 11,
+          },
+          padding: 5,
+        },
+        grid: {
+          color: "transparent",
+          tickMarkLength: 10,
+          offsetGridLines: true,
+        },
+      },
     },
   };
   return <Line data={data} options={options} />;
@@ -117,44 +115,42 @@ export const AssetValueChart = ({ data }) => {
       displayColors: false,
     },
     scales: {
-      yAxes: [
-        {
-          display: true,
-          stacked: false,
-          position: "left",
-          ticks: {
-            beginAtZero: true,
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 10,
-            callback: function (value, index, values) {
-              return "$" + (value / 1000000).toFixed(1) + "M";
-            },
-            min: 0,
+      y: {
+        display: true,
+        stacked: false,
+        position: "left",
+        ticks: {
+          beginAtZero: true,
+          color: "#9eaecf",
+          font: {
+            size: 11,
           },
-          gridLines: {
-            color: "#e5ecf8",
-            tickMarkLength: 0,
-            zeroLineColor: "#e5ecf8",
+          padding: 10,
+          callback: function (value, index, values) {
+            return "$" + (value / 1000000).toFixed(1) + "M";
           },
+          min: 0,
         },
-      ],
-      xAxes: [
-        {
-          display: true,
-          stacked: false,
-          ticks: {
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 5,
-          },
-          gridLines: {
-            color: "transparent",
-            tickMarkLength: 10,
-            zeroLineColor: "transparent",
-          },
+        grid: {
+          color: "#e5ecf8",
+          tickMarkLength: 0,
         },
-      ],
+      },
+      x: {
+        display: true,
+        stacked: false,
+        ticks: {
+          color: "#9eaecf",
+          font: {
+            size: 11,
+          },
+          padding: 5,
+        },
+        grid: {
+          color: "transparent",
+          tickMarkLength: 10,
+        },
+      },
     },
   };
   return <Bar data={data} options={options} />;
@@ -189,46 +185,44 @@ export const AssetUtilizationChart = ({ data }) => {
       displayColors: false,
     },
     scales: {
-      yAxes: [
-        {
-          display: true,
-          stacked: false,
-          position: "left",
-          ticks: {
-            beginAtZero: true,
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 10,
-            callback: function (value, index, values) {
-              return value + "%";
-            },
-            min: 0,
-            max: 100,
-            stepSize: 20,
+      y: {
+        display: true,
+        stacked: false,
+        position: "left",
+        ticks: {
+          beginAtZero: true,
+          color: "#9eaecf",
+          font: {
+            size: 11,
           },
-          gridLines: {
-            color: "#e5ecf8",
-            tickMarkLength: 0,
-            zeroLineColor: "#e5ecf8",
+          padding: 10,
+          callback: function (value, index, values) {
+            return value + "%";
           },
+          min: 0,
+          max: 100,
+          stepSize: 20,
         },
-      ],
-      xAxes: [
-        {
-          display: true,
-          stacked: false,
-          ticks: {
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 5,
-          },
-          gridLines: {
-            color: "transparent",
-            tickMarkLength: 10,
-            zeroLineColor: "transparent",
-          },
+        grid: {
+          color: "#e5ecf8",
+          tickMarkLength: 0,
         },
-      ],
+      },
+      x: {
+        display: true,
+        stacked: false,
+        ticks: {
+          color: "#9eaecf",
+          font: {
+            size: 11,
+          },
+          padding: 5,
+        },
+        grid: {
+          color: "transparent",
+          tickMarkLength: 10,
+        },
+      },
     },
   };
   return <Line data={data} options={options} />;
@@ -263,40 +257,38 @@ export const AssetHealthChart = ({ data }) => {
       displayColors: false,
     },
     scales: {
-      yAxes: [
-        {
-          display: true,
-          ticks: {
-            beginAtZero: false,
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 10,
-            min: 75,
-            max: 100,
-            stepSize: 5,
+      y: {
+        display: true,
+        ticks: {
+          beginAtZero: false,
+          color: "#9eaecf",
+          font: {
+            size: 11,
           },
-          gridLines: {
-            color: "#e5ecf8",
-            tickMarkLength: 0,
-            zeroLineColor: "#e5ecf8",
-          },
+          padding: 10,
+          min: 75,
+          max: 100,
+          stepSize: 5,
         },
-      ],
-      xAxes: [
-        {
-          display: true,
-          ticks: {
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 5,
-          },
-          gridLines: {
-            color: "transparent",
-            tickMarkLength: 10,
-            zeroLineColor: "transparent",
-          },
+        grid: {
+          color: "#e5ecf8",
+          tickMarkLength: 0,
         },
-      ],
+      },
+      x: {
+        display: true,
+        ticks: {
+          color: "#9eaecf",
+          font: {
+            size: 11,
+          },
+          padding: 5,
+        },
+        grid: {
+          color: "transparent",
+          tickMarkLength: 10,
+        },
+      },
     },
   };
   return <Line data={data} options={options} />;
@@ -331,43 +323,41 @@ export const MaintenanceCostChart = ({ data }) => {
       displayColors: false,
     },
     scales: {
-      yAxes: [
-        {
-          display: true,
-          ticks: {
-            beginAtZero: false,
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 10,
-            callback: function (value, index, values) {
-              return "$" + (value / 1000).toFixed(0) + "K";
-            },
-            min: 40000,
-            max: 75000,
-            stepSize: 5000,
+      y: {
+        display: true,
+        ticks: {
+          beginAtZero: false,
+          color: "#9eaecf",
+          font: {
+            size: 11,
           },
-          gridLines: {
-            color: "#e5ecf8",
-            tickMarkLength: 0,
-            zeroLineColor: "#e5ecf8",
+          padding: 10,
+          callback: function (value, index, values) {
+            return "$" + (value / 1000).toFixed(0) + "K";
           },
+          min: 40000,
+          max: 75000,
+          stepSize: 5000,
         },
-      ],
-      xAxes: [
-        {
-          display: true,
-          ticks: {
-            fontSize: 11,
-            fontColor: "#9eaecf",
-            padding: 5,
-          },
-          gridLines: {
-            color: "transparent",
-            tickMarkLength: 10,
-            zeroLineColor: "transparent",
-          },
+        grid: {
+          color: "#e5ecf8",
+          tickMarkLength: 0,
         },
-      ],
+      },
+      x: {
+        display: true,
+        ticks: {
+          color: "#9eaecf",
+          font: {
+            size: 11,
+          },
+          padding: 5,
+        },
+        grid: {
+          color: "transparent",
+          tickMarkLength: 10,
+        },
+      },
     },
   };
   return <Line data={data} options={options} />;

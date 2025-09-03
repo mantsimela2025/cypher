@@ -1,7 +1,7 @@
 const express = require('express');
 const accessRequestController = require('../controllers/accessRequestController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -215,7 +215,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.get('/',
-  requirePermission('access_requests_read'),
+  requireRole(['admin', 'user']),
   accessRequestController.getAllAccessRequests
 );
 
@@ -290,7 +290,7 @@ router.get('/',
  *         description: Insufficient permissions
  */
 router.get('/stats',
-  requirePermission('access_requests_read'),
+  requireRole(['admin', 'user']),
   accessRequestController.getAccessRequestStats
 );
 
@@ -360,7 +360,7 @@ router.get('/stats',
  *         description: Insufficient permissions
  */
 router.get('/:requestId',
-  requirePermission('access_requests_read'),
+  requireRole(['admin', 'user']),
   accessRequestController.getAccessRequestById
 );
 
@@ -419,7 +419,7 @@ router.get('/:requestId',
  *         description: Insufficient permissions
  */
 router.patch('/:requestId/approve',
-  requirePermission('access_requests_admin'),
+  requireRole(['admin']),
   accessRequestController.approveAccessRequest
 );
 
@@ -494,7 +494,7 @@ router.patch('/:requestId/approve',
  *         description: Insufficient permissions
  */
 router.patch('/:requestId/reject',
-  requirePermission('access_requests_admin'),
+  requireRole(['admin']),
   accessRequestController.rejectAccessRequest
 );
 
@@ -550,7 +550,7 @@ router.patch('/:requestId/reject',
  *         description: Insufficient permissions
  */
 router.delete('/:requestId',
-  requirePermission('access_requests_admin'),
+  requireRole(['admin']),
   accessRequestController.deleteAccessRequest
 );
 

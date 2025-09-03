@@ -1,7 +1,6 @@
 const express = require('express');
 const assetManagementController = require('../controllers/assetManagementController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -55,7 +54,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.post('/costs',
-  requirePermission('asset_management:create'),
+  requireRole(['admin']),
   assetManagementController.createCostRecord
 );
 
@@ -98,7 +97,7 @@ router.post('/costs',
  *         description: Unauthorized
  */
 router.get('/costs',
-  requirePermission('asset_management:read'),
+  requireRole(['admin', 'user']),
   assetManagementController.getCostRecords
 );
 
@@ -123,7 +122,7 @@ router.get('/costs',
  *         description: Cost record not found
  */
 router.get('/costs/:id', 
-  requirePermission('asset_management:read'),
+  requireRole(['admin', 'user']),
   assetManagementController.getCostRecordById
 );
 
@@ -161,7 +160,7 @@ router.get('/costs/:id',
  *         description: Cost record not found
  */
 router.put('/costs/:id', 
-  requirePermission('asset_management:update'),
+  requireRole(['admin']),
   assetManagementController.updateCostRecord
 );
 
@@ -186,7 +185,7 @@ router.put('/costs/:id',
  *         description: Cost record not found
  */
 router.delete('/costs/:id', 
-  requirePermission('asset_management:delete'),
+  requireRole(['admin']),
   assetManagementController.deleteCostRecord
 );
 
@@ -225,27 +224,27 @@ router.delete('/costs/:id',
  *         description: Lifecycle record created successfully
  */
 router.post('/lifecycle',
-  requirePermission('asset_management:create'),
+  requireRole(['admin']),
   assetManagementController.createLifecycleRecord
 );
 
 router.get('/lifecycle',
-  requirePermission('asset_management:read'),
+  requireRole(['admin', 'user']),
   assetManagementController.getLifecycleRecords
 );
 
 router.get('/lifecycle/:id',
-  requirePermission('asset_management:read'),
+  requireRole(['admin', 'user']),
   assetManagementController.getLifecycleRecordById
 );
 
 router.put('/lifecycle/:id',
-  requirePermission('asset_management:update'),
+  requireRole(['admin']),
   assetManagementController.updateLifecycleRecord
 );
 
 router.delete('/lifecycle/:id',
-  requirePermission('asset_management:delete'),
+  requireRole(['admin']),
   assetManagementController.deleteLifecycleRecord
 );
 
@@ -286,28 +285,94 @@ router.delete('/lifecycle/:id',
  *         description: Operational cost record created successfully
  */
 router.post('/operational-costs',
-  requirePermission('asset_management:create'),
+  requireRole(['admin']),
   assetManagementController.createOperationalCost
 );
 
 router.get('/operational-costs',
-  requirePermission('asset_management:read'),
+  requireRole(['admin', 'user']),
   assetManagementController.getOperationalCosts
 );
 
 router.get('/operational-costs/:id',
-  requirePermission('asset_management:read'),
+  requireRole(['admin', 'user']),
   assetManagementController.getOperationalCostById
 );
 
 router.put('/operational-costs/:id',
-  requirePermission('asset_management:update'),
+  requireRole(['admin']),
   assetManagementController.updateOperationalCost
 );
 
 router.delete('/operational-costs/:id',
-  requirePermission('asset_management:delete'),
+  requireRole(['admin']),
   assetManagementController.deleteOperationalCost
+);
+
+// ==================== RISK MAPPING ROUTES ====================
+
+/**
+ * @swagger
+ * /api/v1/asset-management/risk-mapping:
+ *   post:
+ *     summary: Create a new risk mapping record
+ *     tags: [Risk Mapping]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - assetUuid
+ *             properties:
+ *               assetUuid:
+ *                 type: string
+ *                 format: uuid
+ *               existingAssetId:
+ *                 type: integer
+ *               riskModelId:
+ *                 type: integer
+ *               costCenterId:
+ *                 type: integer
+ *               mappingConfidence:
+ *                 type: number
+ *                 minimum: 0
+ *                 maximum: 1
+ *               mappingMethod:
+ *                 type: string
+ *                 enum: [automatic, manual, hybrid]
+ *               mappingCriteria:
+ *                 type: object
+ *     responses:
+ *       201:
+ *         description: Risk mapping record created successfully
+ */
+router.post('/risk-mapping',
+  requireRole(['admin']),
+  assetManagementController.createRiskMapping
+);
+
+router.get('/risk-mapping',
+  requireRole(['admin', 'user']),
+  assetManagementController.getRiskMappings
+);
+
+router.get('/risk-mapping/:id',
+  requireRole(['admin', 'user']),
+  assetManagementController.getRiskMappingById
+);
+
+router.put('/risk-mapping/:id',
+  requireRole(['admin']),
+  assetManagementController.updateRiskMapping
+);
+
+router.delete('/risk-mapping/:id',
+  requireRole(['admin']),
+  assetManagementController.deleteRiskMapping
 );
 
 // ==================== ANALYTICS ROUTES ====================
@@ -341,9 +406,240 @@ router.delete('/operational-costs/:id',
  *       200:
  *         description: Cost analytics retrieved successfully
  */
-router.get('/analytics/costs/:assetUuid', 
-  requirePermission('asset_management:read'),
+router.get('/analytics/costs/:assetUuid',
+  requireRole(['admin', 'user']),
   assetManagementController.getCostAnalytics
+);
+
+// ==================== ASSET DETAIL VIEWS ROUTES ====================
+
+/**
+ * @swagger
+ * /api/v1/asset-management/assets:
+ *   get:
+ *     summary: Get paginated list of assets with basic details
+ *     tags: [Asset Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           default: hostname
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *       - in: query
+ *         name: hostname
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: ipAddress
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: operatingSystem
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: assetType
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: criticality
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: environment
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: hasVulnerabilities
+ *         schema:
+ *           type: boolean
+ *     responses:
+ *       200:
+ *         description: Assets with details retrieved successfully
+ */
+router.get('/assets',
+  requireRole(['admin', 'user']),
+  assetManagementController.getAssetsWithDetails
+);
+
+/**
+ * @swagger
+ * /api/v1/asset-management/assets/{assetUuid}/complete-detail:
+ *   get:
+ *     summary: Get comprehensive asset details with all related information
+ *     tags: [Asset Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: assetUuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Asset complete details retrieved successfully
+ *       404:
+ *         description: Asset not found
+ */
+router.get('/assets/:assetUuid/complete-detail',
+  requireRole(['admin', 'user']),
+  assetManagementController.getAssetCompleteDetail
+);
+
+/**
+ * @swagger
+ * /api/v1/asset-management/assets/{assetUuid}/basic-detail:
+ *   get:
+ *     summary: Get basic asset details
+ *     tags: [Asset Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: assetUuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Asset basic details retrieved successfully
+ *       404:
+ *         description: Asset not found
+ */
+router.get('/assets/:assetUuid/basic-detail',
+  requireRole(['admin', 'user']),
+  assetManagementController.getAssetBasicDetail
+);
+
+/**
+ * @swagger
+ * /api/v1/asset-management/assets/{assetUuid}/network-detail:
+ *   get:
+ *     summary: Get asset network details
+ *     tags: [Asset Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: assetUuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Asset network details retrieved successfully
+ *       404:
+ *         description: Asset network details not found
+ */
+router.get('/assets/:assetUuid/network-detail',
+  requireRole(['admin', 'user']),
+  assetManagementController.getAssetNetworkDetail
+);
+
+/**
+ * @swagger
+ * /api/v1/asset-management/assets/{assetUuid}/vulnerabilities-summary:
+ *   get:
+ *     summary: Get asset vulnerabilities summary
+ *     tags: [Asset Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: assetUuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Asset vulnerabilities summary retrieved successfully
+ *       404:
+ *         description: Asset vulnerabilities summary not found
+ */
+router.get('/assets/:assetUuid/vulnerabilities-summary',
+  requireRole(['admin', 'user']),
+  assetManagementController.getAssetVulnerabilitiesSummary
+);
+
+/**
+ * @swagger
+ * /api/v1/asset-management/assets/{assetUuid}/cost-summary:
+ *   get:
+ *     summary: Get asset cost summary
+ *     tags: [Asset Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: assetUuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Asset cost summary retrieved successfully
+ *       404:
+ *         description: Asset cost summary not found
+ */
+router.get('/assets/:assetUuid/cost-summary',
+  requireRole(['admin', 'user']),
+  assetManagementController.getAssetCostSummary
+);
+
+/**
+ * @swagger
+ * /api/v1/asset-management/assets/{assetUuid}/tags-detail:
+ *   get:
+ *     summary: Get asset tags details
+ *     tags: [Asset Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: assetUuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Asset tags retrieved successfully
+ */
+router.get('/assets/:assetUuid/tags-detail',
+  requireRole(['admin', 'user']),
+  assetManagementController.getAssetTagsDetail
 );
 
 module.exports = router;

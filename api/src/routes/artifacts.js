@@ -1,7 +1,6 @@
 const express = require('express');
 const { artifactController, uploadMiddleware } = require('../controllers/artifactController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -74,7 +73,7 @@ router.use(authenticateToken);
  *         description: Unsupported file type
  */
 router.post('/', 
-  requirePermission('artifacts', 'write'),
+  requireRole(['admin']),
   uploadMiddleware,
   artifactController.createArtifact
 );
@@ -172,7 +171,7 @@ router.post('/',
  *         description: Insufficient permissions
  */
 router.get('/', 
-  requirePermission('artifacts', 'read'),
+  requireRole(['admin', 'user']),
   artifactController.getAllArtifacts
 );
 
@@ -202,7 +201,7 @@ router.get('/',
  *         description: Insufficient permissions
  */
 router.get('/:artifactId', 
-  requirePermission('artifacts', 'read'),
+  requireRole(['admin', 'user']),
   artifactController.getArtifactById
 );
 
@@ -270,7 +269,7 @@ router.get('/:artifactId',
  *         description: Insufficient permissions
  */
 router.put('/:artifactId', 
-  requirePermission('artifacts', 'write'),
+  requireRole(['admin']),
   artifactController.updateArtifact
 );
 
@@ -300,7 +299,7 @@ router.put('/:artifactId',
  *         description: Insufficient permissions
  */
 router.delete('/:artifactId', 
-  requirePermission('artifacts', 'delete'),
+  requireRole(['admin']),
   artifactController.deleteArtifact
 );
 
@@ -337,7 +336,7 @@ router.delete('/:artifactId',
  *         description: Insufficient permissions
  */
 router.get('/:artifactId/download', 
-  requirePermission('artifacts', 'read'),
+  requireRole(['admin', 'user']),
   artifactController.downloadArtifact
 );
 
@@ -388,7 +387,7 @@ router.get('/:artifactId/download',
  *         description: Unsupported file type
  */
 router.put('/:artifactId/replace',
-  requirePermission('artifacts', 'write'),
+  requireRole(['admin']),
   uploadMiddleware,
   artifactController.replaceArtifactFile
 );
@@ -439,7 +438,7 @@ router.put('/:artifactId/replace',
  *         description: Insufficient permissions
  */
 router.post('/:artifactId/review',
-  requirePermission('artifacts', 'admin'),
+  requireRole(['admin']),
   artifactController.reviewArtifact
 );
 
@@ -476,7 +475,7 @@ router.post('/:artifactId/review',
  *         description: Insufficient permissions
  */
 router.get('/pending-review',
-  requirePermission('artifacts', 'admin'),
+  requireRole(['admin']),
   artifactController.getPendingReviewArtifacts
 );
 
@@ -536,7 +535,7 @@ router.get('/pending-review',
  *         description: Insufficient permissions
  */
 router.get('/search',
-  requirePermission('artifacts', 'read'),
+  requireRole(['admin', 'user']),
   artifactController.searchArtifacts
 );
 
@@ -602,7 +601,7 @@ router.get('/search',
  *         description: Insufficient permissions
  */
 router.get('/statistics',
-  requirePermission('artifacts', 'read'),
+  requireRole(['admin', 'user']),
   artifactController.getArtifactStatistics
 );
 
@@ -648,7 +647,7 @@ router.get('/statistics',
  *         description: Insufficient permissions
  */
 router.put('/:artifactId/categories',
-  requirePermission('artifacts', 'write'),
+  requireRole(['admin']),
   artifactController.setArtifactCategories
 );
 
@@ -692,7 +691,7 @@ router.put('/:artifactId/categories',
  *         description: Insufficient permissions
  */
 router.put('/:artifactId/tags',
-  requirePermission('artifacts', 'write'),
+  requireRole(['admin']),
   artifactController.setArtifactTags
 );
 

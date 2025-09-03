@@ -43,32 +43,37 @@ const AddUserPanel = ({ isOpen, onClose, onUserAdded }) => {
     },
   });
 
-  // Fetch roles from API
+  // Static roles for simple role-based system
   const fetchRoles = async () => {
     try {
       setLoadingRoles(true);
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch('http://localhost:3001/api/v1/roles', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+
+      // Simulate API delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Static roles for the simple role-based system
+      const staticRoles = [
+        {
+          id: 1,
+          name: 'user',
+          description: 'Standard user with read access and limited write permissions'
         },
-      });
+        {
+          id: 2,
+          name: 'admin',
+          description: 'Administrator with full system access and management capabilities'
+        },
+        {
+          id: 3,
+          name: 'moderator',
+          description: 'Moderator with limited administrative access for content moderation'
+        }
+      ];
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setRoles(data.data);
-      } else {
-        throw new Error(data.message || 'Failed to fetch roles');
-      }
+      setRoles(staticRoles);
     } catch (error) {
-      console.error('Error fetching roles:', error);
-      // Fallback to basic roles if API fails
+      console.error('Error loading roles:', error);
+      // Fallback roles
       setRoles([
         { id: 1, name: 'user', description: 'Regular user' },
         { id: 2, name: 'moderator', description: 'Moderator user' },

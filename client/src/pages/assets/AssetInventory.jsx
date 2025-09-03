@@ -29,6 +29,8 @@ import AssetCostManagementPanel from "./components/AssetCostManagementPanel";
 import AssetTagsManagementPanel from "./components/AssetTagsManagementPanel";
 import AssetOperationalCostsPanel from "./components/AssetOperationalCostsPanel";
 import AssetRiskMappingPanel from "./components/AssetRiskMappingPanel";
+import AddAssetPanel from "./components/AddAssetPanel";
+import DiagramGenerationPanel from "./components/DiagramGenerationPanel";
 import { assetsApi } from "@/utils/assetsApi";
 import { assetTagsApi } from "@/utils/assetTagsApi";
 import { toast, ToastContainer } from "react-toastify";
@@ -71,6 +73,12 @@ const AssetInventory = () => {
 
   // Asset risk mapping panel state
   const [riskMappingPanelOpen, setRiskMappingPanelOpen] = useState(false);
+
+  // Add asset panel state
+  const [addAssetPanelOpen, setAddAssetPanelOpen] = useState(false);
+
+  // Diagram generation panel state
+  const [diagramGenerationPanelOpen, setDiagramGenerationPanelOpen] = useState(false);
 
   // Helper function to get first letters for avatar
   const findUpper = (string) => {
@@ -459,58 +467,19 @@ const AssetInventory = () => {
         console.log(`📊 PAGINATION:`, data.data.pagination);
         console.log(`📊 FIRST 3 ASSETS:`, data.data.assets.slice(0, 3));
 
-        // Fetch additional details for each asset (network and system information)
-        const assetsWithDetails = await Promise.all(
-          data.data.assets.map(async (asset) => {
-            try {
-              // Fetch network information
-              const networkData = await assetsApi.getAssetNetwork(asset.assetUuid);
-              const primaryNetwork = networkData.data?.find(n => n.isPrimary) || networkData.data?.[0];
-
-              // Fetch system information (operating system)
-              let systemInfo = {};
-              try {
-                const systemResponse = await fetch(`http://localhost:3001/api/v1/integrations/tenable/assets/${asset.assetUuid}/systems`, {
-                  headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                    'Content-Type': 'application/json',
-                  },
-                });
-                if (systemResponse.ok) {
-                  const systemData = await systemResponse.json();
-                  const primarySystem = systemData.data?.find(s => s.isPrimary) || systemData.data?.[0];
-                  systemInfo = {
-                    operatingSystem: primarySystem?.operatingSystem,
-                    systemType: primarySystem?.systemType
-                  };
-                }
-              } catch (sysError) {
-                console.warn(`Failed to fetch system data for asset ${asset.assetUuid}:`, sysError);
-              }
-
-              return {
-                ...asset,
-                ipv4Address: primaryNetwork?.ipv4Address || 'N/A',
-                fqdn: primaryNetwork?.fqdn || 'N/A',
-                macAddress: primaryNetwork?.macAddress || 'N/A',
-                operatingSystem: systemInfo.operatingSystem || 'Unknown',
-                systemType: systemInfo.systemType || 'Unknown',
-                tags: asset.tags || [] // Ensure tags is always an array
-              };
-            } catch (error) {
-              console.warn(`Failed to fetch details for asset ${asset.assetUuid}:`, error);
-              return {
-                ...asset,
-                ipv4Address: 'N/A',
-                fqdn: 'N/A',
-                macAddress: 'N/A',
-                operatingSystem: 'Unknown',
-                systemType: 'Unknown',
-                tags: asset.tags || []
-              };
-            }
-          })
-        );
+        // Process assets - no need to fetch additional details as core assets API includes everything
+        const assetsWithDetails = data.data.assets.map(asset => {
+          return {
+            ...asset,
+            // Use data from core assets API (already includes network and system info)
+            ipv4Address: asset.ipv4Address || 'N/A',
+            fqdn: asset.fqdn || 'N/A',
+            macAddress: asset.macAddress || 'N/A',
+            operatingSystem: asset.operatingSystem || 'Unknown',
+            systemType: asset.systemType || 'Unknown',
+            tags: asset.tags || [] // Ensure tags is always an array
+          };
+        });
 
         console.log(`📊 PROCESSED: Created ${assetsWithDetails.length} assets with details`);
 
@@ -682,10 +651,42 @@ const AssetInventory = () => {
     setCurrentPage(1); // Reset to first page when filters change
   };
 
+  const handleAddAsset = () => {
+    console.log('🆕 Opening Add Asset panel');
+    setAddAssetPanelOpen(true);
+  };
 
+  const handleCloseAddAssetPanel = () => {
+    setAddAssetPanelOpen(false);
+  };
+
+  const handleAssetAdded = (newAsset) => {
+    console.log('✅ Asset added successfully:', newAsset);
+    // Refresh the assets list to include the new asset
+    fetchAssets();
+  };
 
   const handleSelectedAssetsChange = (selectedRows) => {
     setSelectedAssets(selectedRows);
+  };
+
+  const handleGenerateDiagram = () => {
+    if (selectedAssets.length === 0) {
+      toast.warning('Please select assets to generate a diagram');
+      return;
+    }
+    console.log('🎨 Opening Diagram Generation panel for assets:', selectedAssets.length);
+    setDiagramGenerationPanelOpen(true);
+  };
+
+  const handleCloseDiagramGenerationPanel = () => {
+    setDiagramGenerationPanelOpen(false);
+  };
+
+  const handleDiagramGenerated = (diagramData) => {
+    console.log('✅ Diagram generated successfully:', diagramData);
+    toast.success('Diagram generated successfully!');
+    setDiagramGenerationPanelOpen(false);
   };
 
   // Effects
@@ -740,6 +741,50 @@ const AssetInventory = () => {
 
             {/* Assets Data Table */}
             <Block>
+              {/* Table Header with Add Asset Button */}
+              <div className="nk-block-head nk-block-head-sm">
+                <div className="nk-block-between">
+                  <div className="nk-block-head-content">
+                    <h6 className="nk-block-title">Assets Inventory</h6>
+                    <div className="nk-block-des text-soft">
+                      <p>Manage and track all organizational assets</p>
+                    </div>
+                  </div>
+                  <div className="nk-block-head-content">
+                    <div className="toggle-wrap nk-block-tools-toggle">
+                      <div className="toggle-expand-content">
+                        <ul className="nk-block-tools g-3">
+                          <li>
+                            <Button
+                              color="info"
+                              size="md"
+                              onClick={handleGenerateDiagram}
+                              className="btn-icon"
+                              disabled={selectedAssets.length === 0}
+                              title={selectedAssets.length === 0 ? "Select assets to generate diagrams" : `Generate diagram from ${selectedAssets.length} selected asset${selectedAssets.length !== 1 ? 's' : ''}`}
+                            >
+                              <Icon name="diagram-3"></Icon>
+                              <span>Generate Diagram ({selectedAssets.length})</span>
+                            </Button>
+                          </li>
+                          <li>
+                            <Button
+                              color="primary"
+                              size="md"
+                              onClick={handleAddAsset}
+                              className="btn-icon"
+                            >
+                              <Icon name="plus"></Icon>
+                              <span>Add Asset</span>
+                            </Button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <AssetDataTable
                 data={assets}
                 columns={assetColumns}
@@ -800,6 +845,21 @@ const AssetInventory = () => {
           onClose={handleCloseRiskMappingPanel}
           assetUuid={selectedAssetUuid}
           assetData={selectedAssetData}
+        />
+
+        {/* Add Asset Slide-out Panel */}
+        <AddAssetPanel
+          isOpen={addAssetPanelOpen}
+          onClose={handleCloseAddAssetPanel}
+          onAssetAdded={handleAssetAdded}
+        />
+
+        {/* Diagram Generation Slide-out Panel */}
+        <DiagramGenerationPanel
+          isOpen={diagramGenerationPanelOpen}
+          onClose={handleCloseDiagramGenerationPanel}
+          selectedAssets={selectedAssets}
+          onDiagramGenerated={handleDiagramGenerated}
         />
       </Content>
     </React.Fragment>

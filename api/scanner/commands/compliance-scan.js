@@ -1,9 +1,22 @@
-const chalk = require('chalk');
 const fs = require('fs');
 const ComplianceScanner = require('../lib/scanners/compliance-scanner');
 const reporter = require('../lib/utils/reporter');
 const validator = require('../lib/utils/validator');
 const logger = require('../lib/utils/logger');
+
+// ANSI color codes to replace chalk
+const colors = {
+  blue: (text) => `\x1b[34m${text}\x1b[0m`,
+  yellow: (text) => `\x1b[33m${text}\x1b[0m`,
+  red: (text) => `\x1b[31m${text}\x1b[0m`,
+  green: (text) => `\x1b[32m${text}\x1b[0m`,
+  gray: (text) => `\x1b[90m${text}\x1b[0m`,
+  magenta: (text) => `\x1b[35m${text}\x1b[0m`
+};
+
+// Extended color functions
+colors.red.bold = (text) => `\x1b[1m\x1b[31m${text}\x1b[0m`;
+colors.yellow.bold = (text) => `\x1b[1m\x1b[33m${text}\x1b[0m`;
 
 /**
  * Handle compliance scan command
@@ -59,13 +72,13 @@ async function complianceScan(target, options) {
     
     // If no valid frameworks specified, show available frameworks and exit
     if (frameworks.length === 0) {
-      console.log(chalk.yellow('No valid compliance frameworks specified.'));
-      console.log(chalk.blue('\nAvailable frameworks:'));
+      console.log(colors.yellow('No valid compliance frameworks specified.'));
+      console.log(colors.blue('\nAvailable frameworks:'));
       availableFrameworks.forEach(framework => {
-        console.log(`  ${chalk.green(framework.id)}: ${framework.name}`);
+        console.log(`  ${colors.green(framework.id)}: ${framework.name}`);
         console.log(`     ${framework.description}`);
       });
-      console.log(chalk.yellow('\nSpecify frameworks with --frameworks option, e.g., --frameworks pci-dss,hipaa'));
+      console.log(colors.yellow('\nSpecify frameworks with --frameworks option, e.g., --frameworks pci-dss,hipaa'));
       process.exit(1);
     }
     
@@ -109,25 +122,25 @@ async function complianceScan(target, options) {
     // Set up event listeners for progress
     scanner.on('progress', (data) => {
       if (data.phase) {
-        process.stdout.write(`\r${chalk.blue(`${data.phase}... ${data.message || ''}`)}`);
+        process.stdout.write(`\r${colors.blue(`${data.phase}... ${data.message || ''}`)}`);
       }
     });
     
     // Handle graceful termination
     process.on('SIGINT', () => {
-      console.log(chalk.yellow('\nScan interrupted. Shutting down...'));
+      console.log(colors.yellow('\nScan interrupted. Shutting down...'));
       scanner.abort();
       process.exit(0);
     });
     
     // Display scan information
-    console.log(chalk.blue('Starting Compliance Scan'));
-    console.log(`Target:      ${chalk.yellow(target)}`);
-    console.log(`Frameworks:  ${chalk.yellow(frameworks.join(', '))}`);
-    console.log(`Ports:       ${chalk.yellow(options.ports || 'default')}`);
-    console.log(`Auth:        ${chalk.yellow(credentials ? 'Yes' : 'No')}`);
-    console.log(`Timeout:     ${chalk.yellow(timeout)}ms`);
-    console.log(chalk.blue('-'.repeat(60)));
+    console.log(colors.blue('Starting Compliance Scan'));
+    console.log(`Target:      ${colors.yellow(target)}`);
+    console.log(`Frameworks:  ${colors.yellow(frameworks.join(', '))}`);
+    console.log(`Ports:       ${colors.yellow(options.ports || 'default')}`);
+    console.log(`Auth:        ${colors.yellow(credentials ? 'Yes' : 'No')}`);
+    console.log(`Timeout:     ${colors.yellow(timeout)}ms`);
+    console.log(colors.blue('-'.repeat(60)));
     
     // Start the scan
     const startTime = Date.now();
@@ -143,17 +156,17 @@ async function complianceScan(target, options) {
     process.stdout.write('\r' + ' '.repeat(100) + '\r');
     
     // Display scan results
-    console.log(chalk.blue('\nCompliance Scan Results'));
-    console.log(`${chalk.yellow('Target:')} ${target}`);
-    console.log(`${chalk.yellow('Scan Duration:')} ${duration.toFixed(2)} seconds`);
-    console.log(`${chalk.yellow('Overall Compliance Score:')} ${getScoreColor(results.summary.score)(`${results.summary.score}%`)}`);
-    console.log(`${chalk.yellow('Compliance Status:')} ${getStatusColor(results.summary.status)(results.summary.status.toUpperCase())}`);
+    console.log(colors.blue('\nCompliance Scan Results'));
+    console.log(`${colors.yellow('Target:')} ${target}`);
+    console.log(`${colors.yellow('Scan Duration:')} ${duration.toFixed(2)} seconds`);
+    console.log(`${colors.yellow('Overall Compliance Score:')} ${getScoreColor(results.summary.score)(`${results.summary.score}%`)}`);
+    console.log(`${colors.yellow('Compliance Status:')} ${getStatusColor(results.summary.status)(results.summary.status.toUpperCase())}`);
     
-    console.log(chalk.blue('\nFrameworks Assessed:'));
+    console.log(colors.blue('\nFrameworks Assessed:'));
     
     // Display framework results
     results.assessments.forEach(framework => {
-      console.log(`\n${chalk.yellow(framework.name)} - ${getScoreColor(framework.score)(`${framework.score}%`)} - ${getStatusColor(framework.status)(framework.status.toUpperCase())}`);
+      console.log(`\n${colors.yellow(framework.name)} - ${getScoreColor(framework.score)(`${framework.score}%`)} - ${getStatusColor(framework.status)(framework.status.toUpperCase())}`);
       
       // Group controls by status
       const failedControls = framework.controls.filter(c => c.status === 'failed');
@@ -162,42 +175,42 @@ async function complianceScan(target, options) {
       const notApplicable = framework.controls.filter(c => c.status === 'not-applicable');
       
       // Display summary of control statuses
-      console.log(`  Controls: ${chalk.red(`${failedControls.length} failed`)}, ${chalk.yellow(`${partialControls.length} partial`)}, ${chalk.green(`${passedControls.length} passed`)}, ${chalk.gray(`${notApplicable.length} N/A`)}`);
+      console.log(`  Controls: ${colors.red(`${failedControls.length} failed`)}, ${colors.yellow(`${partialControls.length} partial`)}, ${colors.green(`${passedControls.length} passed`)}, ${colors.gray(`${notApplicable.length} N/A`)}`);
       
       // Display failed controls with some remediation advice
       if (failedControls.length > 0) {
-        console.log(`\n  ${chalk.red.bold('Failed Controls:')}`);
+        console.log(`\n  ${colors.red.bold('Failed Controls:')}`);
         failedControls.forEach((control, index) => {
-          console.log(`  ${index + 1}. ${chalk.red(control.id)}: ${control.requirement}`);
+          console.log(`  ${index + 1}. ${colors.red(control.id)}: ${control.requirement}`);
           
           if (control.remediation && control.remediation.general && control.remediation.general.length > 0) {
-            console.log(`     ${chalk.green('Remediation:')} ${control.remediation.general[0]}`);
+            console.log(`     ${colors.green('Remediation:')} ${control.remediation.general[0]}`);
           }
         });
       }
       
       // Display partial controls with some remediation advice
       if (partialControls.length > 0 && failedControls.length < 5) {
-        console.log(`\n  ${chalk.yellow.bold('Partially Compliant Controls:')}`);
+        console.log(`\n  ${colors.yellow.bold('Partially Compliant Controls:')}`);
         partialControls.slice(0, 5 - failedControls.length).forEach((control, index) => {
-          console.log(`  ${index + 1}. ${chalk.yellow(control.id)}: ${control.requirement}`);
+          console.log(`  ${index + 1}. ${colors.yellow(control.id)}: ${control.requirement}`);
           
           if (control.remediation && control.remediation.general && control.remediation.general.length > 0) {
-            console.log(`     ${chalk.green('Remediation:')} ${control.remediation.general[0]}`);
+            console.log(`     ${colors.green('Remediation:')} ${control.remediation.general[0]}`);
           }
         });
       }
     });
     
     // Display vulnerability summary
-    console.log(chalk.blue('\nVulnerability Summary:'));
-    console.log(`  ${chalk.red(`Critical: ${results.summary.criticalFindings}`)}`);
-    console.log(`  ${chalk.magenta(`High: ${results.summary.highFindings}`)}`);
-    console.log(`  ${chalk.yellow(`Medium: ${results.summary.mediumFindings}`)}`);
-    console.log(`  ${chalk.blue(`Low: ${results.summary.lowFindings}`)}`);
+    console.log(colors.blue('\nVulnerability Summary:'));
+    console.log(`  ${colors.red(`Critical: ${results.summary.criticalFindings}`)}`);
+    console.log(`  ${colors.magenta(`High: ${results.summary.highFindings}`)}`);
+    console.log(`  ${colors.yellow(`Medium: ${results.summary.mediumFindings}`)}`);
+    console.log(`  ${colors.blue(`Low: ${results.summary.lowFindings}`)}`);
     
     // Display compliance improvement recommendations
-    console.log(chalk.blue('\nTop Compliance Recommendations:'));
+    console.log(colors.blue('\nTop Compliance Recommendations:'));
     
     // Get top failing controls across all frameworks
     const allFailingControls = results.assessments.flatMap(framework => {
@@ -214,7 +227,7 @@ async function complianceScan(target, options) {
     
     if (topRecommendations.length > 0) {
       topRecommendations.forEach((control, index) => {
-        console.log(`${index + 1}. ${chalk.yellow(control.requirement)} (${control.frameworkName} - ${control.id})`);
+        console.log(`${index + 1}. ${colors.yellow(control.requirement)} (${control.frameworkName} - ${control.id})`);
         
         if (control.remediation && control.remediation.general && control.remediation.general.length > 0) {
           console.log(`   ${control.remediation.general.map(advice => `• ${advice}`).join('\n   ')}`);
@@ -223,11 +236,11 @@ async function complianceScan(target, options) {
         console.log('');
       });
     } else {
-      console.log(chalk.green('No compliance issues detected.'));
+      console.log(colors.green('No compliance issues detected.'));
     }
     
     // Compliance report summary
-    console.log(chalk.blue('\nCompliance Report Summary:'));
+    console.log(colors.blue('\nCompliance Report Summary:'));
     console.log(`  ${results.summary.frameworksAssessed} frameworks assessed`);
     console.log(`  ${results.summary.controlsAssessed} controls evaluated`);
     
@@ -243,7 +256,7 @@ async function complianceScan(target, options) {
         excludedHosts: [],
         frameworks: frameworks
       });
-      console.log(chalk.green(`\nResults written to ${options.output}`));
+      console.log(colors.green(`\nResults written to ${options.output}`));
     }
     
   } catch (error) {
@@ -253,32 +266,32 @@ async function complianceScan(target, options) {
 }
 
 /**
- * Get chalk color function based on score
+ * Get color function based on score
  * @param {number} score - Compliance score
- * @returns {Function} - Chalk color function
+ * @returns {Function} - Color function
  */
 function getScoreColor(score) {
-  if (score >= 85) return chalk.green;
-  if (score >= 60) return chalk.yellow;
-  return chalk.red;
+  if (score >= 85) return colors.green;
+  if (score >= 60) return colors.yellow;
+  return colors.red;
 }
 
 /**
- * Get chalk color function based on status
+ * Get color function based on status
  * @param {string} status - Compliance status
- * @returns {Function} - Chalk color function
+ * @returns {Function} - Color function
  */
 function getStatusColor(status) {
   switch (status) {
     case 'compliant':
-      return chalk.green;
+      return colors.green;
     case 'partially-compliant':
-      return chalk.yellow;
+      return colors.yellow;
     case 'non-compliant':
-      return chalk.red;
+      return colors.red;
     case 'not-assessed':
     default:
-      return chalk.gray;
+      return colors.gray;
   }
 }
 

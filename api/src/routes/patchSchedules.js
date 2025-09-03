@@ -1,7 +1,7 @@
 const express = require('express');
 const patchSchedulesController = require('../controllers/patchSchedulesController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -75,7 +75,7 @@ router.use(authenticateToken);
  *         description: Validation error or invalid CRON expression
  */
 router.post('/',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateCreateSchedule(),
   patchSchedulesController.createSchedule
 );
@@ -122,7 +122,7 @@ router.post('/',
  *         description: Patch schedules retrieved successfully
  */
 router.get('/',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateScheduleQuery(),
   patchSchedulesController.getSchedules
 );
@@ -149,7 +149,7 @@ router.get('/',
  *         description: Patch schedule not found
  */
 router.get('/:id',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateUUID(),
   patchSchedulesController.getScheduleById
 );
@@ -204,7 +204,7 @@ router.get('/:id',
  *         description: Invalid CRON expression
  */
 router.put('/:id',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateUUID(),
   patchSchedulesController.validateUpdateSchedule(),
   patchSchedulesController.updateSchedule
@@ -232,7 +232,7 @@ router.put('/:id',
  *         description: Patch schedule not found
  */
 router.delete('/:id',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateUUID(),
   patchSchedulesController.deleteSchedule
 );
@@ -261,7 +261,7 @@ router.delete('/:id',
  *         description: Patch schedule not found
  */
 router.post('/:id/enable',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateUUID(),
   patchSchedulesController.enableSchedule
 );
@@ -288,7 +288,7 @@ router.post('/:id/enable',
  *         description: Patch schedule not found
  */
 router.post('/:id/disable',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateUUID(),
   patchSchedulesController.disableSchedule
 );
@@ -323,7 +323,7 @@ router.post('/:id/disable',
  *         description: Patch schedule not found
  */
 router.post('/:id/trigger',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateUUID(),
   patchSchedulesController.triggerScheduleNow
 );
@@ -356,7 +356,7 @@ router.post('/:id/trigger',
  *         description: Invalid CRON expression
  */
 router.post('/validate-cron',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateCronExpressionInput(),
   patchSchedulesController.validateCronExpression
 );
@@ -393,7 +393,7 @@ router.post('/validate-cron',
  *         description: Invalid CRON expression
  */
 router.post('/next-executions',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateCronExpressionInput(),
   patchSchedulesController.getNextExecutions
 );
@@ -448,7 +448,7 @@ router.post('/next-executions',
  *         description: Maintenance window created successfully
  */
 router.post('/maintenance-windows',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateMaintenanceWindow(),
   patchSchedulesController.createMaintenanceWindow
 );
@@ -466,7 +466,7 @@ router.post('/maintenance-windows',
  *         description: Maintenance windows retrieved successfully
  */
 router.get('/maintenance-windows',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.getMaintenanceWindows
 );
 
@@ -510,13 +510,13 @@ router.get('/maintenance-windows',
  *         description: Maintenance window not found
  */
 router.put('/maintenance-windows/:id',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateMaintenanceWindow(),
   patchSchedulesController.updateMaintenanceWindow
 );
 
 router.delete('/maintenance-windows/:id',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.deleteMaintenanceWindow
 );
 
@@ -566,7 +566,7 @@ router.delete('/maintenance-windows/:id',
  *         description: Execution history retrieved successfully
  */
 router.get('/:id/history',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.validateUUID(),
   patchSchedulesController.getScheduleExecutionHistory
 );
@@ -602,7 +602,7 @@ router.get('/:id/history',
  *         description: Analytics retrieved successfully
  */
 router.get('/analytics',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.getScheduleAnalytics
 );
 
@@ -634,7 +634,7 @@ router.get('/analytics',
  *         description: Month and year are required
  */
 router.get('/execution-calendar',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.getExecutionCalendar
 );
 
@@ -667,7 +667,7 @@ router.get('/execution-calendar',
  *         description: Schedules enabled successfully
  */
 router.put('/bulk/enable',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.bulkEnableSchedules
 );
 
@@ -698,12 +698,12 @@ router.put('/bulk/enable',
  *         description: Schedules disabled successfully
  */
 router.put('/bulk/disable',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.bulkDisableSchedules
 );
 
 router.delete('/bulk/delete',
-  requirePermission('patch_management:schedule'),
+  requireRole(['admin', 'user']),
   patchSchedulesController.bulkDeleteSchedules
 );
 

@@ -61,9 +61,14 @@ swaggerSetup(app);
 // Health check endpoint with performance metrics
 app.get('/health', (req, res) => {
   const cacheStats = getCacheStats();
+  const bypassEnabled = String(process.env.AUTH_BYPASS || 'false').toLowerCase() === 'true';
+  const isProd = String(process.env.NODE_ENV).toLowerCase() === 'production';
+  
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
+    authBypass: bypassEnabled && !isProd,
+    environment: process.env.NODE_ENV || 'development',
     cache: cacheStats,
     memory: {
       used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
@@ -93,10 +98,9 @@ app.use('/api/v1/auth', authRateLimit, authRoutes); // Strict rate limiting for 
 app.use('/api/v1/integrations', cache(300), integrationRoutes); // Cache integrations for 5 minutes
 app.use(require('./routes/userGroupRoutes')); // GET /api/v1/users/:id/groups
 app.use('/api/v1/systems', cache(900), require('./routes/systems')); // Cache systems for 15 minutes
-app.use('/api/v1/roles', cache(1800), require('./routes/roles')); // Cache roles for 30 minutes
-app.use('/api/v1/permissions', cache(1800), require('./routes/permissions')); // Cache permissions for 30 minutes
 // CVE routes with NVD API integration
 app.use('/api/v1/cves', cache(600), require('./routes/cves')); // Cache CVE data for 10 minutes
+app.use('/api/v1/assets', cache(300), require('./routes/assets')); // Core asset CRUD operations
 app.use('/api/v1/asset-management', cache(600), require('./routes/assetManagement')); // Cache assets for 10 minutes
 app.use('/api/v1/asset-tags', cache(900), require('./routes/assetTagsRoutes')); // Cache tags for 15 minutes
 app.use('/api/v1/vulnerabilities', cache(300), require('./routes/vulnerabilities')); // Cache vulns for 5 minutes
@@ -104,13 +108,15 @@ app.use('/api/v1/poams', cache(300), require('./routes/poamRoutes')); // Cache P
 app.use('/api/v1/vulnerability-analytics', cache(600), require('./routes/vulnerabilityAnalytics')); // Cache analytics for 10 minutes
 app.use('/api/v1/system-metrics', cache(180), require('./routes/systemMetrics')); // Cache metrics for 3 minutes
 app.use('/api/v1/metrics-dashboards', cache(300), require('./routes/metricsDashboards')); // Cache dashboards for 5 minutes
+// RMF onboarding routes
+app.use('/api/v1/rmf', require('./routes/rmf.routes'));
 
 // Patch Management Routes
 app.use('/api/v1/patches', cache(300), require('./routes/patches')); // Cache patches for 5 minutes
 app.use('/api/v1/patch-jobs', cache(180), require('./routes/patchJobs')); // Cache jobs for 3 minutes (status changes frequently)
 app.use('/api/v1/patch-schedules', cache(600), require('./routes/patchSchedules')); // Cache schedules for 10 minutes
 // app.use('/api/v1/patch-ai', require('./routes/patchAI')); // No cache for AI responses (need fresh analysis) - Temporarily disabled due to missing openai dependency
-// app.use('/api/v1/asset-analytics', require('./routes/assetAnalytics'));
+app.use('/api/v1/asset-analytics', cache(300), require('./routes/assetAnalytics')); // Cache analytics for 5 minutes
 // app.use('/api/v1/ai-cost-optimization', require('./routes/aiCostOptimization'));
 app.use('/api/v1/nl-query', require('./routes/naturalLanguageQuery')); // No cache for NL queries
 app.use('/api/v1/nl-query/data-sources', cache(3600), require('./routes/nlqDataSources')); // Cache data sources for 1 hour
@@ -133,14 +139,23 @@ app.use('/api/v1/email', require('./routes/emailRoutes'));
 app.use('/api/v1/categories', cache(1800), require('./routes/categories')); // Cache categories for 30 minutes
 app.use('/api/v1/documents', cache(600), require('./routes/documents')); // Cache documents for 10 minutes
 // app.use('/api/v1/artifacts', require('./routes/artifacts')); // Temporarily disabled - missing dependencies
-// app.use('/api/v1/scanner', require('./routes/scanner'));
+app.use('/api/v1/scanner', cache(300), require('./routes/scanner')); // Cache scanner data for 5 minutes
 // app.use('/api/v1/settings', require('./routes/settings'));
+
+// Diagrams routes - no cache for dynamic diagram generation
+app.use('/api/v1/diagrams', require('./routes/diagrams'));
 
 // Admin routes
 app.use('/api/v1/admin', require('./routes/admin'));
 
 // Distribution Groups
 app.use('/api/v1/distribution-groups', require('./routes/distributionGroupsRoutes'));
+
+// API Testing Routes (for Swagger UI enhancement)
+app.use('/api/v1/test', require('./routes/apiTesting'));
+
+// Schema Validation Routes (for form validation)
+app.use('/api/v1/validation', cache(1800), require('./routes/validation')); // Cache validation rules for 30 minutes
 
 // API base route (catch-all for unmatched routes)
 app.use('/api/v1', (req, res) => {

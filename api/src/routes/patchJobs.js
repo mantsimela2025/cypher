@@ -1,7 +1,7 @@
 const express = require('express');
 const patchJobsController = require('../controllers/patchJobsController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -66,7 +66,7 @@ router.use(authenticateToken);
  *         description: Validation error
  */
 router.post('/',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateCreateJob(),
   patchJobsController.createJob
 );
@@ -115,7 +115,7 @@ router.post('/',
  *         description: Patch jobs retrieved successfully
  */
 router.get('/',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateJobQuery(),
   patchJobsController.getJobs
 );
@@ -142,7 +142,7 @@ router.get('/',
  *         description: Patch job not found
  */
 router.get('/:id',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.getJobById
 );
@@ -191,7 +191,7 @@ router.get('/:id',
  *         description: Patch job not found
  */
 router.put('/:id',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchJobsController.validateUUID(),
   patchJobsController.validateUpdateJob(),
   patchJobsController.updateJob
@@ -219,7 +219,7 @@ router.put('/:id',
  *         description: Patch job not found
  */
 router.delete('/:id',
-  requirePermission('patch_management:delete'),
+  requireRole(['admin']),
   patchJobsController.validateUUID(),
   patchJobsController.deleteJob
 );
@@ -250,7 +250,7 @@ router.delete('/:id',
  *         description: Job cannot be started
  */
 router.post('/:id/start',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.startJob
 );
@@ -277,7 +277,7 @@ router.post('/:id/start',
  *         description: Patch job not found
  */
 router.post('/:id/pause',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.pauseJob
 );
@@ -304,7 +304,7 @@ router.post('/:id/pause',
  *         description: Patch job not found
  */
 router.post('/:id/resume',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.resumeJob
 );
@@ -339,7 +339,7 @@ router.post('/:id/resume',
  *         description: Patch job not found
  */
 router.post('/:id/cancel',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.cancelJob
 );
@@ -374,7 +374,7 @@ router.post('/:id/cancel',
  *         description: Patch job not found
  */
 router.post('/:id/rollback',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.rollbackJob
 );
@@ -424,20 +424,20 @@ router.post('/:id/rollback',
  *         description: Targets added successfully
  */
 router.post('/:id/targets',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchJobsController.validateUUID(),
   patchJobsController.validateAddTargets(),
   patchJobsController.addJobTargets
 );
 
 router.get('/:id/targets',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.getJobTargets
 );
 
 router.delete('/:id/targets/:targetId',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchJobsController.validateUUID(),
   patchJobsController.removeJobTarget
 );
@@ -483,7 +483,7 @@ router.delete('/:id/targets/:targetId',
  *         description: Target status updated successfully
  */
 router.put('/:id/targets/:targetId/status',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchJobsController.validateUUID(),
   patchJobsController.validateUpdateTargetStatus(),
   patchJobsController.updateJobTargetStatus
@@ -529,20 +529,20 @@ router.put('/:id/targets/:targetId/status',
  *         description: Circular dependency detected
  */
 router.post('/:id/dependencies',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchJobsController.validateUUID(),
   patchJobsController.validateJobDependency(),
   patchJobsController.addJobDependency
 );
 
 router.get('/:id/dependencies',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.getJobDependencies
 );
 
 router.delete('/:id/dependencies/:dependencyId',
-  requirePermission('patch_management:update'),
+  requireRole(['admin']),
   patchJobsController.validateUUID(),
   patchJobsController.removeJobDependency
 );
@@ -587,7 +587,7 @@ router.delete('/:id/dependencies/:dependencyId',
  *         description: Job logs retrieved successfully
  */
 router.get('/:id/logs',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchJobsController.validateUUID(),
   patchJobsController.getJobLogs
 );
@@ -626,7 +626,7 @@ router.get('/:id/logs',
  *         description: Analytics retrieved successfully
  */
 router.get('/analytics',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchJobsController.getJobAnalytics
 );
 
@@ -662,7 +662,7 @@ router.get('/analytics',
  *         description: Execution report retrieved successfully
  */
 router.get('/execution-report',
-  requirePermission('patch_management:read'),
+  requireRole(['admin', 'user']),
   patchJobsController.getExecutionReport
 );
 
@@ -701,7 +701,7 @@ router.get('/execution-report',
  *         description: Jobs updated successfully
  */
 router.put('/bulk/update-status',
-  requirePermission('patch_management:execute'),
+  requireRole(['admin', 'user']),
   patchJobsController.bulkUpdateJobStatus
 );
 

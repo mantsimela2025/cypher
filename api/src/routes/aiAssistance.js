@@ -1,7 +1,6 @@
 const express = require('express');
 const aiAssistanceController = require('../controllers/aiAssistanceController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -76,7 +75,7 @@ router.use(authenticateToken);
  *         description: Insufficient permissions
  */
 router.post('/requests', 
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.createAssistanceRequest
 );
 
@@ -156,7 +155,7 @@ router.post('/requests',
  *         description: Insufficient permissions
  */
 router.get('/requests', 
-  requirePermission('ai_assistance', 'read'),
+  requireRole(['admin', 'user']),
   aiAssistanceController.getAllAssistanceRequests
 );
 
@@ -186,7 +185,7 @@ router.get('/requests',
  *         description: Insufficient permissions
  */
 router.get('/requests/:requestId', 
-  requirePermission('ai_assistance', 'read'),
+  requireRole(['admin', 'user']),
   aiAssistanceController.getAssistanceRequestById
 );
 
@@ -216,7 +215,7 @@ router.get('/requests/:requestId',
  *         description: Insufficient permissions
  */
 router.post('/requests/:requestId/process', 
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.processAssistanceRequest
 );
 
@@ -278,7 +277,7 @@ router.post('/requests/:requestId/process',
  *         description: Insufficient permissions
  */
 router.put('/requests/:requestId/feedback', 
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.updateRequestFeedback
 );
 
@@ -325,7 +324,7 @@ router.put('/requests/:requestId/feedback',
  *         description: Insufficient permissions
  */
 router.post('/threat-intelligence', 
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.generateThreatIntelligenceReport
 );
 
@@ -368,7 +367,7 @@ router.post('/threat-intelligence',
  *         description: Insufficient permissions
  */
 router.post('/incident-response', 
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.generateIncidentResponsePlaybook
 );
 
@@ -413,7 +412,7 @@ router.post('/incident-response',
  *         description: Insufficient permissions
  */
 router.post('/compliance',
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.generateComplianceAssessment
 );
 
@@ -455,7 +454,7 @@ router.post('/compliance',
  *         description: Insufficient permissions
  */
 router.post('/policy',
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.generateSecurityPolicy
 );
 
@@ -499,7 +498,7 @@ router.post('/policy',
  *         description: Insufficient permissions
  */
 router.post('/vulnerability-analysis',
-  requirePermission('ai_assistance', 'write'),
+  requireRole(['admin']),
   aiAssistanceController.analyzeVulnerabilityImpact
 );
 
@@ -587,7 +586,7 @@ router.post('/vulnerability-analysis',
  *         description: Insufficient permissions
  */
 router.get('/analytics',
-  requirePermission('ai_assistance', 'read'),
+  requireRole(['admin', 'user']),
   aiAssistanceController.getAiAnalytics
 );
 
@@ -663,7 +662,7 @@ router.get('/analytics',
  *         description: Insufficient permissions
  */
 router.get('/knowledge-base/search',
-  requirePermission('ai_assistance', 'read'),
+  requireRole(['admin', 'user']),
   aiAssistanceController.searchKnowledgeBase
 );
 

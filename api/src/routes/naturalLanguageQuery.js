@@ -1,7 +1,7 @@
 const express = require('express');
 const naturalLanguageQueryController = require('../controllers/naturalLanguageQueryController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -100,7 +100,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.post('/process', 
-  requirePermission('nl_query', 'create'),
+  requireRole(['admin']),
   naturalLanguageQueryController.processQuery
 );
 
@@ -141,7 +141,7 @@ router.post('/process',
  *         description: Unauthorized
  */
 router.post('/continue', 
-  requirePermission('nl_query', 'create'),
+  requireRole(['admin']),
   naturalLanguageQueryController.continueConversation
 );
 
@@ -212,7 +212,7 @@ router.post('/continue',
  *         description: Unauthorized
  */
 router.get('/history', 
-  requirePermission('nl_query', 'read'),
+  requireRole(['admin', 'user']),
   naturalLanguageQueryController.getQueryHistory
 );
 
@@ -257,7 +257,7 @@ router.get('/history',
  *         description: Unauthorized
  */
 router.post('/:queryId/feedback', 
-  requirePermission('nl_query', 'update'),
+  requireRole(['admin']),
   naturalLanguageQueryController.submitFeedback
 );
 
@@ -292,7 +292,7 @@ router.post('/:queryId/feedback',
  *         description: Unauthorized
  */
 router.get('/analytics', 
-  requirePermission('nl_query', 'read'),
+  requireRole(['admin', 'user']),
   naturalLanguageQueryController.getQueryAnalytics
 );
 
@@ -352,7 +352,7 @@ router.get('/analytics',
  *         description: Unauthorized
  */
 router.get('/suggestions', 
-  requirePermission('nl_query', 'read'),
+  requireRole(['admin', 'user']),
   naturalLanguageQueryController.getSuggestedQueries
 );
 
@@ -406,7 +406,7 @@ router.get('/suggestions',
  *         description: Unauthorized
  */
 router.get('/capabilities', 
-  requirePermission('nl_query', 'read'),
+  requireRole(['admin', 'user']),
   naturalLanguageQueryController.getAICapabilities
 );
 

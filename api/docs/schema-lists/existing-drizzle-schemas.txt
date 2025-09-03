@@ -1,0 +1,180 @@
+# Existing Drizzle Schemas (Alphabetical)
+# Total: 176 schemas
+# Generated: 2025-08-17T15:33:13.092Z
+
+  1. ✅ access_requests -> accessRequests
+  2. ⚠️ ai_analytics -> aiAssistanceAnalytics
+  3. ✅ ai_assistance_requests -> aiAssistanceRequests
+  4. ⚠️ ai_automation_rules -> aiAutomationRules
+  5. ⚠️ ai_generation_analytics -> aiGenerationAnalytics
+  6. ⚠️ ai_generation_feedback -> aiGenerationFeedback
+  7. ⚠️ ai_generation_requests -> aiGenerationRequests
+  8. ⚠️ ai_generation_templates -> aiGenerationTemplates
+  9. ⚠️ ai_knowledge_base -> aiKnowledgeBase
+ 10. ⚠️ ai_model_configurations -> aiModelConfigurations
+ 11. ⚠️ ai_training_data -> aiTrainingData
+ 12. ✅ app_modules -> appModules
+ 13. ⚠️ approval_audit_log -> approvalAuditLog
+ 14. ⚠️ approval_notifications -> approvalNotifications
+ 15. ⚠️ approval_responses -> approvalResponses
+ 16. ⚠️ approval_workflows -> approvalWorkflows
+ 17. ✅ artifact_categories -> artifactCategories
+ 18. ✅ artifact_references -> artifactReferences
+ 19. ✅ artifact_tags -> artifactTags
+ 20. ✅ artifacts -> artifacts
+ 21. ✅ asset_cost_management -> assetCostManagement
+ 22. ✅ asset_group_members -> assetGroupMembers
+ 23. ✅ asset_groups -> assetGroups
+ 24. ✅ asset_lifecycle -> assetLifecycle
+ 25. ✅ asset_network -> assetNetwork
+ 26. ✅ asset_operational_costs -> assetOperationalCosts
+ 27. ✅ asset_risk_mapping -> assetRiskMapping
+ 28. ✅ asset_systems -> assetSystems
+ 29. ✅ asset_tags -> assetTags
+ 30. ✅ asset_vulnerabilities -> assetVulnerabilities
+ 31. ✅ assets -> assets
+ 32. ✅ ato_documents -> atoDocuments
+ 33. ✅ ato_workflow_history -> atoWorkflowHistory
+ 34. ✅ attack_surface_mapping -> attackSurfaceMapping
+ 35. ✅ audit_logs -> auditLogs
+ 36. ✅ authorizations_to_operate -> authorizationsToOperate
+ 37. ✅ business_impact_analysis -> businessImpactAnalysis
+ 38. ✅ categories -> categories
+ 39. ⚠️ chart_configurations -> chartConfigurations
+ 40. ⚠️ chart_types -> chartTypes
+ 41. ✅ control_evidence -> controlEvidence
+ 42. ✅ control_findings -> controlFindings
+ 43. ✅ control_inheritance -> controlInheritance
+ 44. ✅ control_poams -> controlPoams
+ 45. ✅ controls -> controls
+ 46. ✅ cross_system_correlations -> crossSystemCorrelations
+ 47. ✅ cve_mappings -> cveMappings
+ 48. ✅ cves -> cves
+ 49. ✅ dashboard_metrics -> dashboardMetrics
+ 50. ✅ dashboard_shares -> dashboardShares
+ 51. ✅ dashboards -> dashboards
+ 52. ✅ distribution_group_members -> distributionGroupMembers
+ 53. ✅ distribution_groups -> distributionGroups
+ 54. ✅ document_analytics -> documentAnalytics
+ 55. ✅ document_changes -> documentChanges
+ 56. ✅ document_comments -> documentComments
+ 57. ✅ document_favorites -> documentFavorites
+ 58. ✅ document_shares -> documentShares
+ 59. ✅ document_templates -> documentTemplates
+ 60. ✅ document_versions -> documentVersions
+ 61. ✅ documents -> documents
+ 62. ✅ email_logs -> emailLogs
+ 63. ✅ email_templates -> emailTemplates
+ 64. ✅ enterprise_risk_aggregation -> enterpriseRiskAggregation
+ 65. ✅ folders -> folders
+ 66. ✅ metrics -> metrics
+ 67. ✅ module_analytics -> moduleAnalytics
+ 68. ✅ module_audit_log -> moduleAuditLog
+ 69. ✅ module_dependencies -> moduleDependencies
+ 70. ✅ module_navigation -> moduleNavigation
+ 71. ✅ module_settings -> moduleSettings
+ 72. ✅ nl_queries -> nlQueries
+ 73. ⚠️ note_attachments -> noteAttachments
+ 74. ⚠️ note_comments -> noteComments
+ 75. ⚠️ note_templates -> noteTemplates
+ 76. ✅ notification_channels -> notificationChannels
+ 77. ✅ notification_deliveries -> notificationDeliveries
+ 78. ✅ notification_subscriptions -> notificationSubscriptions
+ 79. ✅ notification_templates -> notificationTemplates
+ 80. ✅ notifications -> notifications
+ 81. ⚠️ patch_activity_feed -> patchActivityFeed
+ 82. ✅ patch_approvals -> patchApprovals
+ 83. ⚠️ patch_assets -> patchAssets
+ 84. ⚠️ patch_dependencies -> patchDependencies
+ 85. ✅ patch_job_dependencies -> patchJobDependencies
+ 86. ✅ patch_job_logs -> patchJobLogs
+ 87. ✅ patch_job_targets -> patchJobTargets
+ 88. ✅ patch_jobs -> patchJobs
+ 89. ✅ patch_notes -> patchNotes
+ 90. ✅ patch_schedules -> patchSchedules
+ 91. ⚠️ patch_vulnerabilities -> patchVulnerabilities
+ 92. ✅ patches -> patches
+ 93. ✅ poam_approval_comments -> poamApprovalComments
+ 94. ✅ poam_assets -> poamAssets
+ 95. ✅ poam_cves -> poamCves
+ 96. ✅ poam_milestones -> poamMilestones
+ 97. ✅ poam_signatures -> poamSignatures
+ 98. ✅ poams -> poams
+ 99. ✅ policies -> policies
+100. ✅ policy_procedures -> policyProcedures
+101. ✅ policy_workflow_history -> policyWorkflowHistory
+102. ✅ policy_workflow_policies -> policyWorkflowPolicies
+103. ✅ policy_workflows -> policyWorkflows
+104. ✅ procedures -> procedures
+105. ✅ query_templates -> queryTemplates
+106. ⚠️ report_analytics -> reportAnalytics
+107. ✅ report_configurations -> reportConfigurations
+108. ⚠️ report_executions -> reportExecutions
+109. ✅ report_schedules -> reportSchedules
+110. ⚠️ report_shares -> reportShares
+111. ⚠️ report_subscriptions -> reportSubscriptions
+112. ✅ report_templates -> reportTemplates
+113. ✅ reports -> reports
+114. ✅ scan_findings -> scanFindings
+115. ✅ scan_jobs -> scanJobs
+116. ✅ scan_policies -> scanPolicies
+117. ✅ scan_reports -> scanReports
+118. ✅ scan_results -> scanResults
+119. ✅ scan_schedules -> scanSchedules
+120. ✅ scan_targets -> scanTargets
+121. ✅ scan_templates -> scanTemplates
+122. ⚠️ schedule_conditions -> scheduleConditions
+123. ⚠️ schedule_exclusions -> scheduleExclusions
+124. ⚠️ schedule_executions -> scheduleExecutions
+125. ⚠️ schedule_notifications -> scheduleNotifications
+126. ✅ session -> sessions
+127. ✅ settings -> settings
+128. ✅ siem_alerts -> siemAlerts
+129. ✅ siem_analytics -> siemAnalytics
+130. ✅ siem_dashboards -> siemDashboards
+131. ✅ siem_events -> siemEvents
+132. ✅ siem_incidents -> siemIncidents
+133. ✅ siem_log_sources -> siemLogSources
+134. ✅ siem_rules -> siemRules
+135. ✅ siem_threat_intelligence -> siemThreatIntelligence
+136. ✅ stig_ai_assistance -> stigAiAssistance
+137. ✅ stig_assessments -> stigAssessments
+138. ✅ stig_checklists -> stigChecklists
+139. ✅ stig_fix_status -> stigFixStatus
+140. ⚠️ stig_hardening_backups -> stigHardeningBackups
+141. ⚠️ stig_hardening_results -> stigHardeningResults
+142. ⚠️ stig_hardening_sessions -> stigHardeningSessions
+143. ✅ stig_library -> stigLibrary
+144. ✅ stig_scan_results -> stigScanResults
+145. ⚠️ sync_jobs -> syncJobs
+146. ⚠️ sync_logs -> syncLogs
+147. ✅ system_assets -> systemAssets
+148. ✅ system_compliance_mapping -> systemComplianceMapping
+149. ✅ system_configuration_drift -> systemConfigurationDrift
+150. ✅ system_discovery_results -> systemDiscoveryResults
+151. ✅ system_discovery_scans -> systemDiscoveryScans
+152. ✅ system_impact_levels -> systemImpactLevels
+153. ✅ system_security_posture -> systemSecurityPosture
+154. ✅ system_threat_modeling -> systemThreatModeling
+155. ✅ systems -> systems
+156. ✅ user_dashboards -> userDashboards
+157. ✅ user_module_preferences -> userModulePreferences
+158. ✅ user_preferences -> userPreferences
+159. ✅ users -> users
+160. ✅ vulnerabilities -> vulnerabilities
+161. ✅ vulnerability_cost_analysis -> vulnerabilityCostAnalysis
+162. ✅ vulnerability_cost_factors -> vulnerabilityCostFactors
+163. ✅ vulnerability_cost_history -> vulnerabilityCostHistory
+164. ✅ vulnerability_cost_models -> vulnerabilityCostModels
+165. ✅ vulnerability_cves -> vulnerabilityCves
+166. ✅ vulnerability_patches -> vulnerabilityPatches
+167. ✅ vulnerability_poams -> vulnerabilityPoams
+168. ✅ vulnerability_references -> vulnerabilityReferences
+169. ✅ vulnerability_risk_scores -> vulnerabilityRiskScores
+170. ✅ webhook_configurations -> webhookConfigurations
+171. ✅ webhook_deliveries -> webhookDeliveries
+172. ✅ webhook_logs -> webhookLogs
+173. ✅ webhook_rate_limits -> webhookRateLimits
+174. ✅ webhook_security -> webhookSecurity
+175. ✅ webhook_subscriptions -> webhookSubscriptions
+176. ⚠️ workflow_approvers -> workflowApprovers

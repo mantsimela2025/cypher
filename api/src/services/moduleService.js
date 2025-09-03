@@ -1,15 +1,13 @@
 const { db } = require('../db');
-const { 
+const {
   appModules,
   moduleNavigation,
-  roleModulePermissions,
   userModulePreferences,
   moduleDependencies,
   moduleSettings,
   moduleAuditLog,
   moduleAnalytics,
-  users,
-  roles
+  users
 } = require('../db/schema');
 const { eq, and, desc, asc, sql, count, gte, lte, like, ilike, inArray, isNull, isNotNull, or } = require('drizzle-orm');
 const notificationService = require('./notificationService');

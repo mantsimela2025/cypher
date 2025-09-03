@@ -4,8 +4,12 @@
   "description": "RAS Dashboard Full Stack Application",
   "scripts": {
     "dev": "npm run kill-ports && concurrently \"npm run dev:api\" \"npm run dev:client\"",
+    "dev:fast": "npm run kill-ports && concurrently \"npm run dev:api:fast\" \"npm run dev:client\"",
+    "dev:ultra": "npm run kill-ports && concurrently \"npm run dev:api:ultra\" \"npm run dev:client\"",
     "dev:unsafe": "concurrently \"npm run dev:api\" \"npm run dev:client\"",
     "dev:api": "cd api && npm run dev",
+    "dev:api:fast": "cd api && npm run dev:fast",
+    "dev:api:ultra": "cd api && npm run dev:ultra",
     "dev:client": "cd client && npm run dev",
     "dev:safe": "npm run kill-ports && concurrently \"npm run dev:api:safe\" \"npm run dev:client\"",
     "dev:api:safe": "cd api && npm run dev:safe:force",
@@ -14,7 +18,8 @@
     "start:client": "cd client && npm run build && npm run preview",
     "install:all": "npm install && cd api && npm install && cd ../client && npm install",
     "clean": "rimraf api/node_modules client/node_modules node_modules",
-    "kill-ports": "node scripts/kill-ports.js"
+    "kill-ports": "node scripts/kill-ports.js",
+    "clear-auth": "node scripts/clear-auth-cache.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
@@ -32,6 +37,7 @@
   "author": "RAS Dashboard Team",
   "license": "MIT",
   "dependencies": {
-    "@tanstack/react-query": "^5.83.0"
+    "@tanstack/react-query": "^5.83.0",
+    "axios": "^1.11.0"
   }
 }

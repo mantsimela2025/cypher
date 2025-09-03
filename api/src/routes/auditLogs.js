@@ -1,7 +1,6 @@
 const express = require('express');
 const auditLogController = require('../controllers/auditLogController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -81,7 +80,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.post('/', 
-  requirePermission('audit_logs', 'create'),
+  requireRole(['admin']),
   auditLogController.createAuditLog
 );
 
@@ -242,7 +241,7 @@ router.post('/',
  *         description: Unauthorized
  */
 router.get('/', 
-  requirePermission('audit_logs', 'read'),
+  requireRole(['admin', 'user']),
   auditLogController.getAuditLogs
 );
 
@@ -270,7 +269,7 @@ router.get('/',
  *         description: Unauthorized
  */
 router.get('/:logId', 
-  requirePermission('audit_logs', 'read'),
+  requireRole(['admin', 'user']),
   auditLogController.getAuditLogById
 );
 
@@ -353,7 +352,7 @@ router.get('/:logId',
  *         description: Unauthorized
  */
 router.get('/stats',
-  requirePermission('audit_logs', 'read'),
+  requireRole(['admin', 'user']),
   auditLogController.getAuditLogStats
 );
 
@@ -386,7 +385,7 @@ router.get('/stats',
  *         description: Unauthorized
  */
 router.get('/users/:userId/timeline',
-  requirePermission('audit_logs', 'read'),
+  requireRole(['admin', 'user']),
   auditLogController.getUserActivityTimeline
 );
 
@@ -425,7 +424,7 @@ router.get('/users/:userId/timeline',
  *         description: Unauthorized
  */
 router.get('/resources/history',
-  requirePermission('audit_logs', 'read'),
+  requireRole(['admin', 'user']),
   auditLogController.getResourceAccessHistory
 );
 
@@ -499,7 +498,7 @@ router.get('/resources/history',
  *         description: Unauthorized
  */
 router.get('/security/events',
-  requirePermission('audit_logs', 'read'),
+  requireRole(['admin', 'user']),
   auditLogController.getSecurityEvents
 );
 
@@ -563,7 +562,7 @@ router.get('/security/events',
  *         description: Unauthorized
  */
 router.get('/search',
-  requirePermission('audit_logs', 'read'),
+  requireRole(['admin', 'user']),
   auditLogController.searchAuditLogs
 );
 
@@ -643,7 +642,7 @@ router.get('/search',
  *         description: Unauthorized
  */
 router.get('/export',
-  requirePermission('audit_logs', 'export'),
+  requireRole(['admin', 'user']),
   auditLogController.exportAuditLogs
 );
 
@@ -716,7 +715,7 @@ router.get('/export',
  *         description: Unauthorized
  */
 router.post('/bulk',
-  requirePermission('audit_logs', 'create'),
+  requireRole(['admin']),
   auditLogController.createBulkAuditLogs
 );
 
@@ -769,7 +768,7 @@ router.post('/bulk',
  *         description: Unauthorized
  */
 router.post('/log-action',
-  requirePermission('audit_logs', 'create'),
+  requireRole(['admin']),
   auditLogController.logUserAction
 );
 

@@ -1,7 +1,6 @@
 const express = require('express');
 const assetAnalyticsController = require('../controllers/assetAnalyticsController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/permissions');
+const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -84,7 +83,7 @@ router.use(authenticateToken);
  *         description: Unauthorized
  */
 router.get('/forecast/:assetUuid', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.generateCostForecast
 );
 
@@ -129,7 +128,7 @@ router.get('/forecast/:assetUuid',
  *         description: Budget plan generated successfully
  */
 router.get('/budget-plan', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.generateBudgetPlan
 );
 
@@ -168,7 +167,7 @@ router.get('/budget-plan',
  *         description: Lifecycle plan generated successfully
  */
 router.get('/lifecycle-plan', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.generateLifecyclePlan
 );
 
@@ -202,7 +201,7 @@ router.get('/lifecycle-plan',
  *         description: Replacement schedule optimized successfully
  */
 router.get('/replacement-schedule', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.optimizeReplacementSchedule
 );
 
@@ -250,7 +249,7 @@ router.get('/replacement-schedule',
  *         description: No cost data found for asset
  */
 router.get('/roi/:assetUuid', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.calculateROI
 );
 
@@ -297,7 +296,7 @@ router.get('/roi/:assetUuid',
  *         description: Insufficient data for depreciation calculation
  */
 router.get('/depreciation/:assetUuid', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.calculateDepreciation
 );
 
@@ -343,7 +342,7 @@ router.get('/depreciation/:assetUuid',
  *         description: Financial analysis completed successfully
  */
 router.get('/financial-analysis/:assetUuid', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.generateFinancialAnalysis
 );
 
@@ -383,7 +382,7 @@ router.get('/financial-analysis/:assetUuid',
  *         description: Analytics dashboard data retrieved successfully
  */
 router.get('/dashboard', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.getAnalyticsDashboard
 );
 
@@ -400,7 +399,7 @@ router.get('/dashboard',
  *         description: Portfolio summary retrieved successfully
  */
 router.get('/portfolio-summary', 
-  requirePermission('asset_analytics', 'read'),
+  requireRole(['admin', 'user']),
   assetAnalyticsController.getPortfolioSummary
 );
 

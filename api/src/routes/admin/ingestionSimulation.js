@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const ingestionSimulationController = require('../../controllers/ingestionSimulationController');
 const { body, param, query } = require('express-validator');
-const { authenticateToken } = require('../../middleware/auth');
-const { requirePermission } = require('../../middleware/rbac');
+const { authenticateToken, requireRole } = require('../../middleware/auth');
 
 // Apply authentication and permission middleware
 router.use(authenticateToken);
-router.use(requirePermission('admin:read'));
+router.use(requireRole(['admin']));
 
 // Validation rules
 const validateCreateUpdate = [

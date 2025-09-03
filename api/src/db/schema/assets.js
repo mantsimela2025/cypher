@@ -1,5 +1,6 @@
 const { pgTable, serial, varchar, timestamp, boolean, jsonb, integer, uuid, numeric } = require('drizzle-orm/pg-core');
 const { systems } = require('./systems');
+const { users } = require('./users');
 
 const assets = pgTable('assets', {
   id: serial('id').primaryKey(),
@@ -40,14 +41,14 @@ const systemAssets = pgTable('system_assets', {
 
 const assetRiskMapping = pgTable('asset_risk_mapping', {
   id: serial('id').primaryKey(),
-  assetUuid: uuid('asset_uuid'),
+  assetUuid: uuid('asset_uuid').references(() => assets.assetUuid),
   existingAssetId: integer('existing_asset_id'),
   riskModelId: integer('risk_model_id'),
   costCenterId: integer('cost_center_id'),
   mappingConfidence: numeric('mapping_confidence', { precision: 3, scale: 2 }).default('0.85'),
   mappingMethod: varchar('mapping_method', { length: 50 }).default('automatic'),
   mappingCriteria: jsonb('mapping_criteria'),
-  verifiedBy: integer('verified_by'),
+  verifiedBy: integer('verified_by').references(() => users.id),
   verifiedAt: timestamp('verified_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

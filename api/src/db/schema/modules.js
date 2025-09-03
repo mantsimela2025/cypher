@@ -26,20 +26,6 @@ const moduleNavigation = pgTable('module_navigation', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// Role Module Permissions - Permissions for roles on specific modules
-const roleModulePermissions = pgTable('role_module_permissions', {
-  id: serial('id').primaryKey(),
-  roleId: integer('role_id').references(() => roles.id, { onDelete: 'cascade' }).notNull(),
-  moduleId: integer('module_id').references(() => appModules.id, { onDelete: 'cascade' }).notNull(),
-  canView: boolean('can_view').default(true).notNull(),
-  canCreate: boolean('can_create').default(false).notNull(),
-  canEdit: boolean('can_edit').default(false).notNull(),
-  canDelete: boolean('can_delete').default(false).notNull(),
-  canAdmin: boolean('can_admin').default(false).notNull(), // Additional admin permission
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-});
-
 // User Module Preferences - User-specific module preferences and customizations
 const userModulePreferences = pgTable('user_module_preferences', {
   id: serial('id').primaryKey(),
@@ -105,7 +91,6 @@ const moduleAnalytics = pgTable('module_analytics', {
 module.exports = {
   appModules,
   moduleNavigation,
-  roleModulePermissions,
   userModulePreferences,
   moduleDependencies,
   moduleSettings,

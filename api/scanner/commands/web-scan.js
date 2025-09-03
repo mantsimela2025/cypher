@@ -1,4 +1,13 @@
-const chalk = require('chalk');
+// ANSI color codes to replace chalk
+const colors = {
+  blue: (text) => `\x1b[34m${text}\x1b[0m`,
+  yellow: (text) => `\x1b[33m${text}\x1b[0m`,
+  red: (text) => `\x1b[31m${text}\x1b[0m`,
+  green: (text) => `\x1b[32m${text}\x1b[0m`,
+  cyan: (text) => `\x1b[36m${text}\x1b[0m`,
+  gray: (text) => `\x1b[90m${text}\x1b[0m`,
+  white: (text) => `\x1b[37m${text}\x1b[0m`
+};
 const WebScanner = require('../lib/scanners/web-scanner');
 const reporter = require('../lib/utils/reporter');
 const validator = require('../lib/utils/validator');

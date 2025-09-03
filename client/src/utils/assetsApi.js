@@ -1,11 +1,39 @@
+import { apiClient } from './apiClient';
+import { cacheUtils } from './apiCache';
+
 const API_BASE_URL = 'http://localhost:3001/api/v1';
 
-// Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
+// Enhanced API request with automatic token refresh and cache management
+const makeApiRequest = async (endpoint, options = {}) => {
+  try {
+    console.log(`🌐 Making API request to: ${endpoint}`);
+
+    // Use apiClient which handles token refresh automatically
+    const response = await apiClient.get(endpoint, options);
+
+    console.log('✅ API request successful');
+    return response;
+  } catch (error) {
+    console.error('❌ API request failed:', error);
+
+    // Handle specific error cases
+    if (error.message.includes('Session expired') || error.message.includes('token')) {
+      console.log('🔄 Session expired, clearing cache and redirecting to login');
+      cacheUtils.clear(); // Clear all cached data
+      // The apiClient already handles logout and redirect
+    }
+
+    throw error;
+  }
 };
 
-// Create headers with auth token
+// Legacy support - keeping for backward compatibility
+const getAuthToken = () => {
+  const token = localStorage.getItem('accessToken');
+  console.log('🔑 Getting auth token:', token ? 'Found' : 'Not found');
+  return token;
+};
+
 const createHeaders = () => {
   const token = getAuthToken();
   return {
@@ -14,11 +42,18 @@ const createHeaders = () => {
   };
 };
 
-// Handle API response
 const handleResponse = async (response) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+
+    // Handle specific error cases
+    if (response.status === 401) {
+      console.log('🔄 Token expired, clearing cache');
+      cacheUtils.clear();
+      throw new Error('Invalid token');
+    }
+
+    throw new Error(errorData.error || errorData.message || `HTTP error! status: ${response.status}`);
   }
   return response.json();
 };
@@ -27,41 +62,74 @@ export const assetsApi = {
   // Get assets with pagination and filtering
   async getAssets(params = {}) {
     const queryParams = new URLSearchParams(params);
+    const endpoint = `/assets?${queryParams}`;
 
-    // Use the proper assets endpoint
-    const url = `${API_BASE_URL}/integrations/tenable/assets?${queryParams}`;
-    console.log('🌐 Making API call to:', url);
+    try {
+      // Use enhanced API request with automatic token refresh
+      const result = await makeApiRequest(endpoint);
 
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
+      console.log('📊 Assets data received:', {
+        count: result.data?.length || 0,
+        pagination: result.pagination
+      });
 
-    console.log('📡 Response status:', response.status);
-    console.log('📡 Response ok:', response.ok);
+      // Transform the response to match frontend expectations
+      return {
+        success: true,
+        data: {
+          assets: result.data || [],
+          pagination: result.pagination || {}
+        }
+      };
+    } catch (error) {
+      console.error('❌ Failed to fetch assets:', error);
 
-    return handleResponse(response);
+      // If it's a session timeout, the apiClient already handled it
+      if (error.message.includes('Session expired')) {
+        throw error; // Re-throw to let calling component handle
+      }
+
+      // For other errors, provide a user-friendly message
+      throw new Error(`Failed to load assets: ${error.message}`);
+    }
   },
 
   // Get asset details by UUID
   async getAssetDetails(assetUuid) {
-    const response = await fetch(`${API_BASE_URL}/integrations/tenable/assets/${assetUuid}`, {
+    const response = await fetch(`${API_BASE_URL}/assets/${assetUuid}`, {
       headers: createHeaders(),
     });
-    return handleResponse(response);
+    const result = await handleResponse(response);
+
+    // Transform to match expected structure
+    return {
+      success: true,
+      data: result.data
+    };
   },
 
   // Get asset network information
   async getAssetNetwork(assetUuid) {
-    const response = await fetch(`${API_BASE_URL}/integrations/tenable/assets/${assetUuid}/network`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    // For now, return the asset details which include network info
+    const assetDetails = await this.getAssetDetails(assetUuid);
+
+    // Transform to match expected network data structure
+    return {
+      success: true,
+      data: [{
+        isPrimary: true,
+        ipv4Address: assetDetails.data?.ipv4Address,
+        fqdn: assetDetails.data?.fqdn,
+        macAddress: assetDetails.data?.macAddress,
+        networkType: assetDetails.data?.networkType
+      }]
+    };
   },
 
   // Get asset vulnerabilities
   async getAssetVulnerabilities(assetUuid, params = {}) {
     const queryParams = new URLSearchParams(params);
-    const response = await fetch(`${API_BASE_URL}/integrations/tenable/assets/${assetUuid}/vulnerabilities?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/asset-management/assets/${assetUuid}/vulnerabilities-summary`, {
       headers: createHeaders(),
     });
     return handleResponse(response);
@@ -146,5 +214,37 @@ export const assetsApi = {
       headers: createHeaders(),
     });
     return handleResponse(response);
+  },
+
+  // Create new asset
+  async createAsset(data) {
+    try {
+      console.log('🌐 Creating asset with data:', data);
+
+      // Use enhanced API client with automatic token refresh
+      const result = await apiClient.post('/assets', data);
+
+      console.log('✅ Asset created successfully:', result);
+
+      // Clear assets cache to force refresh
+      cacheUtils.invalidateResource('assets');
+
+      // Transform response to match expected structure
+      return {
+        success: true,
+        data: result.data,
+        message: result.message || 'Asset created successfully'
+      };
+    } catch (error) {
+      console.error('❌ Failed to create asset:', error);
+
+      // If it's a session timeout, the apiClient already handled it
+      if (error.message.includes('Session expired')) {
+        throw error;
+      }
+
+      // For other errors, provide a user-friendly message
+      throw new Error(`Failed to create asset: ${error.message}`);
+    }
   }
 };

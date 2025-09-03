@@ -30,9 +30,10 @@ body.dark-mode {
         }
     }
 
-    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, 
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6,
     .lead-text, .dropdown-title {
-        color: $white;
+        color: $white !important;
+        opacity: 1 !important;
     }
     pre {
         color: $base-300 !important;
@@ -49,9 +50,10 @@ body.dark-mode {
     .text-muted {
         color: $base-400 !important;
     }
-    // .text-white {
-    //     color: $light-900 !important;
-    // }
+    .text-white {
+        color: $white !important;
+        opacity: 1 !important;
+    }
     .text-light, .user-avatar[class*="-dark"] {
         color: $light-500 !important;
     }
@@ -463,16 +465,17 @@ body.dark-mode {
     }
     .team-info li span:last-child,.team-statistics li span:first-child,.project-progress-percent,
     .kanban-title-content .title,
-    .card-tools-nav li a:hover, 
-    .card-tools-nav li a.active, 
-    .card-tools-nav li.active a, 
+    .card-tools-nav li a:hover,
+    .card-tools-nav li a.active,
+    .card-tools-nav li.active a,
     .card-amount .amount,
     .accordion-head .title,.custom-file-label::after,
-    .input-mail,.form-control,.form-control:focus,.form-label,.form-label-outlined,.input-group-text,.table .table-light th, .table-hover tbody tr:hover, 
+    .input-mail,.form-control,.form-control:focus,.form-label,.form-label-outlined,.input-group-text,.table .table-light th, .table-hover tbody tr:hover,
     .close,.close:hover,.user-name,.nk-news-text p,
     .data-item:hover .icon,
     .accordion-icon {
         color: $white !important;
+        opacity: 1 !important;
     }
     .close {
         text-shadow: 0 1px 0 $dark-card-bg;
@@ -678,7 +681,8 @@ body.dark-mode {
     .nk-order-ovwg-data .info strong, .user-activity .amount, .invest-data-history .amount,
     .analytic-data .amount, .traffic-channel-data .amount, .analytics-map-data .amount,
     .device-status-data .amount, .invest-ov .amount, .profile-balance-amount .number{
-        color: $white;
+        color: $white !important;
+        opacity: 1 !important;
     }
 
     .invest-ov:not(:last-child){

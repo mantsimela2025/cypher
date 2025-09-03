@@ -379,27 +379,80 @@ const queries = {
   'schema': async () => {
     console.log('🏗️ Table Schemas:');
     const result = await client`
-      SELECT 
+      SELECT
         table_name,
         column_name,
         data_type,
         is_nullable,
         column_default
-      FROM information_schema.columns 
-      WHERE table_schema = 'public' 
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
       ORDER BY table_name, ordinal_position
     `;
-    
+
     const grouped = result.reduce((acc, col) => {
       if (!acc[col.table_name]) acc[col.table_name] = [];
       acc[col.table_name].push(col);
       return acc;
     }, {});
-    
+
     Object.entries(grouped).forEach(([table, columns]) => {
       console.log(`\n📋 ${table.toUpperCase()}:`);
       console.table(columns);
     });
+  },
+
+  'coverage': async () => {
+    console.log('🔍 Drizzle Schema Coverage:');
+
+    // Get database tables
+    const dbTables = await client`
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public'
+      AND table_type = 'BASE TABLE'
+      ORDER BY table_name
+    `;
+
+    // Get Drizzle schema table names
+    const drizzleTableNames = new Set();
+    Object.entries({
+      users, roles, permissions, rolePermissions, userRoles, userPreferences, accessRequests,
+      emailLogs, emailTemplates, systems, assets, vulnerabilities, poams, controls, cves,
+      assetCostManagement, assetGroups, assetLifecycle, assetVulnerabilities, artifacts,
+      artifactCategories, artifactReferences, artifactTags
+    }).forEach(([schemaName, schema]) => {
+      if (schema && typeof schema === 'object' && schema[Symbol.for('drizzle:Name')]) {
+        drizzleTableNames.add(schema[Symbol.for('drizzle:Name')]);
+      }
+    });
+
+    const dbTableNames = new Set(dbTables.map(t => t.table_name));
+    const missingSchemas = [];
+    const matchedTables = [];
+
+    dbTableNames.forEach(tableName => {
+      if (!drizzleTableNames.has(tableName)) {
+        missingSchemas.push(tableName);
+      } else {
+        matchedTables.push(tableName);
+      }
+    });
+
+    const coveragePercentage = Math.round((matchedTables.length / dbTableNames.size) * 100);
+
+    console.log(`\n📊 Database Tables: ${dbTableNames.size}`);
+    console.log(`📋 Drizzle Schemas: ${drizzleTableNames.size}`);
+    console.log(`✅ Coverage: ${coveragePercentage}% (${matchedTables.length}/${dbTableNames.size})`);
+
+    if (missingSchemas.length > 0) {
+      console.log('\n❌ Tables Missing Drizzle Schemas:');
+      missingSchemas.sort().forEach(table => {
+        console.log(`   • ${table}`);
+      });
+    } else {
+      console.log('\n🎉 Perfect! All database tables have Drizzle schemas.');
+    }
   },
 
   // Help

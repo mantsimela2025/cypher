@@ -1,6 +1,5 @@
 const fs = require('fs').promises;
 const path = require('path');
-const { createObjectCsvWriter } = require('csv-writer');
 const logger = require('./logger');
 const { formatResults } = require('./comprehensive-formatter');
 
@@ -75,22 +74,8 @@ class Reporter {
    * @returns {Promise<void>}
    */
   async writeCsvFile(results, filename) {
-    // Convert object to array if needed
-    const dataArray = Array.isArray(results) ? results : [results];
-    
-    // Get all possible headers from all objects
-    const headers = new Set();
-    dataArray.forEach(item => {
-      Object.keys(item).forEach(key => headers.add(key));
-    });
-    
-    // Create CSV writer with dynamic headers
-    const csvWriter = createObjectCsvWriter({
-      path: filename,
-      header: Array.from(headers).map(id => ({ id, title: id }))
-    });
-    
-    await csvWriter.writeRecords(dataArray);
+    const csvContent = this.convertToCsvString(results);
+    await fs.writeFile(filename, csvContent, 'utf8');
   }
 
   /**

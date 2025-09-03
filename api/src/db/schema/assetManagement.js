@@ -63,7 +63,7 @@ const assetCostManagement = pgTable('asset_cost_management', {
   lastModifiedBy: integer('last_modified_by').references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-  assetUuid: uuid('asset_uuid')
+  assetUuid: uuid('asset_uuid').references(() => assets.assetUuid)
 }, (table) => {
   return {
     // Indexes for performance optimization
@@ -89,7 +89,7 @@ const assetGroups = pgTable('asset_groups', {
 const assetGroupMembers = pgTable('asset_group_members', {
   id: serial('id').primaryKey(),
   groupId: integer('group_id').references(() => assetGroups.id).notNull(),
-  assetUuid: integer('asset_uuid').notNull(), // Note: This should probably be uuid type, but matching your schema
+  assetUuid: integer('asset_uuid').notNull().references(() => assets.id), // Note: This should probably be uuid type, but matching your schema
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
@@ -107,7 +107,7 @@ const assetLifecycle = pgTable('asset_lifecycle', {
   replacementNotes: text('replacement_notes'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-  assetUuid: uuid('asset_uuid')
+  assetUuid: uuid('asset_uuid').references(() => assets.assetUuid)
 }, (table) => {
   return {
     // Indexes for performance optimization
@@ -134,7 +134,7 @@ const assetOperationalCosts = pgTable('asset_operational_costs', {
   notes: text('notes'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-  assetUuid: uuid('asset_uuid')
+  assetUuid: uuid('asset_uuid').references(() => assets.assetUuid)
 }, (table) => {
   return {
     // Indexes for performance optimization
@@ -149,7 +149,7 @@ const assetOperationalCosts = pgTable('asset_operational_costs', {
 // Asset risk mapping table
 const assetRiskMapping = pgTable('asset_risk_mapping', {
   id: serial('id').primaryKey(),
-  assetUuid: uuid('asset_uuid'),
+  assetUuid: uuid('asset_uuid').references(() => assets.assetUuid),
   existingAssetId: integer('existing_asset_id'),
   riskModelId: integer('risk_model_id'),
   costCenterId: integer('cost_center_id'),

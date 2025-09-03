@@ -1,7 +1,7 @@
 const express = require('express');
 const categoriesController = require('../controllers/categoriesController');
-const { authenticateToken } = require('../middleware/auth');
-const { requirePermission } = require('../middleware/rbac');
+const { authenticateToken, requireRole } = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -62,7 +62,7 @@ router.use(authenticateToken);
  *         description: Category name already exists at this level
  */
 router.post('/',
-  requirePermission('categories:write'),
+  requireRole(['admin']),
   categoriesController.createCategory
 );
 
@@ -147,7 +147,7 @@ router.post('/',
  *         description: Insufficient permissions
  */
 router.get('/',
-  requirePermission('categories:read'),
+  requireRole(['admin', 'user']),
   categoriesController.getAllCategories
 );
 
@@ -177,7 +177,7 @@ router.get('/',
  *         description: Insufficient permissions
  */
 router.get('/:categoryId',
-  requirePermission('categories:read'),
+  requireRole(['admin', 'user']),
   categoriesController.getCategoryById
 );
 
@@ -237,7 +237,7 @@ router.get('/:categoryId',
  *         description: Category name already exists at this level
  */
 router.put('/:categoryId',
-  requirePermission('categories:write'),
+  requireRole(['admin']),
   categoriesController.updateCategory
 );
 
@@ -269,7 +269,7 @@ router.put('/:categoryId',
  *         description: Insufficient permissions
  */
 router.delete('/:categoryId',
-  requirePermission('categories:delete'),
+  requireRole(['admin']),
   categoriesController.deleteCategory
 );
 
@@ -299,7 +299,7 @@ router.delete('/:categoryId',
  *         description: Insufficient permissions
  */
 router.get('/:categoryId/subcategories',
-  requirePermission('categories:read'),
+  requireRole(['admin', 'user']),
   categoriesController.getSubcategories
 );
 
@@ -345,7 +345,7 @@ router.get('/:categoryId/subcategories',
  *         description: Insufficient permissions
  */
 router.get('/hierarchy',
-  requirePermission('categories:read'),
+  requireRole(['admin', 'user']),
   categoriesController.getCategoryHierarchy
 );
 
@@ -389,7 +389,7 @@ router.get('/hierarchy',
  *         description: Insufficient permissions
  */
 router.get('/:categoryId/path',
-  requirePermission('categories:read'),
+  requireRole(['admin', 'user']),
   categoriesController.getCategoryPath
 );
 
@@ -434,7 +434,7 @@ router.get('/:categoryId/path',
  *         description: Insufficient permissions
  */
 router.get('/:categoryId/documents',
-  requirePermission('categories:read'),
+  requireRole(['admin', 'user']),
   categoriesController.getCategoryDocuments
 );
 
@@ -482,7 +482,7 @@ router.get('/:categoryId/documents',
  *         description: Insufficient permissions
  */
 router.get('/statistics',
-  requirePermission('categories:read'),
+  requireRole(['admin', 'user']),
   categoriesController.getCategoryStatistics
 );
 
@@ -550,7 +550,7 @@ router.get('/statistics',
  *         description: Insufficient permissions
  */
 router.post('/bulk/delete',
-  requirePermission('categories:delete'),
+  requireRole(['admin']),
   categoriesController.bulkDeleteCategories
 );
 
@@ -621,7 +621,7 @@ router.post('/bulk/delete',
  *         description: Insufficient permissions
  */
 router.put('/bulk/status',
-  requirePermission('categories:write'),
+  requireRole(['admin']),
   categoriesController.bulkUpdateStatus
 );
 
