@@ -231,13 +231,13 @@ const RMFCategorizeStep = () => {
   const handleAIResult = (aiResult) => {
     console.log('🤖 Applying AI categorization result:', aiResult);
 
-    // Update form with AI suggestions
+    // Update form with AI suggestions (convert to lowercase for form compatibility)
     setSystemForm(prev => ({
       ...prev,
-      confidentialityImpact: aiResult.confidentiality,
-      integrityImpact: aiResult.integrity,
-      availabilityImpact: aiResult.availability,
-      overallImpact: aiResult.overall
+      confidentialityImpact: aiResult.confidentiality?.toLowerCase() || '',
+      integrityImpact: aiResult.integrity?.toLowerCase() || '',
+      availabilityImpact: aiResult.availability?.toLowerCase() || '',
+      overallImpact: aiResult.overall?.toLowerCase() || ''
     }));
 
     // Show success message
@@ -267,6 +267,34 @@ const RMFCategorizeStep = () => {
       setAddSystemModal(false);
     }
     setSelectedSystem(null);
+  };
+
+  // Handle complete categorization step
+  const handleCompleteStep = async () => {
+    try {
+      setLoading(true);
+
+      // TODO: Save all systems to database via API
+      console.log('💾 Saving systems to database:', systems);
+
+      // TODO: Mark CATEGORIZE step as complete via API
+      console.log('✅ Marking CATEGORIZE step as complete for project:', projectId);
+
+      // Update completed steps
+      setCompletedSteps(prev => [...prev, 'CATEGORIZE']);
+
+      // Show success message
+      console.log('🎉 CATEGORIZE step completed successfully!');
+
+      // Navigate to SELECT step
+      window.location.href = `/rmf/projects/${projectId}/step/select`;
+
+    } catch (error) {
+      console.error('❌ Failed to complete CATEGORIZE step:', error);
+      alert('Failed to complete step. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Format date
@@ -394,7 +422,7 @@ const RMFCategorizeStep = () => {
                 <DataTableRow>
                   <span className="sub-text">System Name</span>
                 </DataTableRow>
-                <DataTableRow size="md">
+                <DataTableRow size="lg">
                   <span className="sub-text">System Type</span>
                 </DataTableRow>
                 <DataTableRow size="sm">
@@ -425,7 +453,7 @@ const RMFCategorizeStep = () => {
                         <div className="text-soft tb-sub">{system.description}</div>
                       </div>
                     </DataTableRow>
-                    <DataTableRow size="md">
+                    <DataTableRow size="lg">
                       <span className="text-capitalize">
                         {system.systemType?.replace('_', ' ')}
                       </span>
@@ -446,7 +474,7 @@ const RMFCategorizeStep = () => {
                       </span>
                     </DataTableRow>
                     <DataTableRow size="sm">
-                      <span className={`badge badge-lg bg-${getImpactBadgeColor(system.overallImpact)}`}>
+                      <span className={`badge badge-dim bg-${getImpactBadgeColor(system.overallImpact)}`}>
                         {system.overallImpact?.toUpperCase()}
                       </span>
                     </DataTableRow>
@@ -458,23 +486,25 @@ const RMFCategorizeStep = () => {
                     <DataTableRow className="nk-tb-col-tools">
                       <ul className="nk-tb-actions gx-1">
                         <li>
-                          <Button
-                            size="sm"
-                            color="primary"
-                            outline
-                            onClick={() => handleEditSystem(system)}
-                          >
-                            <Icon name="edit"></Icon>
-                            <span>Edit</span>
-                          </Button>
-                        </li>
-                        <li>
                           <UncontrolledDropdown>
                             <DropdownToggle tag="a" className="dropdown-toggle btn btn-icon btn-trigger">
                               <Icon name="more-h"></Icon>
                             </DropdownToggle>
                             <DropdownMenu end>
                               <ul className="link-list-opt no-bdr">
+                                <li>
+                                  <DropdownItem
+                                    tag="a"
+                                    href="#edit"
+                                    onClick={(ev) => {
+                                      ev.preventDefault();
+                                      handleEditSystem(system);
+                                    }}
+                                  >
+                                    <Icon name="edit"></Icon>
+                                    <span>Edit</span>
+                                  </DropdownItem>
+                                </li>
                                 <li>
                                   <DropdownItem
                                     tag="a"
@@ -549,9 +579,14 @@ const RMFCategorizeStep = () => {
                   </p>
                 </div>
                 <div>
-                  <Button color="success" size="lg" disabled={systems.length === 0}>
+                  <Button
+                    color="success"
+                    size="lg"
+                    disabled={systems.length === 0 || loading}
+                    onClick={handleCompleteStep}
+                  >
                     <Icon name="check-thick" className="me-1"></Icon>
-                    Complete Categorization
+                    {loading ? 'Completing...' : 'Complete Categorization'}
                   </Button>
                 </div>
               </div>

@@ -89,9 +89,9 @@ const router = express.Router();
 // Apply auth to all routes
 router.use(authenticateToken);
 
-// Projects
+// Projects - Allow both admin and user roles to create projects
 router.post('/projects',
-  requireRole(['admin']),
+  requireRole(['admin', 'user']),
   validateCreateProject,
   projectsController.create
 );
@@ -290,6 +290,14 @@ router.get('/ai/categorization-history/:systemId',
   requireRole(['admin', 'user']),      // ✅ Authorization
   validateCategorizationHistory,        // ✅ Input validation
   aiController.getCategorizationHistory // ✅ Controller
+);
+
+// AI Security Control Selection
+router.post('/ai/select-controls',
+  authenticateToken,                    // ✅ Authentication
+  requireRole(['admin', 'user']),      // ✅ Authorization
+  validateControlSelection,             // ✅ Input validation
+  aiController.selectControls          // ✅ Controller
 );
 
 // AI Service Health Check

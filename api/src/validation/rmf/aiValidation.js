@@ -84,45 +84,49 @@ const validateAIStats = [
  * Validation for control selection request
  */
 const validateControlSelection = [
-  body('systemId')
+  body('name')
     .notEmpty()
-    .withMessage('System ID is required')
-    .isInt({ min: 1 })
-    .withMessage('System ID must be a positive integer'),
+    .withMessage('System name is required')
+    .isLength({ min: 2, max: 255 })
+    .withMessage('System name must be between 2 and 255 characters'),
 
-  body('categorization')
-    .notEmpty()
-    .withMessage('System categorization is required')
-    .isObject()
-    .withMessage('Categorization must be an object'),
+  body('description')
+    .optional()
+    .isLength({ max: 2000 })
+    .withMessage('System description must be less than 2000 characters'),
 
-  body('categorization.confidentiality')
+  body('systemType')
+    .optional()
+    .isString()
+    .withMessage('System type must be a string'),
+
+  body('environment')
+    .optional()
+    .isString()
+    .withMessage('Environment must be a string'),
+
+  body('confidentialityImpact')
     .notEmpty()
     .withMessage('Confidentiality impact is required')
-    .isIn(['LOW', 'MODERATE', 'HIGH'])
-    .withMessage('Confidentiality impact must be LOW, MODERATE, or HIGH'),
+    .isIn(['low', 'moderate', 'high'])
+    .withMessage('Confidentiality impact must be low, moderate, or high'),
 
-  body('categorization.integrity')
+  body('integrityImpact')
     .notEmpty()
     .withMessage('Integrity impact is required')
-    .isIn(['LOW', 'MODERATE', 'HIGH'])
-    .withMessage('Integrity impact must be LOW, MODERATE, or HIGH'),
+    .isIn(['low', 'moderate', 'high'])
+    .withMessage('Integrity impact must be low, moderate, or high'),
 
-  body('categorization.availability')
+  body('availabilityImpact')
     .notEmpty()
     .withMessage('Availability impact is required')
-    .isIn(['LOW', 'MODERATE', 'HIGH'])
-    .withMessage('Availability impact must be LOW, MODERATE, or HIGH'),
+    .isIn(['low', 'moderate', 'high'])
+    .withMessage('Availability impact must be low, moderate, or high'),
 
-  body('systemContext')
+  body('overallImpact')
     .optional()
-    .isObject()
-    .withMessage('System context must be an object'),
-
-  body('systemContext.environment')
-    .optional()
-    .isIn(['On-Premises', 'Cloud', 'Hybrid', 'Multi-Cloud'])
-    .withMessage('Environment must be one of: On-Premises, Cloud, Hybrid, Multi-Cloud'),
+    .isIn(['low', 'moderate', 'high'])
+    .withMessage('Overall impact must be low, moderate, or high'),
 
   body('systemContext.cloudProvider')
     .optional()

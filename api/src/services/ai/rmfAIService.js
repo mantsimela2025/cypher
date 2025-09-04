@@ -379,6 +379,106 @@ Respond in JSON format with this exact structure:
       throw new Error(`Failed to retrieve categorization history: ${error.message}`);
     }
   }
+
+  /**
+   * AI-Powered Security Control Selection (NIST SP 800-53)
+   * Recommends appropriate control baselines and tailoring based on system categorization
+   */
+  async selectSecurityControls(systemData) {
+    const operation = 'control_selection';
+    console.log(`🤖 Starting AI control selection for system: ${systemData.name}`);
+
+    const prompt = `
+You are a NIST cybersecurity expert specializing in NIST SP 800-53 security control selection. Based on the system categorization, recommend appropriate security controls.
+
+SYSTEM INFORMATION:
+- Name: ${systemData.name}
+- Type: ${systemData.systemType}
+- Environment: ${systemData.environment || 'Not specified'}
+- Description: ${systemData.description}
+
+IMPACT LEVELS (from CATEGORIZE step):
+- Confidentiality: ${systemData.confidentialityImpact?.toUpperCase()}
+- Integrity: ${systemData.integrityImpact?.toUpperCase()}
+- Availability: ${systemData.availabilityImpact?.toUpperCase()}
+- Overall: ${systemData.overallImpact?.toUpperCase()}
+
+REQUIREMENTS:
+1. Determine the appropriate NIST SP 800-53 control baseline (LOW, MODERATE, HIGH)
+2. Recommend specific control families and controls
+3. Suggest tailoring recommendations for the specific environment
+4. Identify any additional controls needed based on system characteristics
+5. Provide implementation guidance and priorities
+
+Respond with a JSON object containing:
+{
+  "baseline": "LOW|MODERATE|HIGH",
+  "controlFamilies": [
+    {
+      "family": "AC",
+      "name": "Access Control",
+      "controls": ["AC-1", "AC-2", "AC-3"],
+      "priority": "HIGH|MEDIUM|LOW"
+    }
+  ],
+  "additionalControls": [
+    {
+      "controlId": "SC-7",
+      "name": "Boundary Protection",
+      "rationale": "Required for cloud environment"
+    }
+  ],
+  "tailoringRecommendations": [
+    {
+      "controlId": "AC-2",
+      "recommendation": "Implement automated account management",
+      "rationale": "Reduces manual overhead in cloud environment"
+    }
+  ],
+  "implementationPriorities": [
+    {
+      "phase": "Phase 1 - Critical",
+      "controls": ["AC-1", "AC-2", "IA-1"],
+      "timeframe": "0-30 days"
+    }
+  ],
+  "reasoning": "Detailed explanation of control selection rationale"
+}`;
+
+    try {
+      const response = await this.makeAIRequest([
+        {
+          role: 'system',
+          content: 'You are a NIST cybersecurity expert specializing in SP 800-53 security control selection. Provide accurate, compliant control recommendations.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ], {
+        operation,
+        temperature: 0.2, // Lower temperature for consistent control selection
+        maxTokens: 2500
+      });
+
+      const result = this.validateResponse(response, 'json');
+
+      // Validate required fields
+      const requiredFields = ['baseline', 'controlFamilies', 'reasoning'];
+      for (const field of requiredFields) {
+        if (!result[field]) {
+          throw new Error(`AI response missing required field: ${field}`);
+        }
+      }
+
+      console.log(`✅ AI control selection completed for ${systemData.name}`);
+      return result;
+
+    } catch (error) {
+      console.error('❌ AI control selection failed:', error);
+      throw new Error(`Control selection failed: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new RMFAIService();

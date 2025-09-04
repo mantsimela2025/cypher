@@ -172,6 +172,44 @@ class AIController {
       next(error);
     }
   }
+
+  /**
+   * AI-powered security control selection
+   * POST /api/rmf/ai/select-controls
+   */
+  async selectControls(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      const systemData = req.body;
+      const userId = req.user?.id;
+
+      console.log(`🤖 AI Control Selection request for system: ${systemData.name}`);
+
+      // Perform AI control selection
+      const controlSelectionResult = await rmfAIService.selectSecurityControls(systemData);
+
+      // TODO: Save results to database if needed
+      console.log('💾 Control selection results generated:', controlSelectionResult.baseline);
+
+      res.status(200).json({
+        success: true,
+        data: controlSelectionResult,
+        message: 'Security control selection completed successfully'
+      });
+
+    } catch (error) {
+      console.error('❌ AI control selection error:', error.message);
+      next(error);
+    }
+  }
 }
 
 module.exports = new AIController();

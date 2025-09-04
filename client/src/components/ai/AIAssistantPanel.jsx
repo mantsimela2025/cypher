@@ -72,15 +72,37 @@ const AIAssistantPanel = ({
       console.log('🤖 Starting AI analysis for system:', systemData.name);
       
       // Prepare data for AI analysis
-      const analysisData = {
-        name: systemData.name,
-        description: systemData.description,
-        dataTypes: systemData.dataTypes || [],
-        businessProcesses: systemData.businessProcesses || [],
-        environment: systemData.environment || systemData.systemType || 'Not specified',
-        userBase: systemData.userBase || 'Not specified'
+      // Map system type to valid environment values for API validation
+      const mapEnvironment = (env) => {
+        if (!env || env === 'Not specified') return 'Cloud';
+        // If it's already a valid environment, use it
+        if (['On-Premises', 'Cloud', 'Hybrid', 'Multi-Cloud'].includes(env)) return env;
+        // Map system types to reasonable environment defaults
+        if (env.includes('major_application') || env.includes('minor_application')) return 'Cloud';
+        if (env.includes('general_support')) return 'On-Premises';
+        return 'Cloud'; // Default fallback
       };
 
+      const analysisData = {
+        name: systemData.name?.trim(),
+        description: systemData.description?.trim(),
+        dataTypes: Array.isArray(systemData.dataTypes) ? systemData.dataTypes : [],
+        businessProcesses: systemData.businessProcesses || [],
+        environment: mapEnvironment(systemData.environment || systemData.systemType),
+        userBase: systemData.userBase || 'System users and administrators'
+      };
+
+      // Debug logging to see exact payload
+      console.log('📋 Request payload being sent to AI API:', JSON.stringify(analysisData, null, 2));
+
+      // Client-side validation before API call
+      const validation = rmfAIApi.validateSystemData(analysisData);
+      if (!validation.isValid) {
+        console.log('❌ Client-side validation failed:', validation.errors);
+        throw new Error(`Client validation failed: ${validation.errors.join(', ')}`);
+      }
+
+      console.log('✅ Client-side validation passed, sending to AI API...');
       const result = await rmfAIApi.categorizeSystem(analysisData);
       
       if (result.success && result.data.categorization) {
@@ -97,11 +119,34 @@ const AIAssistantPanel = ({
         setAiResult(enhancedResult);
         console.log('✅ AI analysis completed:', enhancedResult);
       } else {
-        throw new Error(result.message || 'AI analysis failed');
+        throw new Error(result.message || 'AI analysis failed - no categorization data received');
       }
     } catch (error) {
       console.error('❌ AI analysis error:', error);
-      setError(error.message || 'AI analysis failed. Please try again.');
+      
+      // Provide more specific error messages
+      let errorMessage = 'AI analysis failed. Please try again.';
+
+      if (error.message.includes('Validation failed')) {
+        errorMessage = 'Input validation failed. Please check that all required fields are properly filled.';
+        // Try to extract specific validation errors if available
+        if (error.response?.data?.errors) {
+          const validationErrors = error.response.data.errors.map(err => err.msg).join(', ');
+          errorMessage = `Validation failed: ${validationErrors}`;
+        }
+      } else if (error.message.includes('Session expired')) {
+        errorMessage = 'Session expired. Please refresh the page and try again.';
+      } else if (error.message.includes('Network')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message.includes('500')) {
+        errorMessage = 'AI service is temporarily unavailable. Please try again later.';
+      } else if (error.message.includes('404')) {
+        errorMessage = 'AI categorization service not found. Please contact support.';
+      } else if (error.message) {
+        errorMessage = `Failed to categorize system: ${error.message}`;
+      }
+      
+      setError(errorMessage);
     } finally {
       setAiLoading(false);
     }
@@ -124,6 +169,72 @@ const AIAssistantPanel = ({
     setAiResult(null);
     setError(null);
     handleAIAnalysis();
+  };
+
+  /**
+   * Handle using mock data for development/testing
+   */
+  const handleUseMockData = () => {
+    console.log('🔧 Using mock AI data for development');
+    
+    // Generate mock categorization based on system characteristics
+    let mockCategorization = {
+      confidentiality: 'MODERATE',
+      integrity: 'MODERATE',
+      availability: 'MODERATE',
+      overall: 'MODERATE',
+      confidence: 85,
+      reasoning: 'Mock AI analysis: Based on the system name and description, this appears to be a business application with moderate impact requirements. The system processes business data that requires protection but is not classified or highly sensitive.',
+      risk_factors: [
+        'System processes business-critical data',
+        'Multiple user access points',
+        'Network connectivity requirements'
+      ],
+      recommendations: 'Consider implementing standard security controls appropriate for moderate impact systems. Review access controls and data protection measures.'
+    };
+
+    // Adjust mock data based on system characteristics
+    if (systemData.dataTypes?.includes('classified') || systemData.description?.toLowerCase().includes('classified')) {
+      mockCategorization = {
+        ...mockCategorization,
+        confidentiality: 'HIGH',
+        integrity: 'HIGH',
+        availability: 'HIGH',
+        overall: 'HIGH',
+        confidence: 90,
+        reasoning: 'Mock AI analysis: System handles classified information requiring high impact protection across all CIA triad elements.',
+        risk_factors: [
+          'Classified information processing',
+          'National security implications',
+          'Strict compliance requirements'
+        ]
+      };
+    } else if (systemData.dataTypes?.includes('financial') || systemData.dataTypes?.includes('pii')) {
+      mockCategorization = {
+        ...mockCategorization,
+        confidentiality: 'HIGH',
+        integrity: 'HIGH',
+        overall: 'HIGH',
+        confidence: 88,
+        reasoning: 'Mock AI analysis: System processes sensitive financial or PII data requiring high confidentiality and integrity protection.',
+        risk_factors: [
+          'Sensitive personal information',
+          'Financial data processing',
+          'Regulatory compliance requirements'
+        ]
+      };
+    }
+
+    const mockResult = {
+      ...mockCategorization,
+      systemName: systemData.name,
+      systemDescription: systemData.description,
+      analysisTimestamp: new Date().toISOString()
+    };
+
+    setAiResult(mockResult);
+    setError(null);
+    console.log('✅ Mock AI analysis applied:', mockResult);
   };
 
   return (
@@ -153,18 +264,24 @@ const AIAssistantPanel = ({
         {/* Error State */}
         {error && (
           <div className="alert alert-danger alert-dismissible">
-            <button 
-              type="button" 
-              className="btn-close" 
+            <button
+              type="button"
+              className="btn-close"
               onClick={() => setError(null)}
             ></button>
             <div className="alert-text">
               <h6>Analysis Failed</h6>
               <p className="mb-2">{error}</p>
-              <Button color="danger" size="sm" onClick={handleRetry}>
-                <Icon name="refresh" className="me-1"></Icon>
-                Retry Analysis
-              </Button>
+              <div className="d-grid gap-2">
+                <Button color="danger" size="sm" onClick={handleRetry}>
+                  <Icon name="refresh" className="me-1"></Icon>
+                  Retry Analysis
+                </Button>
+                <Button color="secondary" size="sm" onClick={handleUseMockData}>
+                  <Icon name="cpu" className="me-1"></Icon>
+                  Use Sample Data (Development)
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -190,25 +307,38 @@ const AIAssistantPanel = ({
               </div>
             )}
             
-            <Button 
-              color="primary" 
-              size="sm"
-              onClick={handleAIAnalysis}
-              disabled={disabled || aiLoading || !canAnalyze()}
-              className="btn-block"
-            >
-              {aiLoading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2"></span>
-                  Analyzing System...
-                </>
-              ) : (
-                <>
-                  <Icon name="cpu" className="me-2"></Icon>
-                  Analyze with AI
-                </>
+            <div className="d-grid gap-2">
+              <Button
+                color="primary"
+                size="sm"
+                onClick={handleAIAnalysis}
+                disabled={disabled || aiLoading || !canAnalyze()}
+              >
+                {aiLoading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Analyzing System...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="cpu" className="me-2"></Icon>
+                    Analyze with AI
+                  </>
+                )}
+              </Button>
+              
+              {canAnalyze() && (
+                <Button
+                  color="outline-secondary"
+                  size="sm"
+                  onClick={handleUseMockData}
+                  disabled={disabled || aiLoading}
+                >
+                  <Icon name="settings" className="me-2"></Icon>
+                  Use Sample Analysis
+                </Button>
               )}
-            </Button>
+            </div>
             
             {aiLoading && (
               <div className="mt-3">
@@ -253,26 +383,26 @@ const AIAssistantPanel = ({
               <h6 className="mb-2">Impact Assessment</h6>
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <span className="text-soft">Confidentiality:</span>
-                <span className={`badge badge-${getImpactColor(aiResult.confidentiality)}`}>
+                <span className={`badge bg-${getImpactColor(aiResult.confidentiality)}`}>
                   {aiResult.confidentiality}
                 </span>
               </div>
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <span className="text-soft">Integrity:</span>
-                <span className={`badge badge-${getImpactColor(aiResult.integrity)}`}>
+                <span className={`badge bg-${getImpactColor(aiResult.integrity)}`}>
                   {aiResult.integrity}
                 </span>
               </div>
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <span className="text-soft">Availability:</span>
-                <span className={`badge badge-${getImpactColor(aiResult.availability)}`}>
+                <span className={`badge bg-${getImpactColor(aiResult.availability)}`}>
                   {aiResult.availability}
                 </span>
               </div>
               <hr className="my-2" />
               <div className="d-flex justify-content-between align-items-center">
                 <span className="fw-bold">Overall Impact:</span>
-                <span className={`badge badge-lg badge-${getImpactColor(aiResult.overall)}`}>
+                <span className={`badge bg-${getImpactColor(aiResult.overall)}`}>
                   {aiResult.overall}
                 </span>
               </div>

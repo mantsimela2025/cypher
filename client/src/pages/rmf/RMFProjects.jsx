@@ -402,6 +402,19 @@ const RMFProjects = () => {
                         <li>
                           <DropdownItem
                             tag="a"
+                            href="#wizard"
+                            onClick={(ev) => {
+                              ev.preventDefault();
+                              navigate(`/rmf/wizard/${item.id}`);
+                            }}
+                          >
+                            <Icon name="activity"></Icon>
+                            <span>Use Wizard</span>
+                          </DropdownItem>
+                        </li>
+                        <li>
+                          <DropdownItem
+                            tag="a"
                             href="#tasks"
                             onClick={(ev) => {
                               ev.preventDefault();
@@ -644,13 +657,44 @@ const RMFProjects = () => {
                       </a>
                     </li>
                     <li className="nk-block-tools-opt">
-                      <Button 
-                        color="primary" 
-                        className="btn-icon"
-                        onClick={handleOpenAddPanel}
-                      >
-                        <Icon name="plus"></Icon>
-                      </Button>
+                      <UncontrolledDropdown>
+                        <DropdownToggle color="primary" className="dropdown-toggle">
+                          <Icon name="plus" className="me-1"></Icon>
+                          New Project
+                        </DropdownToggle>
+                        <DropdownMenu end>
+                          <ul className="link-list-opt no-bdr">
+                            <li>
+                              <DropdownItem
+                                tag="a"
+                                href="#"
+                                onClick={(ev) => {
+                                  ev.preventDefault();
+                                  navigate('/rmf/wizard/new');
+                                }}
+                              >
+                                <Icon name="activity" className="me-2"></Icon>
+                                <span>Step-by-Step Wizard</span>
+                                <div className="text-soft small">Guided RMF implementation</div>
+                              </DropdownItem>
+                            </li>
+                            <li>
+                              <DropdownItem
+                                tag="a"
+                                href="#"
+                                onClick={(ev) => {
+                                  ev.preventDefault();
+                                  handleOpenAddPanel();
+                                }}
+                              >
+                                <Icon name="edit" className="me-2"></Icon>
+                                <span>Quick Form</span>
+                                <div className="text-soft small">Traditional form interface</div>
+                              </DropdownItem>
+                            </li>
+                          </ul>
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
                     </li>
                   </ul>
                 </div>
@@ -1007,6 +1051,7 @@ const RMFProjects = () => {
                             icon="eye-fill"
                             direction="top"
                             text="View Details"
+                            onClick={() => navigate(`/rmf/projects/${item.id}/step/categorize`)}
                           />
                         </li>
                         <li className="nk-tb-action-hidden">
@@ -1033,6 +1078,7 @@ const RMFProjects = () => {
                                     href="#view"
                                     onClick={(ev) => {
                                       ev.preventDefault();
+                                      navigate(`/rmf/projects/${item.id}/step/categorize`);
                                     }}
                                   >
                                     <Icon name="eye"></Icon>
@@ -1055,6 +1101,19 @@ const RMFProjects = () => {
                                 <li>
                                   <DropdownItem
                                     tag="a"
+                                    href="#wizard"
+                                    onClick={(ev) => {
+                                      ev.preventDefault();
+                                      navigate(`/rmf/wizard/${item.id}`);
+                                    }}
+                                  >
+                                    <Icon name="activity"></Icon>
+                                    <span>Use Wizard</span>
+                                  </DropdownItem>
+                                </li>
+                                <li>
+                                  <DropdownItem
+                                    tag="a"
                                     href="#tasks"
                                     onClick={(ev) => {
                                       ev.preventDefault();
@@ -1070,6 +1129,7 @@ const RMFProjects = () => {
                                     href="#workflow"
                                     onClick={(ev) => {
                                       ev.preventDefault();
+                                      navigate(`/rmf/projects/${item.id}/step/categorize`);
                                     }}
                                   >
                                     <Icon name="flow"></Icon>

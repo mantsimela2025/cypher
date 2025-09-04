@@ -231,7 +231,11 @@ const Success = React.lazy(() => import("@/pages/auth/Success"));
 const RMFDashboard = React.lazy(() => import("@/pages/rmf/RMFDashboard"));
 const RMFProjects = React.lazy(() => import("@/pages/rmf/RMFProjects"));
 const RMFNewProject = React.lazy(() => import("@/pages/rmf/RMFNewProject"));
+const RMFWizard = React.lazy(() => import("@/pages/rmf/RMFWizard"));
+const RMFWizardDemo = React.lazy(() => import("@/pages/rmf/RMFWizardDemo"));
 const RMFCategorizeStep = React.lazy(() => import("@/pages/rmf/steps/RMFCategorizeStep"));
+const RMFSelectStep = React.lazy(() => import("@/pages/rmf/steps/RMFSelectStep"));
+const RMFImplementStep = React.lazy(() => import("@/pages/rmf/steps/RMFImplementStep"));
 
 
 const ScrollToTop = (props) => {
@@ -326,7 +330,11 @@ const Pages = () => {
 <Route path="rmf/dashboard" element={<Suspense fallback={<PageLoader />}><RMFDashboard /></Suspense>}></Route>
 <Route path="rmf/projects" element={<Suspense fallback={<PageLoader />}><RMFProjects /></Suspense>}></Route>
 <Route path="rmf/projects/new" element={<Suspense fallback={<PageLoader />}><RMFNewProject /></Suspense>}></Route>
+<Route path="rmf/wizard/:projectId" element={<Suspense fallback={<PageLoader />}><RMFWizard /></Suspense>}></Route>
+<Route path="rmf/wizard-demo" element={<Suspense fallback={<PageLoader />}><RMFWizardDemo /></Suspense>}></Route>
 <Route path="rmf/projects/:projectId/step/categorize" element={<Suspense fallback={<PageLoader />}><RMFCategorizeStep /></Suspense>}></Route>
+<Route path="rmf/projects/:projectId/step/select" element={<Suspense fallback={<PageLoader />}><RMFSelectStep /></Suspense>}></Route>
+<Route path="rmf/projects/:projectId/step/implement" element={<Suspense fallback={<PageLoader />}><RMFImplementStep /></Suspense>}></Route>
 
 
               {/*Scan Management*/}

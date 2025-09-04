@@ -14,16 +14,17 @@ import {
   Col,
   PreviewCard,
 } from "@/components/Component";
-// Test just the rmfApi import
+// ✅ CYPHER Standard: Use proper imports
 import { rmfProjectsApi } from "@/utils/rmfApi";
-// import { toast } from "react-toastify"; // Keep toast commented out
+import { toast } from "react-toastify";
+import { FormGroup, Label, Input, Alert, Spinner } from "reactstrap";
 
 const RMFNewProject = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    systemType: "",
+    systemType: "cloud", // Default to cloud environment
     owner: "",
     dueDate: "",
     priority: "medium"
@@ -95,7 +96,9 @@ const RMFNewProject = () => {
 
       if (result.success) {
         console.log('✅ Project created successfully:', result.data);
-        alert(`Project "${formData.name}" created successfully!`);
+
+        // ✅ CYPHER Standard: Use toast notifications
+        toast.success(`Project "${formData.name}" created successfully!`);
 
         // Navigate back to projects list
         navigate('/rmf/projects');
@@ -107,7 +110,9 @@ const RMFNewProject = () => {
       console.error('❌ Error creating project:', error);
       const errorMessage = error.message || 'Failed to create project. Please try again.';
       setErrors({ submit: errorMessage });
-      alert('Error: ' + errorMessage);
+
+      // ✅ CYPHER Standard: Use toast for errors
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -180,7 +185,7 @@ const RMFNewProject = () => {
                 <Col sm="6">
                   <div className="form-group">
                     <label className="form-label" htmlFor="system-type">
-                      System Impact Level <span className="text-danger">*</span>
+                      Environment Type <span className="text-danger">*</span>
                     </label>
                     <div className="form-control-wrap">
                       <select
@@ -190,10 +195,10 @@ const RMFNewProject = () => {
                         value={formData.systemType}
                         onChange={handleInputChange}
                       >
-                        <option value="">Select impact level</option>
-                        <option value="low">Low Impact</option>
-                        <option value="moderate">Moderate Impact</option>
-                        <option value="high">High Impact</option>
+                        <option value="">Select environment type</option>
+                        <option value="on-premises">On-Premises</option>
+                        <option value="cloud">Cloud</option>
+                        <option value="hybrid">Hybrid</option>
                       </select>
                       {errors.systemType && <span className="text-danger">{errors.systemType}</span>}
                     </div>
@@ -307,6 +312,16 @@ const RMFNewProject = () => {
             </form>
           </PreviewCard>
         </Block>
+
+        {/* ✅ CYPHER Standard: Error Display */}
+        {errors.submit && (
+          <Block>
+            <Alert className="alert-icon" color="danger" fade={false}>
+              <Icon name="alert-circle" />
+              <strong>Error:</strong> {errors.submit}
+            </Alert>
+          </Block>
+        )}
 
         {/* Info Panel */}
         <Block>
