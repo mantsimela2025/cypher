@@ -1,283 +1,276 @@
-# GitLab CI/CD Pipeline for CYPHER Application
-# Deploys to AWS EC2 instance with automated testing and deployment
+# GitLab CI/CD Pipeline for CYPHER Deployment to AWS Windows EC2
+# Deploys to Windows Server 2019 EC2 instance with IIS and PM2
 
 stages:
   - test
   - build
-  - deploy-staging
-  - deploy-production
+  - deploy
+  - health-check
 
 variables:
-  # Application settings
   NODE_VERSION: "18"
-  APP_NAME: "cypher-app"
-
-  # AWS settings
+  EC2_INSTANCE_ID: "i-04a41343a3f51559a"  # Your Windows Server 2019 instance
+  EC2_HOST: "18.207.177.239"  # Replace with your actual EC2 public IP
+  EC2_USERNAME: "Administrator"
   AWS_DEFAULT_REGION: "us-east-1"
-  EC2_INSTANCE_ID: "i-04a41343a3f51559a"
-  EC2_PUBLIC_IP: "18.207.177.239"
+  S3_BUCKET: "rasdash-deployments"
+  S3_DEPLOYMENT_PATH: "CYPHER-DEPLOYMENT"
 
-  # Deployment paths
-  DEPLOY_PATH: "/opt/cypher"
-  API_PATH: "/opt/cypher/api"
-  CLIENT_PATH: "/opt/cypher/client"
-
-# Cache node_modules for faster builds
-cache:
-  paths:
-    - api/node_modules/
-    - client/node_modules/
-    - node_modules/
-
-# Test Stage - Run on all branches
-test-api:
+# Test stage - runs on every push and merge request
+test:
   stage: test
   image: node:18-alpine
-  before_script:
-    - cd api
-    - npm ci
-  script:
-    - npm run test
-    - npm run test:coverage
-  artifacts:
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
     paths:
-      - api/coverage/
-  only:
-    - merge_requests
-    - dev
-    - staging
-    - main
-
-test-client:
-  stage: test
-  image: node:18-alpine
+      - node_modules/
+      - api/node_modules/
+      - client/node_modules/
   before_script:
-    - cd client
+    - apk add --no-cache git
     - npm ci
+    - cd api && npm ci
+    - cd ../client && npm ci
   script:
-    - npm run test
-    - npm run build
+    - echo "🧪 Running API tests..."
+    - cd api && npm run test
+    - echo "🏗️ Building client..."
+    - cd ../client && npm run build
   artifacts:
     paths:
       - client/dist/
-  only:
-    - merge_requests
-    - dev
-    - staging
-    - main
+    expire_in: 1 hour
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "master"
 
-# Build Stage - Create production builds
-build-application:
+# Build stage - creates deployment package
+build:
   stage: build
   image: node:18-alpine
+  dependencies:
+    - test
   before_script:
-    - apk add --no-cache git
+    - apk add --no-cache zip git
   script:
-    # Install root dependencies
-    - npm ci
-    
-    # Build API
-    - cd api
-    - npm ci --production
-    - cd ..
-    
-    # Build Client
-    - cd client
-    - npm ci
-    - npm run build
-    - cd ..
-    
-    # Create deployment package
-    - mkdir -p deploy-package
-    - cp -r api deploy-package/
-    - cp -r client/dist deploy-package/client
-    - cp package.json deploy-package/
-    - cp start-full-stack.js deploy-package/
-    - cp -r scripts deploy-package/
-    
-    # Clean up node_modules in client (not needed for production)
-    - rm -rf deploy-package/client/node_modules
-    
+    - echo "📦 Creating deployment package..."
+    - mkdir -p deployment
+    - cp -r api deployment/
+    - cp -r client/dist deployment/client
+    - cp package.json deployment/
+    - cp ecosystem.config.js deployment/ || echo "ecosystem.config.js not found, skipping"
+    - cd deployment && zip -r ../cypher-deployment.zip .
+    - echo "✅ Deployment package created"
   artifacts:
     paths:
-      - deploy-package/
+      - cypher-deployment.zip
     expire_in: 1 hour
-  only:
-    - dev
-    - staging
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "master"
 
-# Deploy to Staging (from staging branch)
-deploy-staging:
-  stage: deploy-staging
-  image: alpine:latest
+# Deploy stage - deploys to Windows EC2
+deploy:
+  stage: deploy
+  image: amazon/aws-cli:latest
+  dependencies:
+    - build
   before_script:
-    - apk add --no-cache openssh-client rsync
-    - eval $(ssh-agent -s)
-    - echo "$EC2_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $EC2_PUBLIC_IP >> ~/.ssh/known_hosts
+    - yum update -y
+    - yum install -y openssh-clients
+    - aws --version
   script:
-    # Create staging environment file
-    - |
-      cat > deploy-package/.env.staging << EOF
-      NODE_ENV=staging
-      PORT=3002
-      DB_HOST=$DB_HOST
-      DB_PORT=$DB_PORT
-      DB_NAME=$DB_NAME
-      DB_USER=$DB_USER
-      DB_PASSWORD=$(echo $DB_PASSWORD | sed 's/DOLLAR/$/g')
-      JWT_SECRET=$JWT_SECRET
-      CORS_ORIGIN=http://staging.rasdash.dev.com
-      FRONTEND_URL=http://staging.rasdash.dev.com
-      EMAIL_FROM=$EMAIL_FROM
-      OPENAI_API_KEY=$OPENAI_API_KEY
-      ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
-      NVD_API_KEY=$NVD_API_KEY
-      MAILERSEND_API_KEY=$MAILERSEND_API_KEY
-      EOF
-    
-    # Deploy to staging directory
-    - rsync -avz --delete deploy-package/ ec2-user@$EC2_PUBLIC_IP:/opt/cypher-staging/
-    
-    # Restart staging services
-    - |
-      ssh ec2-user@$EC2_PUBLIC_IP << 'EOF'
-        cd /opt/cypher-staging
-        cp .env.staging api/.env
-        
-        # Install/update dependencies
-        cd api && npm ci --production && cd ..
-        
-        # Restart staging services
-        sudo systemctl restart cypher-staging-api
-        sudo systemctl restart cypher-staging-client
-        
-        # Health check
-        sleep 10
-        curl -f http://localhost:3002/health || exit 1
-      EOF
-  environment:
-    name: staging
-    url: https://staging.rasdash.dev.com
-  only:
-    - staging
+    - echo "🚀 Starting deployment to Windows EC2..."
 
-# Deploy to Production (from main branch)
-deploy-production:
-  stage: deploy-production
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache openssh-client rsync
-    - eval $(ssh-agent -s)
-    - echo "$EC2_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $EC2_PUBLIC_IP >> ~/.ssh/known_hosts
+    # Upload to S3 with timestamp
+    - TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    - echo "📤 Uploading deployment package to S3..."
+    - aws s3 cp cypher-deployment.zip s3://${S3_BUCKET}/${S3_DEPLOYMENT_PATH}/releases/cypher-${TIMESTAMP}.zip
+    - aws s3 cp cypher-deployment.zip s3://${S3_BUCKET}/${S3_DEPLOYMENT_PATH}/latest/cypher-latest.zip
+    - echo "✅ Deployment uploaded with timestamp: ${TIMESTAMP}"
+
+    # Check and start EC2 instance if needed
+    - echo "🔍 Checking EC2 instance state..."
+    - INSTANCE_STATE=$(aws ec2 describe-instances --instance-ids ${EC2_INSTANCE_ID} --query 'Reservations[0].Instances[0].State.Name' --output text)
+    - echo "Current instance state: ${INSTANCE_STATE}"
+
+    - |
+      if [ "$INSTANCE_STATE" = "stopped" ]; then
+        echo "🚀 Starting EC2 instance..."
+        aws ec2 start-instances --instance-ids ${EC2_INSTANCE_ID}
+        echo "⏳ Waiting for instance to be running..."
+        aws ec2 wait instance-running --instance-ids ${EC2_INSTANCE_ID}
+        echo "✅ Instance started successfully"
+        echo "⏳ Waiting additional 60 seconds for services to initialize..."
+        sleep 60
+      else
+        echo "✅ Instance is already running"
+      fi
+
+    # Create PowerShell deployment script
+    - |
+      cat > deploy-script.ps1 << 'EOF'
+      # PowerShell deployment script for CYPHER on Windows Server 2019
+      $ErrorActionPreference = "Stop"
+
+      Write-Host "🚀 Starting CYPHER deployment..." -ForegroundColor Green
+
+      # Set deployment paths
+      $AppPath = "C:\inetpub\wwwroot\cypher"
+      $BackupPath = "C:\deployments\backups\$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+      $TempPath = "C:\deployments\temp"
+
+      # Create directories if they don't exist
+      Write-Host "📁 Creating deployment directories..." -ForegroundColor Yellow
+      New-Item -ItemType Directory -Force -Path $AppPath, $BackupPath, $TempPath | Out-Null
+
+      # Stop PM2 processes gracefully
+      Write-Host "⏹️ Stopping PM2 processes..." -ForegroundColor Yellow
+      try {
+          pm2 stop cypher-api 2>$null
+          pm2 stop cypher-client 2>$null
+          pm2 delete cypher-api 2>$null
+          pm2 delete cypher-client 2>$null
+      } catch {
+          Write-Host "PM2 processes not running or not found" -ForegroundColor Gray
+      }
+
+      # Backup current deployment
+      if (Test-Path $AppPath) {
+          Write-Host "💾 Creating backup..." -ForegroundColor Yellow
+          Copy-Item -Path $AppPath -Destination $BackupPath -Recurse -Force
+          Write-Host "✅ Backup created at $BackupPath" -ForegroundColor Green
+      }
+
+      # Download latest deployment from S3
+      Write-Host "📥 Downloading latest deployment from S3..." -ForegroundColor Yellow
+      aws s3 cp s3://rasdash-deployments/CYPHER-DEPLOYMENT/latest/cypher-latest.zip $TempPath\cypher-latest.zip
+
+      # Extract deployment
+      Write-Host "📦 Extracting deployment package..." -ForegroundColor Yellow
+      Expand-Archive -Path $TempPath\cypher-latest.zip -DestinationPath $TempPath\extracted -Force
+
+      # Stop IIS
+      Write-Host "⏹️ Stopping IIS..." -ForegroundColor Yellow
+      iisreset /stop
+
+      # Remove old files (keep web.config if exists)
+      Write-Host "🧹 Cleaning old deployment..." -ForegroundColor Yellow
+      if (Test-Path $AppPath\web.config) {
+          Copy-Item -Path $AppPath\web.config -Destination $TempPath\web.config.backup
+      }
+      Remove-Item -Path $AppPath\* -Recurse -Force -ErrorAction SilentlyContinue
+
+      # Copy new files
+      Write-Host "📋 Copying new files..." -ForegroundColor Yellow
+      Copy-Item -Path $TempPath\extracted\* -Destination $AppPath -Recurse -Force
+
+      # Restore web.config if it existed
+      if (Test-Path $TempPath\web.config.backup) {
+          Copy-Item -Path $TempPath\web.config.backup -Destination $AppPath\web.config -Force
+      }
+
+      # Install/update API dependencies
+      Write-Host "📦 Installing API dependencies..." -ForegroundColor Yellow
+      Set-Location $AppPath\api
+      npm install --production --silent
+
+      # Create PM2 ecosystem config if it doesn't exist
+      if (-not (Test-Path $AppPath\ecosystem.config.js)) {
+          Write-Host "📝 Creating PM2 ecosystem config..." -ForegroundColor Yellow
+          @"
+      module.exports = {
+        apps: [
+          {
+            name: 'cypher-api',
+            script: './api/src/server.js',
+            cwd: '$AppPath',
+            env: {
+              NODE_ENV: 'production',
+              PORT: 3001
+            },
+            instances: 1,
+            exec_mode: 'fork',
+            watch: false,
+            max_memory_restart: '1G',
+            error_file: 'C:/deployments/logs/api-error.log',
+            out_file: 'C:/deployments/logs/api-out.log',
+            log_file: 'C:/deployments/logs/api-combined.log'
+          }
+        ]
+      };
+      "@ | Out-File -FilePath $AppPath\ecosystem.config.js -Encoding UTF8
+      }
+
+      # Create logs directory
+      New-Item -ItemType Directory -Force -Path "C:\deployments\logs" | Out-Null
+
+      # Start PM2 processes
+      Write-Host "🚀 Starting PM2 processes..." -ForegroundColor Yellow
+      Set-Location $AppPath
+      pm2 start ecosystem.config.js
+      pm2 save
+
+      # Start IIS
+      Write-Host "🌐 Starting IIS..." -ForegroundColor Yellow
+      iisreset /start
+
+      # Cleanup temp files
+      Write-Host "🧹 Cleaning up temporary files..." -ForegroundColor Yellow
+      Remove-Item -Path $TempPath -Recurse -Force -ErrorAction SilentlyContinue
+
+      Write-Host "✅ CYPHER deployment completed successfully!" -ForegroundColor Green
+      Write-Host "🌐 Application should be available at: http://localhost" -ForegroundColor Cyan
+      Write-Host "🔧 API should be available at: http://localhost:3001" -ForegroundColor Cyan
+      EOF
+
+    # Deploy to EC2 using SSH
+    - echo "🔐 Setting up SSH connection..."
+    - echo "$EC2_PRIVATE_KEY" > ec2-key.pem
+    - chmod 600 ec2-key.pem
+
+    - echo "📤 Uploading deployment script to EC2..."
+    - scp -i ec2-key.pem -o StrictHostKeyChecking=no deploy-script.ps1 ${EC2_USERNAME}@${EC2_HOST}:C:/deployments/
+
+    - echo "🚀 Executing deployment on EC2..."
+    - ssh -i ec2-key.pem -o StrictHostKeyChecking=no ${EC2_USERNAME}@${EC2_HOST} "powershell -ExecutionPolicy Bypass -File C:/deployments/deploy-script.ps1"
+
+    - echo "🧹 Cleaning up local files..."
+    - rm -f ec2-key.pem deploy-script.ps1
+
+    - echo "✅ Deployment completed successfully!"
+
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "master"
+
+# Health check stage - verifies deployment
+health-check:
+  stage: health-check
+  image: curlimages/curl:latest
   script:
-    # Create production environment file
-    - |
-      cat > deploy-package/.env.production << EOF
-      NODE_ENV=production
-      PORT=3001
-      DB_HOST=$DB_HOST
-      DB_PORT=$DB_PORT
-      DB_NAME=$DB_NAME
-      DB_USER=$DB_USER
-      DB_PASSWORD=$(echo $DB_PASSWORD | sed 's/DOLLAR/$/g')
-      JWT_SECRET=$JWT_SECRET
-      CORS_ORIGIN=http://rasdash.dev.com
-      FRONTEND_URL=http://rasdash.dev.com
-      EMAIL_FROM=$EMAIL_FROM
-      OPENAI_API_KEY=$OPENAI_API_KEY
-      ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
-      NVD_API_KEY=$NVD_API_KEY
-      MAILERSEND_API_KEY=$MAILERSEND_API_KEY
-      EOF
-    
-    # Deploy to production directory
-    - rsync -avz --delete deploy-package/ ec2-user@$EC2_PUBLIC_IP:$DEPLOY_PATH/
-    
-    # Restart production services
-    - |
-      ssh ec2-user@$EC2_PUBLIC_IP << 'EOF'
-        cd /opt/cypher
-        cp .env.production api/.env
+    - echo "⏳ Waiting for services to start..."
+    - sleep 30
 
-        # Install/update dependencies
-        cd api && npm ci --production && cd ..
-
-        # Restart production services
-        sudo systemctl restart cypher-api
-        sudo systemctl restart cypher-client
-
-        # Health check
-        sleep 15
-        curl -f http://localhost:3001/health || exit 1
-      EOF
-  environment:
-    name: production
-    url: https://rasdash.dev.com
-  when: manual
-  only:
-    - main
-
-# Deploy to Dev (from dev branch) - Auto deploy for development
-deploy-dev:
-  stage: deploy-staging
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache openssh-client rsync
-    - eval $(ssh-agent -s)
-    - echo "$EC2_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan -H $EC2_PUBLIC_IP >> ~/.ssh/known_hosts
-  script:
-    # Create dev environment file
+    - echo "🏥 Performing health check..."
     - |
-      cat > deploy-package/.env.dev << EOF
-      NODE_ENV=development
-      PORT=3003
-      DB_HOST=$DB_HOST
-      DB_PORT=$DB_PORT
-      DB_NAME=$DB_NAME
-      DB_USER=$DB_USER
-      DB_PASSWORD=$(echo $DB_PASSWORD | sed 's/DOLLAR/$/g')
-      JWT_SECRET=$JWT_SECRET
-      CORS_ORIGIN=http://dev.rasdash.dev.com
-      FRONTEND_URL=http://dev.rasdash.dev.com
-      EMAIL_FROM=$EMAIL_FROM
-      OPENAI_API_KEY=$OPENAI_API_KEY
-      ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
-      NVD_API_KEY=$NVD_API_KEY
-      MAILERSEND_API_KEY=$MAILERSEND_API_KEY
-      EOF
-    
-    # Deploy to dev directory
-    - rsync -avz --delete deploy-package/ ec2-user@$EC2_PUBLIC_IP:/opt/cypher-dev/
-    
-    # Restart dev services
-    - |
-      ssh ec2-user@$EC2_PUBLIC_IP << 'EOF'
-        cd /opt/cypher-dev
-        cp .env.dev api/.env
-        
-        # Install/update dependencies
-        cd api && npm ci && cd ..
-        
-        # Restart dev services
-        sudo systemctl restart cypher-dev-api
-        sudo systemctl restart cypher-dev-client
-        
-        # Health check
-        sleep 10
-        curl -f http://localhost:3003/health || exit 1
-      EOF
-  environment:
-    name: development
-    url: https://dev.rasdash.dev.com
-  only:
-    - dev
+      for i in {1..5}; do
+        echo "Attempt $i/5..."
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://${EC2_HOST}/health || echo "000")
+        if [ "$response" = "200" ]; then
+          echo "✅ Health check passed!"
+          exit 0
+        fi
+        echo "❌ Health check failed with status: $response"
+        if [ $i -lt 5 ]; then
+          echo "⏳ Waiting 10 seconds before retry..."
+          sleep 10
+        fi
+      done
+      echo "❌ Health check failed after 5 attempts"
+      exit 1
+
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "master"
