@@ -12,6 +12,12 @@ This document tracks the compliance status of all client-side files with the [AP
 - ✅ `client/src/utils/assetsApi.js` - **FIXED** - Removed hardcoded URLs
 - ✅ `client/src/utils/rmfApi.js` - Already compliant
 - ✅ `client/src/utils/nlqAdminApi.js` - Already compliant
+- ✅ `client/src/utils/assetOperationalCostsApi.js` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/utils/assetRiskMappingApi.js` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/utils/assetTagsApi.js` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/utils/categoriesApi.js` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/utils/globalMetricsApi.js` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/utils/testAssetsApi.js` - **FIXED** - Complete apiClient conversion
 
 ### **Components (Partially Fixed)**
 - ✅ `client/src/pages/patch-management/PatchLibrary.jsx` - **FIXED** - Now uses apiClient
@@ -24,15 +30,9 @@ This document tracks the compliance status of all client-side files with the [AP
 
 ## ⚠️ **Files Requiring Fixes**
 
-### **API Utility Files (High Priority)**
+### **API Utility Files (Remaining Issues)**
 - ❌ `client/src/utils/systemsApi.js` - **PARTIALLY FIXED** - Still has some direct fetch() calls
 - ❌ `client/src/utils/assetManagementApi.js` - **IN PROGRESS** - Needs complete overhaul
-- ❌ `client/src/utils/assetOperationalCostsApi.js` - Direct fetch() calls
-- ❌ `client/src/utils/assetRiskMappingApi.js` - Direct fetch() calls
-- ❌ `client/src/utils/assetTagsApi.js` - Direct fetch() calls
-- ❌ `client/src/utils/categoriesApi.js` - Direct fetch() calls
-- ❌ `client/src/utils/globalMetricsApi.js` - Direct fetch() calls
-- ❌ `client/src/utils/testAssetsApi.js` - Direct fetch() calls
 
 ### **Component Files (Medium Priority)**
 - ❌ `client/src/components/dashboard-creator/MetricsLibrary.jsx` - Direct fetch() calls
@@ -74,12 +74,12 @@ This document tracks the compliance status of all client-side files with the [AP
 
 ### **Current Status:**
 - **Total Files Analyzed:** 45
-- **Fully Compliant:** 9 (20%)
+- **Fully Compliant:** 15 (33%)
 - **Partially Fixed:** 3 (7%)
-- **Needs Fixing:** 33 (73%)
+- **Needs Fixing:** 27 (60%)
 
 ### **By Category:**
-- **API Utilities:** 5/13 compliant (38%)
+- **API Utilities:** 11/13 compliant (85%)
 - **Components:** 3/20 compliant (15%)
 - **Pages:** 1/12 compliant (8%)
 

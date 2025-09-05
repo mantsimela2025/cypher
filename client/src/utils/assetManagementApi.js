@@ -8,12 +8,8 @@ export const assetManagementApi = {
    * Create a new lifecycle record
    */
   createLifecycleRecord: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/lifecycle`, {
-      method: 'POST',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Creating new lifecycle record');
+    return await apiClient.post('/asset-management/lifecycle', data);
   },
 
   /**
@@ -29,51 +25,33 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/lifecycle?${params.toString()}` : `${API_BASE_URL}/lifecycle`;
-    console.log('🌐 Making lifecycle API call to:', url);
-    console.log('🔑 Headers:', createHeaders());
-
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-
-    console.log('📡 Response status:', response.status);
-    console.log('📡 Response ok:', response.ok);
-
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/lifecycle?${params.toString()}` : '/asset-management/lifecycle';
+    log.api('Getting lifecycle records with filters:', filters);
+    return await apiClient.get(endpoint);
   },
 
   /**
    * Get a specific lifecycle record by ID
    */
   getLifecycleRecordById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/lifecycle/${id}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Getting lifecycle record by ID:', id);
+    return await apiClient.get(`/asset-management/lifecycle/${id}`);
   },
 
   /**
    * Update a lifecycle record
    */
   updateLifecycleRecord: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/lifecycle/${id}`, {
-      method: 'PUT',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Updating lifecycle record:', id);
+    return await apiClient.put(`/asset-management/lifecycle/${id}`, data);
   },
 
   /**
    * Delete a lifecycle record
    */
   deleteLifecycleRecord: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/lifecycle/${id}`, {
-      method: 'DELETE',
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Deleting lifecycle record:', id);
+    return await apiClient.delete(`/asset-management/lifecycle/${id}`);
   },
 
   // ==================== ASSET COST MANAGEMENT ====================
@@ -82,12 +60,8 @@ export const assetManagementApi = {
    * Create a new cost record
    */
   createCostRecord: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/costs`, {
-      method: 'POST',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Creating new cost record');
+    return await apiClient.post('/asset-management/costs', data);
   },
 
   /**
@@ -102,44 +76,33 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/costs?${params.toString()}` : `${API_BASE_URL}/costs`;
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/costs?${params.toString()}` : '/asset-management/costs';
+    log.api('Getting cost records with filters:', filters);
+    return await apiClient.get(endpoint);
   },
 
   /**
    * Get a specific cost record by ID
    */
   getCostRecordById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/costs/${id}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Getting cost record by ID:', id);
+    return await apiClient.get(`/asset-management/costs/${id}`);
   },
 
   /**
    * Update a cost record
    */
   updateCostRecord: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/costs/${id}`, {
-      method: 'PUT',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Updating cost record:', id);
+    return await apiClient.put(`/asset-management/costs/${id}`, data);
   },
 
   /**
    * Delete a cost record
    */
   deleteCostRecord: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/costs/${id}`, {
-      method: 'DELETE',
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Deleting cost record:', id);
+    return await apiClient.delete(`/asset-management/costs/${id}`);
   },
 
   // ==================== OPERATIONAL COSTS ====================
@@ -148,12 +111,8 @@ export const assetManagementApi = {
    * Create a new operational cost record
    */
   createOperationalCost: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/operational-costs`, {
-      method: 'POST',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Creating new operational cost record');
+    return await apiClient.post('/asset-management/operational-costs', data);
   },
 
   /**
@@ -168,44 +127,33 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/operational-costs?${params.toString()}` : `${API_BASE_URL}/operational-costs`;
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/operational-costs?${params.toString()}` : '/asset-management/operational-costs';
+    log.api('Getting operational costs with filters:', filters);
+    return await apiClient.get(endpoint);
   },
 
   /**
    * Get a specific operational cost record by ID
    */
   getOperationalCostById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/operational-costs/${id}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Getting operational cost by ID:', id);
+    return await apiClient.get(`/asset-management/operational-costs/${id}`);
   },
 
   /**
    * Update an operational cost record
    */
   updateOperationalCost: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/operational-costs/${id}`, {
-      method: 'PUT',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Updating operational cost:', id);
+    return await apiClient.put(`/asset-management/operational-costs/${id}`, data);
   },
 
   /**
    * Delete an operational cost record
    */
   deleteOperationalCost: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/operational-costs/${id}`, {
-      method: 'DELETE',
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Deleting operational cost:', id);
+    return await apiClient.delete(`/asset-management/operational-costs/${id}`);
   },
 
   // ==================== RISK MAPPING ====================
@@ -214,12 +162,8 @@ export const assetManagementApi = {
    * Create a new risk mapping record
    */
   createRiskMapping: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/risk-mapping`, {
-      method: 'POST',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Creating new risk mapping record');
+    return await apiClient.post('/asset-management/risk-mapping', data);
   },
 
   /**
@@ -234,44 +178,33 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/risk-mapping?${params.toString()}` : `${API_BASE_URL}/risk-mapping`;
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/risk-mapping?${params.toString()}` : '/asset-management/risk-mapping';
+    log.api('Getting risk mappings with filters:', filters);
+    return await apiClient.get(endpoint);
   },
 
   /**
    * Get a specific risk mapping record by ID
    */
   getRiskMappingById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/risk-mapping/${id}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Getting risk mapping by ID:', id);
+    return await apiClient.get(`/asset-management/risk-mapping/${id}`);
   },
 
   /**
    * Update a risk mapping record
    */
   updateRiskMapping: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/risk-mapping/${id}`, {
-      method: 'PUT',
-      headers: createHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    log.api('Updating risk mapping:', id);
+    return await apiClient.put(`/asset-management/risk-mapping/${id}`, data);
   },
 
   /**
    * Delete a risk mapping record
    */
   deleteRiskMapping: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/risk-mapping/${id}`, {
-      method: 'DELETE',
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    log.api('Deleting risk mapping:', id);
+    return await apiClient.delete(`/asset-management/risk-mapping/${id}`);
   },
 
   // ==================== ANALYTICS ====================
@@ -288,11 +221,9 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/analytics/cost-analysis?${params.toString()}` : `${API_BASE_URL}/analytics/cost-analysis`;
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/analytics/cost-analysis?${params.toString()}` : '/asset-management/analytics/cost-analysis';
+    log.api('Getting cost analysis with filters:', filters);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -307,11 +238,9 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/analytics/lifecycle-analysis?${params.toString()}` : `${API_BASE_URL}/analytics/lifecycle-analysis`;
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/analytics/lifecycle-analysis?${params.toString()}` : '/asset-management/analytics/lifecycle-analysis';
+    log.api('Getting lifecycle analysis with filters:', filters);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -326,11 +255,9 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/analytics/roi-calculations?${params.toString()}` : `${API_BASE_URL}/analytics/roi-calculations`;
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/analytics/roi-calculations?${params.toString()}` : '/asset-management/analytics/roi-calculations';
+    log.api('Getting ROI calculations with filters:', filters);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -345,12 +272,8 @@ export const assetManagementApi = {
       }
     });
 
-    const url = params.toString() ? `${API_BASE_URL}/analytics/cost-optimization?${params.toString()}` : `${API_BASE_URL}/analytics/cost-optimization`;
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = params.toString() ? `/asset-management/analytics/cost-optimization?${params.toString()}` : '/asset-management/analytics/cost-optimization';
+    log.api('Getting cost optimization with filters:', filters);
+    return await apiClient.get(endpoint);
   }
 };
-
-export default assetManagementApi;

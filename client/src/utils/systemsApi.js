@@ -30,27 +30,7 @@ const makeApiRequest = async (endpoint, options = {}) => {
   }
 };
 
-// Legacy support - keeping for backward compatibility
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
 
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Helper function to handle API responses
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Network error' }));
-    throw new Error(error.message || `HTTP error! status: ${response.status}`);
-  }
-  return response.json();
-};
 
 // Helper function to build query string
 const buildQueryString = (params) => {
