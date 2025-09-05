@@ -38,20 +38,21 @@ const Login = () => {
         password: formData.password,
       });
 
-      if (response.ok && data.success) {
+      if (data.success) {
         // Use the auth context to handle login
         login(data.data.user, {
           accessToken: data.data.accessToken,
           refreshToken: data.data.refreshToken
         });
-        
+
+        log.info('✅ Login successful, redirecting...');
         // Navigation will be handled by the useEffect above
       } else {
         setError(data.message || "Login failed");
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError("Network error. Please try again.");
+      log.error('Login error:', error.message);
+      setError("Network error. Please check if the API server is running.");
     } finally {
       setLoading(false);
     }
