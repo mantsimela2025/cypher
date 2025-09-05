@@ -20,6 +20,8 @@ import {
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const AdminRoles = () => {
   const [loading, setLoading] = useState(true);
@@ -70,31 +72,25 @@ const AdminRoles = () => {
 
       // Fetch user counts for each role
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('http://localhost:3001/api/v1/users?limit=1000', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        log.api('Fetching user counts for role management');
+        const userData = await apiClient.get('/users?limit=1000');
 
-        if (response.ok) {
-          const userData = await response.json();
-          if (userData.success && userData.data) {
-            // Count users by role
-            const roleCounts = userData.data.reduce((acc, user) => {
-              acc[user.role] = (acc[user.role] || 0) + 1;
-              return acc;
-            }, {});
+        if (userData.success && userData.data) {
+          // Count users by role
+          const roleCounts = userData.data.reduce((acc, user) => {
+            acc[user.role] = (acc[user.role] || 0) + 1;
+            return acc;
+          }, {});
 
-            // Update role counts
-            staticRoles.forEach(role => {
-              role.userCount = roleCounts[role.name] || 0;
-            });
-          }
+          // Update role counts
+          staticRoles.forEach(role => {
+            role.userCount = roleCounts[role.name] || 0;
+          });
+
+          log.info('User role counts loaded successfully');
         }
       } catch (userError) {
-        console.warn('Could not fetch user counts:', userError);
+        log.warn('Could not fetch user counts:', userError.message);
       }
 
       setRoles(staticRoles);

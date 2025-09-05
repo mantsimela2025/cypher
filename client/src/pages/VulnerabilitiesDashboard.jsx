@@ -17,6 +17,8 @@ import {
 } from "@/components/Component";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Filler, Legend } from "chart.js";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 Chart.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Filler, Legend);
 
@@ -41,37 +43,29 @@ const VulnerabilitiesDashboard = () => {
   useEffect(() => {
     const fetchVulnData = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/v1/system-metrics/by-category', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        log.api('Fetching vulnerabilities dashboard metrics');
+        const data = await apiClient.get('/system-metrics/by-category');
+        const vulnMetrics = data.data.vulnerabilities || [];
 
-        if (response.ok) {
-          const data = await response.json();
-          const vulnMetrics = data.data.vulnerabilities || [];
-          
-          // Process metrics data
-          const processedData = {
-            totalVulnerabilities: vulnMetrics.find(m => m.name === 'total_vulnerabilities_new')?.value || 0,
-            criticalVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_critical_new')?.value || 0,
-            highVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_high_new')?.value || 0,
-            mediumVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_medium_new')?.value || 0,
-            lowVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_low_new')?.value || 0,
-            openVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_open_new')?.value || 0,
-            fixedVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_fixed_new')?.value || 0,
-            criticalOpen: vulnMetrics.find(m => m.name === 'critical_open_vulnerabilities_new')?.value || 0,
-            highOpen: vulnMetrics.find(m => m.name === 'high_open_vulnerabilities_new')?.value || 0,
-            avgCvssScore: vulnMetrics.find(m => m.name === 'avg_cvss_score')?.value || 0,
-            avgCvssCritical: vulnMetrics.find(m => m.name === 'avg_cvss_critical')?.value || 0
-          };
-          
-          setVulnData(processedData);
-        }
+        // Process metrics data
+        const processedData = {
+          totalVulnerabilities: vulnMetrics.find(m => m.name === 'total_vulnerabilities_new')?.value || 0,
+          criticalVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_critical_new')?.value || 0,
+          highVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_high_new')?.value || 0,
+          mediumVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_medium_new')?.value || 0,
+          lowVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_low_new')?.value || 0,
+          openVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_open_new')?.value || 0,
+          fixedVulns: vulnMetrics.find(m => m.name === 'vulnerabilities_fixed_new')?.value || 0,
+          criticalOpen: vulnMetrics.find(m => m.name === 'critical_open_vulnerabilities_new')?.value || 0,
+          highOpen: vulnMetrics.find(m => m.name === 'high_open_vulnerabilities_new')?.value || 0,
+          avgCvssScore: vulnMetrics.find(m => m.name === 'avg_cvss_score')?.value || 0,
+          avgCvssCritical: vulnMetrics.find(m => m.name === 'avg_cvss_critical')?.value || 0
+        };
+
+        setVulnData(processedData);
+        log.info('Vulnerabilities dashboard data loaded successfully');
       } catch (error) {
-        console.error('Error fetching vulnerability data:', error);
+        log.error('Error fetching vulnerability data:', error.message);
       } finally {
         setLoading(false);
       }

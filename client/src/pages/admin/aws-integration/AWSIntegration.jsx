@@ -1,30 +1,36 @@
 import React, { useState } from "react";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 // API utility for AWS integration
 async function generateAwsRecommendation(requirements) {
-  const res = await fetch('/api/aws/recommendation', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requirements),
-  });
-  if (!res.ok) throw new Error('Failed to generate recommendation');
-  return res.json();
+  try {
+    log.api('Generating AWS recommendation');
+    return await apiClient.post('/aws/recommendation', requirements);
+  } catch (error) {
+    log.error('Failed to generate AWS recommendation:', error.message);
+    throw new Error('Failed to generate recommendation');
+  }
 }
 
 async function deployAwsInfrastructure(recommendation) {
-  const res = await fetch('/api/aws/deploy', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recommendation }),
-  });
-  if (!res.ok) throw new Error('Failed to deploy infrastructure');
-  return res.json();
+  try {
+    log.api('Deploying AWS infrastructure');
+    return await apiClient.post('/aws/deploy', { recommendation });
+  } catch (error) {
+    log.error('Failed to deploy AWS infrastructure:', error.message);
+    throw new Error('Failed to deploy infrastructure');
+  }
 }
 
 async function getDeploymentProgress(deploymentId) {
-  const res = await fetch(`/api/aws/deployments/${deploymentId}/progress`);
-  if (!res.ok) throw new Error('Failed to get deployment progress');
-  return res.json();
+  try {
+    log.api('Getting deployment progress for:', deploymentId);
+    return await apiClient.get(`/aws/deployments/${deploymentId}/progress`);
+  } catch (error) {
+    log.error('Failed to get deployment progress:', error.message);
+    throw new Error('Failed to get deployment progress');
+  }
 }
 
 // Dashboard Tab Component

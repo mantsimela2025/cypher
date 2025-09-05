@@ -17,6 +17,8 @@ import {
 } from "@/components/Component";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Filler, Legend } from "chart.js";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 Chart.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Filler, Legend);
 
@@ -39,35 +41,27 @@ const AssetsDashboard = () => {
   useEffect(() => {
     const fetchAssetsData = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/v1/system-metrics/by-category', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        log.api('Fetching assets dashboard metrics');
+        const data = await apiClient.get('/system-metrics/by-category');
+        const assetsMetrics = data.data.assets || [];
 
-        if (response.ok) {
-          const data = await response.json();
-          const assetsMetrics = data.data.assets || [];
-          
-          // Process metrics data
-          const processedData = {
-            totalAssets: assetsMetrics.find(m => m.name === 'total_assets')?.value || 0,
-            assetsWithAgent: assetsMetrics.find(m => m.name === 'assets_with_agent')?.value || 0,
-            assetsWithoutAgent: assetsMetrics.find(m => m.name === 'assets_without_agent')?.value || 0,
-            assetsWithResults: assetsMetrics.find(m => m.name === 'assets_with_plugin_results')?.value || 0,
-            assetCoverage: assetsMetrics.find(m => m.name === 'asset_coverage_percentage')?.value || 0,
-            agentDeployment: assetsMetrics.find(m => m.name === 'agent_deployment_percentage')?.value || 0,
-            assetsSeenLast7Days: assetsMetrics.find(m => m.name === 'assets_seen_last_7_days')?.value || 0,
-            assetsSeenLast30Days: assetsMetrics.find(m => m.name === 'assets_seen_last_30_days')?.value || 0,
-            staleAssets: assetsMetrics.find(m => m.name === 'assets_stale')?.value || 0
-          };
-          
-          setAssetsData(processedData);
-        }
+        // Process metrics data
+        const processedData = {
+          totalAssets: assetsMetrics.find(m => m.name === 'total_assets')?.value || 0,
+          assetsWithAgent: assetsMetrics.find(m => m.name === 'assets_with_agent')?.value || 0,
+          assetsWithoutAgent: assetsMetrics.find(m => m.name === 'assets_without_agent')?.value || 0,
+          assetsWithResults: assetsMetrics.find(m => m.name === 'assets_with_plugin_results')?.value || 0,
+          assetCoverage: assetsMetrics.find(m => m.name === 'asset_coverage_percentage')?.value || 0,
+          agentDeployment: assetsMetrics.find(m => m.name === 'agent_deployment_percentage')?.value || 0,
+          assetsSeenLast7Days: assetsMetrics.find(m => m.name === 'assets_seen_last_7_days')?.value || 0,
+          assetsSeenLast30Days: assetsMetrics.find(m => m.name === 'assets_seen_last_30_days')?.value || 0,
+          staleAssets: assetsMetrics.find(m => m.name === 'assets_stale')?.value || 0
+        };
+
+        setAssetsData(processedData);
+        log.info('Assets dashboard data loaded successfully');
       } catch (error) {
-        console.error('Error fetching assets data:', error);
+        log.error('Error fetching assets data:', error.message);
       } finally {
         setLoading(false);
       }

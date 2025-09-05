@@ -17,6 +17,8 @@ import {
 } from "@/components/Component";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Filler, Legend } from "chart.js";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 Chart.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Filler, Legend);
 
@@ -37,31 +39,23 @@ const SystemsDashboard = () => {
   useEffect(() => {
     const fetchSystemsData = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/v1/system-metrics/by-category', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        log.api('Fetching systems dashboard metrics');
+        const data = await apiClient.get('/system-metrics/by-category');
+        const systemsMetrics = data.data.systems || [];
 
-        if (response.ok) {
-          const data = await response.json();
-          const systemsMetrics = data.data.systems || [];
-          
-          // Process metrics data
-          const processedData = {
-            totalSystems: systemsMetrics.find(m => m.name === 'total_systems')?.value || 0,
-            activeSystems: systemsMetrics.find(m => m.name === 'systems_by_status_active')?.value || 0,
-            inactiveSystems: systemsMetrics.find(m => m.name === 'systems_by_status_inactive')?.value || 0,
-            systemsWithAssets: systemsMetrics.find(m => m.name === 'systems_with_assets')?.value || 0,
-            systemCoverage: systemsMetrics.find(m => m.name === 'system_asset_coverage_percentage')?.value || 0
-          };
-          
-          setSystemsData(processedData);
-        }
+        // Process metrics data
+        const processedData = {
+          totalSystems: systemsMetrics.find(m => m.name === 'total_systems')?.value || 0,
+          activeSystems: systemsMetrics.find(m => m.name === 'systems_by_status_active')?.value || 0,
+          inactiveSystems: systemsMetrics.find(m => m.name === 'systems_by_status_inactive')?.value || 0,
+          systemsWithAssets: systemsMetrics.find(m => m.name === 'systems_with_assets')?.value || 0,
+          systemCoverage: systemsMetrics.find(m => m.name === 'system_asset_coverage_percentage')?.value || 0
+        };
+
+        setSystemsData(processedData);
+        log.info('Systems dashboard data loaded successfully');
       } catch (error) {
-        console.error('Error fetching systems data:', error);
+        log.error('Error fetching systems data:', error.message);
       } finally {
         setLoading(false);
       }
