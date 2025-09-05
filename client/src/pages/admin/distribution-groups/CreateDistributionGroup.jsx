@@ -14,6 +14,8 @@ import {
   Row,
   Col,
 } from "@/components/Component";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const CreateDistributionGroup = () => {
   const navigate = useNavigate();
@@ -71,26 +73,23 @@ const CreateDistributionGroup = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/admin/distribution-groups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          description: formData.description.trim() || undefined
-        })
-      });
-      
-      const data = await response.json();
-      
+      const groupData = {
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined
+      };
+
+      log.api('Creating distribution group:', groupData.name);
+      const data = await apiClient.post('/admin/distribution-groups', groupData);
+
       if (data.success) {
         // Navigate to the members page for the newly created group
         navigate(`/admin/distribution-groups/${data.data.id}/members`);
+        log.info('Distribution group created successfully:', groupData.name);
       } else {
         throw new Error(data.error || 'Failed to create group');
       }
     } catch (err) {
+      log.error('Error creating distribution group:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);

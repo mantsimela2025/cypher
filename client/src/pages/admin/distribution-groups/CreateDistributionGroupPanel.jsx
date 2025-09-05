@@ -14,6 +14,8 @@ import {
 } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Icon } from "@/components/Component";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const CreateDistributionGroupPanel = ({ isOpen, onClose, onGroupCreated }) => {
   const [loading, setLoading] = useState(false);
@@ -43,38 +45,27 @@ const CreateDistributionGroupPanel = ({ isOpen, onClose, onGroupCreated }) => {
         description: data.description.trim() || null,
       };
 
-      const response = await fetch('http://localhost:3001/api/v1/admin/distribution-groups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result?.message || `HTTP error! status: ${response.status}`);
-      }
+      log.api('Creating distribution group:', payload.name);
+      const result = await apiClient.post('/admin/distribution-groups', payload);
 
       if (result.success) {
         // Call the callback to refresh the main list
         onGroupCreated && onGroupCreated(result.data);
         reset();
         onClose();
-        
+
         // Optional: Navigate to member management for the new group
         if (result.data && result.data.id) {
           setTimeout(() => {
             navigate(`/admin/distribution-groups/${result.data.id}/members`);
           }, 100);
         }
+        log.info('Distribution group created successfully:', payload.name);
       } else {
         throw new Error(result.message || 'Failed to create distribution group');
       }
     } catch (err) {
-      console.error('Error creating distribution group:', err);
+      log.error('Error creating distribution group:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);

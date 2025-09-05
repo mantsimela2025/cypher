@@ -21,6 +21,8 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 import { useNavigate } from "react-router-dom";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const MyDashboards = () => {
   const navigate = useNavigate();
@@ -31,22 +33,12 @@ const MyDashboards = () => {
   useEffect(() => {
     const fetchDashboards = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/v1/dashboards/my-dashboards', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setDashboards(data.data || []);
-        } else {
-          console.error('Failed to fetch dashboards');
-        }
+        log.api('Fetching user dashboards');
+        const data = await apiClient.get('/dashboards/my-dashboards');
+        setDashboards(data.data || []);
+        log.info('User dashboards loaded:', data.data?.length || 0, 'dashboards');
       } catch (error) {
-        console.error('Error fetching dashboards:', error);
+        log.error('Error fetching dashboards:', error.message);
       } finally {
         setLoading(false);
       }
@@ -62,22 +54,12 @@ const MyDashboards = () => {
     }
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/dashboards/${dashboardId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        setDashboards(dashboards.filter(d => d.id !== dashboardId));
-      } else {
-        console.error('Failed to delete dashboard');
-      }
+      log.api('Deleting dashboard:', dashboardId);
+      await apiClient.delete(`/dashboards/${dashboardId}`);
+      setDashboards(dashboards.filter(d => d.id !== dashboardId));
+      log.info('Dashboard deleted successfully');
     } catch (error) {
-      console.error('Error deleting dashboard:', error);
+      log.error('Error deleting dashboard:', error.message);
     }
   };
 

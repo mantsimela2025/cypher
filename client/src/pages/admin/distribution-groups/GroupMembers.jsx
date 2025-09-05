@@ -33,6 +33,8 @@ import {
   ModalHeader,
   ModalFooter,
 } from "reactstrap";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const GroupMembers = () => {
   const { id } = useParams();
@@ -56,20 +58,17 @@ const GroupMembers = () => {
 
   const fetchGroupData = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/admin/distribution-groups/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      
+      log.api('Fetching distribution group data:', id);
+      const data = await apiClient.get(`/admin/distribution-groups/${id}`);
+
       if (data.success) {
         setGroup(data.data);
+        log.info('Distribution group data loaded:', data.data.name);
       } else {
         throw new Error(data.error || 'Failed to fetch group');
       }
     } catch (err) {
+      log.error('Error fetching group data:', err.message);
       setError(err.message);
     }
   };
@@ -77,20 +76,17 @@ const GroupMembers = () => {
   const fetchMembers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3001/api/v1/admin/distribution-groups/${id}/members`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      
+      log.api('Fetching group members:', id);
+      const data = await apiClient.get(`/admin/distribution-groups/${id}/members`);
+
       if (data.success) {
         setMembers(data.data);
+        log.info('Group members loaded:', data.data.length, 'members');
       } else {
         throw new Error(data.error || 'Failed to fetch members');
       }
     } catch (err) {
+      log.error('Error fetching members:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -100,42 +96,40 @@ const GroupMembers = () => {
   const fetchAvailableUsers = async (search = '') => {
     try {
       const params = search ? `?search=${encodeURIComponent(search)}` : '';
-      const response = await fetch(`/api/admin/distribution-groups/${id}/available-users${params}`);
-      const data = await response.json();
-      
+      log.api('Fetching available users for group:', id, search ? `with search: ${search}` : '');
+      const data = await apiClient.get(`/admin/distribution-groups/${id}/available-users${params}`);
+
       if (data.success) {
         setAvailableUsers(data.data);
+        log.info('Available users loaded:', data.data.length, 'users');
       }
     } catch (err) {
-      console.error('Failed to fetch available users:', err);
+      log.error('Failed to fetch available users:', err.message);
     }
   };
 
   const handleAddUser = async () => {
     if (!selectedUserId) return;
-    
+
     try {
       setAddingUser(true);
-      const response = await fetch(`/api/admin/distribution-groups/${id}/members`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: parseInt(selectedUserId) })
-      });
-      
-      const data = await response.json();
-      
+      const userData = { userId: parseInt(selectedUserId) };
+
+      log.api('Adding user to distribution group:', id, selectedUserId);
+      const data = await apiClient.post(`/admin/distribution-groups/${id}/members`, userData);
+
       if (data.success) {
         await fetchMembers(); // Refresh members list
         setShowAddModal(false);
         setSelectedUserId('');
         setAvailableUsers([]);
         setUserSearchTerm('');
+        log.info('User added to group successfully');
       } else {
         throw new Error(data.error || 'Failed to add user');
       }
     } catch (err) {
+      log.error('Error adding user to group:', err.message);
       setError(err.message);
     } finally {
       setAddingUser(false);
@@ -148,18 +142,17 @@ const GroupMembers = () => {
     }
     
     try {
-      const response = await fetch(`/api/admin/distribution-groups/${id}/members/${userId}`, {
-        method: 'DELETE'
-      });
-      
-      const data = await response.json();
-      
+      log.api('Removing user from distribution group:', id, userId);
+      const data = await apiClient.delete(`/admin/distribution-groups/${id}/members/${userId}`);
+
       if (data.success) {
         setMembers(members.filter(member => member.userId !== userId));
+        log.info('User removed from group successfully');
       } else {
         throw new Error(data.error || 'Failed to remove user');
       }
     } catch (err) {
+      log.error('Error removing user from group:', err.message);
       setError(err.message);
     }
   };

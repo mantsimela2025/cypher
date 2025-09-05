@@ -23,6 +23,8 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import MetricsLibrary from "../components/dashboard-creator/MetricsLibrary";
 import DashboardCanvas from "../components/dashboard-creator/DashboardCanvas";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const DashboardCreator = () => {
   const navigate = useNavigate();
@@ -56,30 +58,20 @@ const DashboardCreator = () => {
   const loadDashboardForEditing = async (dashboardId) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/dashboards/${dashboardId}/edit`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      log.api('Loading dashboard for editing:', dashboardId);
+      const data = await apiClient.get(`/dashboards/${dashboardId}/edit`);
 
-      if (response.ok) {
-        const data = await response.json();
-        setDashboardData({
-          id: data.data.id,
-          name: data.data.name,
-          description: data.data.description || '',
-          widgets: data.data.widgets || [],
-          layout: data.data.layout || {},
-          isPublished: data.data.isPublished || false
-        });
-      } else {
-        console.error('Failed to load dashboard');
-        navigate('/my-dashboards');
-      }
+      setDashboardData({
+        id: data.data.id,
+        name: data.data.name,
+        description: data.data.description || '',
+        widgets: data.data.widgets || [],
+        layout: data.data.layout || {},
+        isPublished: data.data.isPublished || false
+      });
+      log.info('Dashboard loaded for editing:', data.data.name);
     } catch (error) {
-      console.error('Error loading dashboard:', error);
+      log.error('Error loading dashboard:', error.message);
       navigate('/my-dashboards');
     } finally {
       setLoading(false);
@@ -125,58 +117,34 @@ const DashboardCreator = () => {
   const saveDashboard = async (publish = false) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('accessToken');
-      
       const payload = {
         ...dashboardData,
         layout: { ...dashboardData.layout, gridSettings },
         isPublished: publish
       };
 
-      let response;
+      let data;
       if (editId) {
         // Update existing dashboard
-        response = await fetch(`/api/v1/dashboards/${editId}/widgets`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ widgets: payload.widgets })
-        });
+        log.api('Updating dashboard widgets:', editId);
+        data = await apiClient.put(`/dashboards/${editId}/widgets`, { widgets: payload.widgets });
       } else {
         // Create new dashboard
-        response = await fetch('/api/v1/dashboards/creator', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
+        log.api('Creating new dashboard:', payload.name);
+        data = await apiClient.post('/dashboards/creator', payload);
       }
 
-      if (response.ok) {
-        const data = await response.json();
-        
-        // If publishing, make separate publish call
-        if (publish && !editId) {
-          await fetch(`/api/v1/dashboards/${data.data.id}/publish`, {
-            method: 'PATCH',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ isPublished: true })
-          });
-        }
-
-        navigate('/my-dashboards');
-      } else {
-        console.error('Failed to save dashboard');
+      // If publishing, make separate publish call
+      if (publish && !editId) {
+        log.api('Publishing dashboard:', data.data.id);
+        await apiClient.patch(`/dashboards/${data.data.id}/publish`, { isPublished: true });
       }
+
+      navigate('/my-dashboards');
+      log.info('Dashboard saved successfully:', editId ? 'updated' : 'created');
+
     } catch (error) {
-      console.error('Error saving dashboard:', error);
+      log.error('Error saving dashboard:', error.message);
     } finally {
       setLoading(false);
     }

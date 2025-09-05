@@ -14,6 +14,8 @@ import {
   Row,
   Col,
 } from "@/components/Component";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const EditDistributionGroup = () => {
   const { id } = useParams();
@@ -35,24 +37,21 @@ const EditDistributionGroup = () => {
   const fetchGroup = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3001/api/v1/admin/distribution-groups/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      
+      log.api('Fetching distribution group for editing:', id);
+      const data = await apiClient.get(`/admin/distribution-groups/${id}`);
+
       if (data.success) {
         setGroup(data.data);
         setFormData({
           name: data.data.name,
           description: data.data.description || ''
         });
+        log.info('Distribution group loaded for editing:', data.data.name);
       } else {
         throw new Error(data.error || 'Failed to fetch group');
       }
     } catch (err) {
+      log.error('Error fetching distribution group:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -105,26 +104,23 @@ const EditDistributionGroup = () => {
       setSubmitting(true);
       setError(null);
       
-      const response = await fetch(`/api/admin/distribution-groups/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          description: formData.description.trim() || undefined
-        })
-      });
-      
-      const data = await response.json();
-      
+      const updateData = {
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined
+      };
+
+      log.api('Updating distribution group:', id, updateData.name);
+      const data = await apiClient.put(`/admin/distribution-groups/${id}`, updateData);
+
       if (data.success) {
         // Navigate back to groups list
         navigate('/admin/distribution-groups');
+        log.info('Distribution group updated successfully:', updateData.name);
       } else {
         throw new Error(data.error || 'Failed to update group');
       }
     } catch (err) {
+      log.error('Error updating distribution group:', err.message);
       setError(err.message);
     } finally {
       setSubmitting(false);
