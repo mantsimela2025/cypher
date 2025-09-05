@@ -17,6 +17,8 @@ import {
   Spinner
 } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { apiClient } from '@/utils/apiClient';
+import { log } from '@/utils/config';
 
 const DocumentSettings = () => {
   const [loading, setLoading] = useState(true);
@@ -87,18 +89,14 @@ const DocumentSettings = () => {
   const loadSettings = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/v1/documents/settings');
-      // const data = await response.json();
-      // setSettings(data.settings);
-      
-      // Mock delay
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+      log.api('Loading document settings');
+      const data = await apiClient.get('/documents/settings');
+      setSettings(data.settings);
+      log.info('Document settings loaded successfully');
     } catch (error) {
-      console.error('Error loading settings:', error);
+      log.error('Error loading settings:', error.message);
       toast.error('Failed to load settings');
+    } finally {
       setLoading(false);
     }
   };
@@ -128,35 +126,28 @@ const DocumentSettings = () => {
     try {
       setTestingConnection(true);
       setConnectionStatus(prev => ({ ...prev, s3: 'testing' }));
-      
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/v1/documents/test-s3', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(settings.s3)
-      // });
-      
-      // Mock test
-      setTimeout(() => {
-        const success = settings.s3.bucketName && settings.s3.accessKeyId;
-        setConnectionStatus(prev => ({ 
-          ...prev, 
-          s3: success ? 'connected' : 'error' 
-        }));
-        
-        if (success) {
-          toast.success('S3 connection successful!');
-        } else {
-          toast.error('S3 connection failed. Please check your credentials.');
-        }
-        
-        setTestingConnection(false);
-      }, 2000);
-      
+
+      log.api('Testing S3 connection');
+      const result = await apiClient.post('/documents/test-s3', settings.s3);
+
+      setConnectionStatus(prev => ({
+        ...prev,
+        s3: result.success ? 'connected' : 'error'
+      }));
+
+      if (result.success) {
+        toast.success('S3 connection successful!');
+        log.info('S3 connection test passed');
+      } else {
+        toast.error('S3 connection failed. Please check your credentials.');
+        log.warn('S3 connection test failed:', result.message);
+      }
+
     } catch (error) {
-      console.error('Error testing S3 connection:', error);
+      log.error('Error testing S3 connection:', error.message);
       setConnectionStatus(prev => ({ ...prev, s3: 'error' }));
       toast.error('Failed to test S3 connection');
+    } finally {
       setTestingConnection(false);
     }
   };
@@ -164,23 +155,22 @@ const DocumentSettings = () => {
   const saveSettings = async () => {
     try {
       setSaving(true);
-      
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/v1/documents/settings', {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(settings)
-      // });
-      
-      // Mock save
-      setTimeout(() => {
+
+      log.api('Saving document settings');
+      const result = await apiClient.put('/documents/settings', settings);
+
+      if (result.success) {
         toast.success('Settings saved successfully!');
-        setSaving(false);
-      }, 1500);
-      
+        log.info('Document settings saved successfully');
+      } else {
+        toast.error('Failed to save settings');
+        log.warn('Failed to save settings:', result.message);
+      }
+
     } catch (error) {
-      console.error('Error saving settings:', error);
+      log.error('Error saving settings:', error.message);
       toast.error('Failed to save settings');
+    } finally {
       setSaving(false);
     }
   };

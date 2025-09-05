@@ -21,10 +21,15 @@ This document tracks the compliance status of all client-side files with the [AP
 - ✅ `client/src/utils/systemsApi.js` - **FIXED** - Complete cleanup and apiClient conversion
 - ✅ `client/src/utils/assetManagementApi.js` - **FIXED** - Complete overhaul with 24 methods
 
-### **Components (Partially Fixed)**
+### **Components (Fixed)**
 - ✅ `client/src/pages/patch-management/PatchLibrary.jsx` - **FIXED** - Now uses apiClient
 - ✅ `client/src/context/AuthContext.jsx` - **FIXED** - Now uses apiClient and config
 - ✅ `client/src/pages/auth/Login.jsx` - **FIXED** - Now uses apiClient and config
+- ✅ `client/src/pages/AssetsDashboard.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/SystemsDashboard.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/VulnerabilitiesDashboard.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/admin/roles/AdminRoles.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/admin/aws-integration/AWSIntegration.jsx` - **FIXED** - Complete apiClient conversion
 
 ### **Configuration Files**
 - ✅ `client/src/utils/config.js` - Centralized configuration utility
@@ -75,14 +80,16 @@ All 13 API utility files are now fully compliant with the API Client Consistency
 
 ### **Current Status:**
 - **Total Files Analyzed:** 45
-- **Fully Compliant:** 17 (38%)
+- **Fully Compliant:** 22 (49%)
 - **Partially Fixed:** 3 (7%)
-- **Needs Fixing:** 25 (55%)
+- **Needs Fixing:** 20 (44%)
 
 ### **By Category:**
 - **API Utilities:** 13/13 compliant (100%) 🎯✨
-- **Components:** 3/20 compliant (15%)
-- **Pages:** 1/12 compliant (8%)
+- **Dashboard Components:** 3/3 compliant (100%) 🎯✨
+- **Admin Components:** 2/2 compliant (100%) 🎯✨
+- **Other Components:** 3/15 compliant (20%)
+- **Remaining Pages:** 1/12 compliant (8%)
 
 ## 🔧 **Common Patterns to Fix**
 

@@ -39,6 +39,8 @@ import {
 import { Bar, Doughnut, Radar } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement, ArcElement, RadialLinearScale, PointElement, LineElement, Tooltip, Legend } from "chart.js";
 import classnames from "classnames";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 Chart.register(CategoryScale, LinearScale, BarElement, ArcElement, RadialLinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -56,46 +58,26 @@ const AIRecommendations = () => {
   useEffect(() => {
     const fetchAIData = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        
+        log.api('Fetching AI patch recommendations data');
+
         // Fetch prioritization recommendations
-        const prioritizationResponse = await fetch('/api/v1/patch-ai/prioritization-recommendations', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const prioritizationData = await apiClient.get('/patch-ai/prioritization-recommendations');
+        setRecommendations(prioritizationData.data || mockRecommendations);
 
         // Fetch risk trends
-        const riskResponse = await fetch('/api/v1/patch-ai/risk-trends', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const riskData = await apiClient.get('/patch-ai/risk-trends');
+        setRiskAssessment(riskData.data || mockRiskAssessment);
 
         // Fetch AI insights
-        const insightsResponse = await fetch('/api/v1/patch-ai/insights', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const insightsData = await apiClient.get('/patch-ai/insights');
+        setDeploymentStrategy(insightsData.deploymentStrategy || mockDeploymentStrategy);
+        setComplianceAnalysis(insightsData.complianceAnalysis || mockComplianceAnalysis);
 
-        if (prioritizationResponse.ok) {
-          const data = await prioritizationResponse.json();
-          setRecommendations(data.data || mockRecommendations);
-        } else {
-          setRecommendations(mockRecommendations);
-        }
-
-        // Set mock data for other sections
-        setRiskAssessment(mockRiskAssessment);
-        setDeploymentStrategy(mockDeploymentStrategy);
-        setComplianceAnalysis(mockComplianceAnalysis);
+        log.info('AI patch recommendations loaded successfully');
 
       } catch (error) {
-        console.error('Error fetching AI data:', error);
+        log.error('Error fetching AI data:', error.message);
+        log.warn('Falling back to mock data');
         setRecommendations(mockRecommendations);
         setRiskAssessment(mockRiskAssessment);
         setDeploymentStrategy(mockDeploymentStrategy);
@@ -267,25 +249,17 @@ const AIRecommendations = () => {
 
   const generateActionPlan = async (recommendation) => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch('/api/v1/patch-ai/action-plan', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          patchIds: [recommendation.patchId]
-        })
+      log.api('Generating action plan for patch:', recommendation.patchId);
+      const data = await apiClient.post('/patch-ai/action-plan', {
+        patchIds: [recommendation.patchId]
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        // Handle action plan data
-        console.log('Action plan generated:', data);
-      }
+      // Handle action plan data
+      log.info('Action plan generated successfully:', data);
+      // You can add UI updates here to show the action plan
+
     } catch (error) {
-      console.error('Error generating action plan:', error);
+      log.error('Error generating action plan:', error.message);
     }
   };
 

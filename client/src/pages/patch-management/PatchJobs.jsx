@@ -39,6 +39,8 @@ import {
 import DataTable from "react-data-table-component";
 import { Line } from "react-chartjs-2";
 import classnames from "classnames";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const PatchJobs = () => {
   const [activeTab, setActiveTab] = useState("active");
@@ -55,23 +57,13 @@ const PatchJobs = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/v1/patch-jobs?limit=100', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setJobs(data.data || []);
-        } else {
-          // Fallback mock data
-          setJobs(mockJobs);
-        }
+        log.api('Fetching patch jobs');
+        const data = await apiClient.get('/patch-jobs?limit=100');
+        setJobs(data.data || []);
+        log.info('Patch jobs loaded successfully:', data.data?.length || 0, 'jobs');
       } catch (error) {
-        console.error('Error fetching jobs:', error);
+        log.error('Error fetching jobs:', error.message);
+        log.warn('Falling back to mock data');
         setJobs(mockJobs);
       } finally {
         setLoading(false);
@@ -193,16 +185,10 @@ const PatchJobs = () => {
   // Job control functions
   const handleJobControl = async (jobId, action) => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/patch-jobs/${jobId}/${action}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      log.api(`Performing ${action} action on job:`, jobId);
+      const result = await apiClient.post(`/patch-jobs/${jobId}/${action}`);
 
-      if (response.ok) {
+      if (result.success) {
         // Update job status locally
         setJobs(prevJobs =>
           prevJobs.map(job =>
@@ -211,30 +197,22 @@ const PatchJobs = () => {
               : job
           )
         );
+        log.info(`Job ${action} action completed successfully`);
       }
     } catch (error) {
-      console.error(`Error ${action} job:`, error);
+      log.error(`Error ${action} job:`, error.message);
     }
   };
 
   const fetchJobLogs = async (jobId) => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`/api/v1/patch-jobs/${jobId}/logs`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setLogs(data.data || mockLogs);
-      } else {
-        setLogs(mockLogs);
-      }
+      log.api('Fetching logs for job:', jobId);
+      const data = await apiClient.get(`/patch-jobs/${jobId}/logs`);
+      setLogs(data.data || mockLogs);
+      log.info('Job logs loaded successfully');
     } catch (error) {
-      console.error('Error fetching logs:', error);
+      log.error('Error fetching logs:', error.message);
+      log.warn('Falling back to mock logs');
       setLogs(mockLogs);
     }
   };

@@ -16,6 +16,8 @@ import {
   UserAvatar,
   RSelect,
 } from "@/components/Component";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 import {
   Card,
   UncontrolledDropdown,
@@ -112,19 +114,16 @@ const DocumentLibrary = () => {
     const fetchDocuments = async () => {
       setLoading(true);
       try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/v1/artifacts');
-        // const data = await response.json();
-        // setDocuments(data.artifacts || []);
-
-        // Using mock data for now
-        setTimeout(() => {
-          setDocuments(mockDocuments);
-          setLoading(false);
-        }, 1000);
+        log.api('Fetching documents from document library');
+        const data = await apiClient.get('/artifacts');
+        setDocuments(data.artifacts || []);
+        log.info('Documents loaded successfully:', data.artifacts?.length || 0, 'documents');
       } catch (error) {
-        console.error('Error fetching documents:', error);
+        log.error('Error fetching documents:', error.message);
+        log.warn('Falling back to mock data');
+        // Fallback to mock data if API fails
         setDocuments(mockDocuments);
+      } finally {
         setLoading(false);
       }
     };
