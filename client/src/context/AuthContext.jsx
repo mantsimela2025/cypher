@@ -22,6 +22,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
+        // TEMPORARILY DISABLED: Health check causing session expired loops
+        // TODO: Re-enable once backend is properly configured
+        /*
         // First check if AUTH_BYPASS is enabled on the backend
         try {
           log.info('🔍 Checking AUTH_BYPASS status...');
@@ -52,6 +55,9 @@ export const AuthProvider = ({ children }) => {
           log.info('Proceeding with normal authentication flow');
           // If health endpoint fails, we'll continue with normal auth flow
         }
+        */
+
+        log.info('🔐 Skipping health check - proceeding with normal authentication flow');
 
         // Clear any existing bypass auth data to force fresh login
         // This ensures no old bypass tokens remain in localStorage
@@ -85,6 +91,9 @@ export const AuthProvider = ({ children }) => {
         const storedUserData = localStorage.getItem('user');
 
         if (token && storedUserData) {
+          // TEMPORARILY DISABLED: Token validation causing session expired loops
+          // TODO: Re-enable once backend is properly configured and accessible
+          /*
           // Validate token with server
           try {
             log.info('🔍 Validating existing token...');
@@ -104,6 +113,15 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(false);
             setUser(null);
           }
+          */
+
+          // For now, clear any existing tokens to force fresh login
+          log.info('🧹 Clearing existing auth data to force fresh login');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          setIsAuthenticated(false);
+          setUser(null);
         } else {
           setIsAuthenticated(false);
           setUser(null);
