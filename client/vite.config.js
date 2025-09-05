@@ -7,7 +7,14 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    strictPort: true // Don't try other ports if 3000 is in use
+    strictPort: true, // Don't try other ports if 3000 is in use
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   css: {
     devSourcemap: true
