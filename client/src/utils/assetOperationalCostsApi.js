@@ -1,27 +1,5 @@
-const API_BASE_URL = 'http://localhost:3001/api/v1';
-
-// Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Create headers with auth token
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Handle API response
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-  }
-  return await response.json();
-};
+import { apiClient } from './apiClient';
+import { log } from './config';
 
 export const assetOperationalCostsApi = {
   // Get operational costs for a specific asset
@@ -35,67 +13,56 @@ export const assetOperationalCostsApi = {
       if (filters.sortBy) params.append('sortBy', filters.sortBy);
       if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
 
-      const response = await fetch(`${API_BASE_URL}/asset-management/operational-costs?${params}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      const endpoint = params.toString() ? `/asset-management/operational-costs?${params}` : '/asset-management/operational-costs';
+      log.api('Getting operational costs with filters:', filters);
+      return await apiClient.get(endpoint);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch operational costs');
+      log.error('Failed to fetch operational costs:', error.message);
+      throw error;
     }
   },
 
   // Get operational cost by ID
   async getOperationalCostById(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/operational-costs/${id}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting operational cost by ID:', id);
+      return await apiClient.get(`/asset-management/operational-costs/${id}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch operational cost record');
+      log.error('Failed to fetch operational cost:', error.message);
+      throw error;
     }
   },
 
   // Create new operational cost record
   async createOperationalCost(costData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/operational-costs`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify(costData)
-      });
-      return await handleResponse(response);
+      log.api('Creating new operational cost record');
+      return await apiClient.post('/asset-management/operational-costs', costData);
     } catch (error) {
-      throw new Error(error.message || 'Failed to create operational cost record');
+      log.error('Failed to create operational cost:', error.message);
+      throw error;
     }
   },
 
   // Update operational cost record
   async updateOperationalCost(id, costData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/operational-costs/${id}`, {
-        method: 'PUT',
-        headers: createHeaders(),
-        body: JSON.stringify(costData)
-      });
-      return await handleResponse(response);
+      log.api('Updating operational cost record:', id);
+      return await apiClient.put(`/asset-management/operational-costs/${id}`, costData);
     } catch (error) {
-      throw new Error(error.message || 'Failed to update operational cost record');
+      log.error('Failed to update operational cost:', error.message);
+      throw error;
     }
   },
 
   // Delete operational cost record
   async deleteOperationalCost(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/operational-costs/${id}`, {
-        method: 'DELETE',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Deleting operational cost record:', id);
+      return await apiClient.delete(`/asset-management/operational-costs/${id}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to delete operational cost record');
+      log.error('Failed to delete operational cost:', error.message);
+      throw error;
     }
   },
 
@@ -105,13 +72,12 @@ export const assetOperationalCostsApi = {
       const params = new URLSearchParams();
       params.append('period', period);
 
-      const response = await fetch(`${API_BASE_URL}/asset-management/analytics/operational-costs/${assetUuid}?${params}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      const endpoint = `/asset-management/analytics/operational-costs/${assetUuid}?${params}`;
+      log.api('Getting cost analytics for asset:', assetUuid, 'period:', period);
+      return await apiClient.get(endpoint);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch cost analytics');
+      log.error('Failed to fetch cost analytics:', error.message);
+      throw error;
     }
   },
 

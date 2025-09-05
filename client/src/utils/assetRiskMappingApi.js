@@ -1,27 +1,5 @@
-const API_BASE_URL = 'http://localhost:3001/api/v1';
-
-// Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Create headers with auth token
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Handle API response
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-  }
-  return await response.json();
-};
+import { apiClient } from './apiClient';
+import { log } from './config';
 
 export const assetRiskMappingApi = {
   // Get risk mappings for a specific asset
@@ -37,94 +15,78 @@ export const assetRiskMappingApi = {
       if (filters.sortBy) params.append('sortBy', filters.sortBy);
       if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
 
-      const response = await fetch(`${API_BASE_URL}/asset-management/risk-mapping?${params}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      const endpoint = params.toString() ? `/asset-management/risk-mapping?${params}` : '/asset-management/risk-mapping';
+      log.api('Getting risk mappings for asset:', assetUuid, 'with filters:', filters);
+      return await apiClient.get(endpoint);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch risk mappings');
+      log.error('Failed to fetch risk mappings:', error.message);
+      throw error;
     }
   },
 
   // Get risk mapping by ID
   async getRiskMappingById(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/risk-mapping/${id}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting risk mapping by ID:', id);
+      return await apiClient.get(`/asset-management/risk-mapping/${id}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch risk mapping record');
+      log.error('Failed to fetch risk mapping record:', error.message);
+      throw error;
     }
   },
 
   // Create new risk mapping record
   async createRiskMapping(mappingData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/risk-mapping`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify(mappingData)
-      });
-      return await handleResponse(response);
+      log.api('Creating new risk mapping record');
+      return await apiClient.post('/asset-management/risk-mapping', mappingData);
     } catch (error) {
-      throw new Error(error.message || 'Failed to create risk mapping record');
+      log.error('Failed to create risk mapping record:', error.message);
+      throw error;
     }
   },
 
   // Update risk mapping record
   async updateRiskMapping(id, mappingData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/risk-mapping/${id}`, {
-        method: 'PUT',
-        headers: createHeaders(),
-        body: JSON.stringify(mappingData)
-      });
-      return await handleResponse(response);
+      log.api('Updating risk mapping record:', id);
+      return await apiClient.put(`/asset-management/risk-mapping/${id}`, mappingData);
     } catch (error) {
-      throw new Error(error.message || 'Failed to update risk mapping record');
+      log.error('Failed to update risk mapping record:', error.message);
+      throw error;
     }
   },
 
   // Delete risk mapping record
   async deleteRiskMapping(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/risk-mapping/${id}`, {
-        method: 'DELETE',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Deleting risk mapping record:', id);
+      return await apiClient.delete(`/asset-management/risk-mapping/${id}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to delete risk mapping record');
+      log.error('Failed to delete risk mapping record:', error.message);
+      throw error;
     }
   },
 
   // Verify risk mapping
   async verifyRiskMapping(id, verificationData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/risk-mapping/${id}/verify`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify(verificationData)
-      });
-      return await handleResponse(response);
+      log.api('Verifying risk mapping:', id);
+      return await apiClient.post(`/asset-management/risk-mapping/${id}/verify`, verificationData);
     } catch (error) {
-      throw new Error(error.message || 'Failed to verify risk mapping');
+      log.error('Failed to verify risk mapping:', error.message);
+      throw error;
     }
   },
 
   // Get risk mapping analytics
   async getRiskAnalytics(assetUuid) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-management/analytics/risk-mapping/${assetUuid}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting risk analytics for asset:', assetUuid);
+      return await apiClient.get(`/asset-management/analytics/risk-mapping/${assetUuid}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch risk analytics');
+      log.error('Failed to fetch risk analytics:', error.message);
+      throw error;
     }
   },
 

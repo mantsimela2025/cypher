@@ -1,27 +1,5 @@
-const API_BASE_URL = 'http://localhost:3001/api/v1';
-
-// Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Create headers with auth token
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Handle API response
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-  }
-  return response.json();
-};
+import { apiClient } from './apiClient';
+import { log } from './config';
 
 /**
  * Global Metrics API Client
@@ -35,14 +13,9 @@ export const globalMetricsApi = {
    * @returns {Promise<Object>} Vulnerability metrics
    */
   async getVulnerabilityMetrics(forceRefresh = false) {
-    const url = `${API_BASE_URL}/global-metrics/vulnerability${forceRefresh ? '?forceRefresh=true' : ''}`;
-    console.log('🌐 Getting vulnerability metrics from:', url);
-
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-
-    return handleResponse(response);
+    const endpoint = forceRefresh ? '/global-metrics/vulnerability?forceRefresh=true' : '/global-metrics/vulnerability';
+    log.api('Getting vulnerability metrics, forceRefresh:', forceRefresh);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -51,14 +24,9 @@ export const globalMetricsApi = {
    * @returns {Promise<Object>} System metrics
    */
   async getSystemMetrics(forceRefresh = false) {
-    const url = `${API_BASE_URL}/global-metrics/system${forceRefresh ? '?forceRefresh=true' : ''}`;
-    console.log('🌐 Getting system metrics from:', url);
-
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-
-    return handleResponse(response);
+    const endpoint = forceRefresh ? '/global-metrics/system?forceRefresh=true' : '/global-metrics/system';
+    log.api('Getting system metrics, forceRefresh:', forceRefresh);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -67,14 +35,9 @@ export const globalMetricsApi = {
    * @returns {Promise<Object>} Asset metrics
    */
   async getAssetMetrics(forceRefresh = false) {
-    const url = `${API_BASE_URL}/global-metrics/asset${forceRefresh ? '?forceRefresh=true' : ''}`;
-    console.log('🌐 Getting asset metrics from:', url);
-
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-
-    return handleResponse(response);
+    const endpoint = forceRefresh ? '/global-metrics/asset?forceRefresh=true' : '/global-metrics/asset';
+    log.api('Getting asset metrics, forceRefresh:', forceRefresh);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -84,14 +47,9 @@ export const globalMetricsApi = {
    * @returns {Promise<Object>} Dashboard metrics
    */
   async getDashboardMetrics(dashboardType, forceRefresh = false) {
-    const url = `${API_BASE_URL}/global-metrics/dashboard/${dashboardType}${forceRefresh ? '?forceRefresh=true' : ''}`;
-    console.log('🌐 Getting dashboard metrics from:', url);
-
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-
-    return handleResponse(response);
+    const endpoint = forceRefresh ? `/global-metrics/dashboard/${dashboardType}?forceRefresh=true` : `/global-metrics/dashboard/${dashboardType}`;
+    log.api('Getting dashboard metrics for type:', dashboardType, 'forceRefresh:', forceRefresh);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -101,14 +59,9 @@ export const globalMetricsApi = {
    * @returns {Promise<Object>} Metric data
    */
   async getMetricByName(metricName, forceRefresh = false) {
-    const url = `${API_BASE_URL}/global-metrics/metric/${metricName}${forceRefresh ? '?forceRefresh=true' : ''}`;
-    console.log('🌐 Getting metric from:', url);
-
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-
-    return handleResponse(response);
+    const endpoint = forceRefresh ? `/global-metrics/metric/${metricName}?forceRefresh=true` : `/global-metrics/metric/${metricName}`;
+    log.api('Getting metric by name:', metricName, 'forceRefresh:', forceRefresh);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -117,15 +70,8 @@ export const globalMetricsApi = {
    * @returns {Promise<Object>} Refresh results
    */
   async refreshMetricsByCategory(category) {
-    const url = `${API_BASE_URL}/global-metrics/category/${category}/refresh`;
-    console.log('🔄 Refreshing metrics for category:', category);
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: createHeaders(),
-    });
-
-    return handleResponse(response);
+    log.api('Refreshing metrics for category:', category);
+    return await apiClient.post(`/global-metrics/category/${category}/refresh`);
   },
 
   /**
@@ -137,7 +83,7 @@ export const globalMetricsApi = {
   async getMetricsByNames(metricNames, forceRefresh = false) {
     const promises = metricNames.map(name => 
       this.getMetricByName(name, forceRefresh).catch(error => {
-        console.warn(`Failed to get metric ${name}:`, error.message);
+        log.warn(`Failed to get metric ${name}:`, error.message);
         return null;
       })
     );

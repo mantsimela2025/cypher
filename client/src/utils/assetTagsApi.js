@@ -1,27 +1,5 @@
-const API_BASE_URL = 'http://localhost:3001/api/v1';
-
-// Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Create headers with auth token
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Handle API response
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-  }
-  return await response.json();
-};
+import { apiClient } from './apiClient';
+import { log } from './config';
 
 export const assetTagsApi = {
   // Get all tags for a specific asset
@@ -32,108 +10,89 @@ export const assetTagsApi = {
       if (filters.sortBy) params.append('sortBy', filters.sortBy);
       if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
 
-      const response = await fetch(`${API_BASE_URL}/asset-tags/${assetUuid}?${params}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      const endpoint = params.toString() ? `/asset-tags/${assetUuid}?${params}` : `/asset-tags/${assetUuid}`;
+      log.api('Getting asset tags for:', assetUuid, 'with filters:', filters);
+      return await apiClient.get(endpoint);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch asset tags');
+      log.error('Failed to fetch asset tags:', error.message);
+      throw error;
     }
   },
 
   // Get tags for multiple assets (for table display)
   async getMultipleAssetTags(assetUuids) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/multiple`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify({ assetUuids })
-      });
-      return await handleResponse(response);
+      log.api('Getting tags for multiple assets:', assetUuids.length, 'assets');
+      return await apiClient.post('/asset-tags/multiple', { assetUuids });
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch multiple asset tags');
+      log.error('Failed to fetch multiple asset tags:', error.message);
+      throw error;
     }
   },
 
   // Get all unique tag keys
   async getTagKeys() {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/keys`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting all tag keys');
+      return await apiClient.get('/asset-tags/keys');
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch tag keys');
+      log.error('Failed to fetch tag keys:', error.message);
+      throw error;
     }
   },
 
   // Get all values for a specific tag key
   async getTagValues(tagKey) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/keys/${tagKey}/values`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting tag values for key:', tagKey);
+      return await apiClient.get(`/asset-tags/keys/${tagKey}/values`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch tag values');
+      log.error('Failed to fetch tag values:', error.message);
+      throw error;
     }
   },
 
   // Add a new tag to an asset
   async addAssetTag(assetUuid, tagKey, tagValue) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/${assetUuid}`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify({ tagKey, tagValue })
-      });
-      return await handleResponse(response);
+      log.api('Adding tag to asset:', assetUuid, 'key:', tagKey, 'value:', tagValue);
+      return await apiClient.post(`/asset-tags/${assetUuid}`, { tagKey, tagValue });
     } catch (error) {
-      throw new Error(error.message || 'Failed to add asset tag');
+      log.error('Failed to add asset tag:', error.message);
+      throw error;
     }
   },
 
   // Remove a tag from an asset
   async removeAssetTag(tagId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/tag/${tagId}`, {
-        method: 'DELETE',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Removing asset tag:', tagId);
+      return await apiClient.delete(`/asset-tags/tag/${tagId}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to remove asset tag');
+      log.error('Failed to remove asset tag:', error.message);
+      throw error;
     }
   },
 
   // Update a tag value
   async updateAssetTag(tagId, newValue) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/tag/${tagId}`, {
-        method: 'PUT',
-        headers: createHeaders(),
-        body: JSON.stringify({ tagValue: newValue })
-      });
-      return await handleResponse(response);
+      log.api('Updating asset tag:', tagId, 'to value:', newValue);
+      return await apiClient.put(`/asset-tags/tag/${tagId}`, { tagValue: newValue });
     } catch (error) {
-      throw new Error(error.message || 'Failed to update asset tag');
+      log.error('Failed to update asset tag:', error.message);
+      throw error;
     }
   },
 
   // Bulk add tags to an asset
   async bulkAddTags(assetUuid, tags) {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/${assetUuid}/bulk`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify({ tags })
-      });
-      return await handleResponse(response);
+      log.api('Bulk adding tags to asset:', assetUuid, 'tags count:', tags.length);
+      return await apiClient.post(`/asset-tags/${assetUuid}/bulk`, { tags });
     } catch (error) {
-      throw new Error(error.message || 'Failed to bulk add tags');
+      log.error('Failed to bulk add tags:', error.message);
+      throw error;
     }
   },
 
@@ -144,27 +103,23 @@ export const assetTagsApi = {
       if (options.limit) params.append('limit', options.limit);
       if (options.offset) params.append('offset', options.offset);
 
-      const response = await fetch(`${API_BASE_URL}/asset-tags/search?${params}`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify({ tagFilters })
-      });
-      return await handleResponse(response);
+      const endpoint = params.toString() ? `/asset-tags/search?${params}` : '/asset-tags/search';
+      log.api('Searching assets by tags with filters:', tagFilters);
+      return await apiClient.post(endpoint, { tagFilters });
     } catch (error) {
-      throw new Error(error.message || 'Failed to search assets by tags');
+      log.error('Failed to search assets by tags:', error.message);
+      throw error;
     }
   },
 
   // Get tag statistics
   async getTagStatistics() {
     try {
-      const response = await fetch(`${API_BASE_URL}/asset-tags/statistics`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting tag statistics');
+      return await apiClient.get('/asset-tags/statistics');
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch tag statistics');
+      log.error('Failed to fetch tag statistics:', error.message);
+      throw error;
     }
   },
 

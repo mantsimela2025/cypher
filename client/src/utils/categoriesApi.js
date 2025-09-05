@@ -1,27 +1,5 @@
-const API_BASE_URL = 'http://localhost:3001/api/v1';
-
-// Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Create headers with auth token
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Handle API response
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-  }
-  return await response.json();
-};
+import { apiClient } from './apiClient';
+import { log } from './config';
 
 export const categoriesApi = {
   /**
@@ -36,13 +14,12 @@ export const categoriesApi = {
         }
       });
 
-      const response = await fetch(`${API_BASE_URL}/categories?${params}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      const endpoint = params.toString() ? `/categories?${params}` : '/categories';
+      log.api('Getting all categories with filters:', filters);
+      return await apiClient.get(endpoint);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch categories');
+      log.error('Failed to fetch categories:', error.message);
+      throw error;
     }
   },
 
@@ -51,13 +28,11 @@ export const categoriesApi = {
    */
   async getById(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting category by ID:', id);
+      return await apiClient.get(`/categories/${id}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch category');
+      log.error('Failed to fetch category:', error.message);
+      throw error;
     }
   },
 
@@ -66,14 +41,11 @@ export const categoriesApi = {
    */
   async create(categoryData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories`, {
-        method: 'POST',
-        headers: createHeaders(),
-        body: JSON.stringify(categoryData)
-      });
-      return await handleResponse(response);
+      log.api('Creating new category');
+      return await apiClient.post('/categories', categoryData);
     } catch (error) {
-      throw new Error(error.message || 'Failed to create category');
+      log.error('Failed to create category:', error.message);
+      throw error;
     }
   },
 
@@ -82,14 +54,11 @@ export const categoriesApi = {
    */
   async update(id, categoryData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-        method: 'PUT',
-        headers: createHeaders(),
-        body: JSON.stringify(categoryData)
-      });
-      return await handleResponse(response);
+      log.api('Updating category:', id);
+      return await apiClient.put(`/categories/${id}`, categoryData);
     } catch (error) {
-      throw new Error(error.message || 'Failed to update category');
+      log.error('Failed to update category:', error.message);
+      throw error;
     }
   },
 
@@ -98,13 +67,11 @@ export const categoriesApi = {
    */
   async delete(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-        method: 'DELETE',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Deleting category:', id);
+      return await apiClient.delete(`/categories/${id}`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to delete category');
+      log.error('Failed to delete category:', error.message);
+      throw error;
     }
   },
 
@@ -113,13 +80,11 @@ export const categoriesApi = {
    */
   async getHierarchy() {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/hierarchy`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting category hierarchy');
+      return await apiClient.get('/categories/hierarchy');
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch category hierarchy');
+      log.error('Failed to fetch category hierarchy:', error.message);
+      throw error;
     }
   },
 
@@ -128,13 +93,11 @@ export const categoriesApi = {
    */
   async getSubcategories(parentId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/${parentId}/subcategories`, {
-        method: 'GET',
-        headers: createHeaders(),
-      });
-      return await handleResponse(response);
+      log.api('Getting subcategories for parent:', parentId);
+      return await apiClient.get(`/categories/${parentId}/subcategories`);
     } catch (error) {
-      throw new Error(error.message || 'Failed to fetch subcategories');
+      log.error('Failed to fetch subcategories:', error.message);
+      throw error;
     }
   },
 
@@ -150,11 +113,11 @@ export const categoriesApi = {
         }
       });
 
-      const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/documents?${params}`, {
-        method: 'GET',
-        headers: createHeaders(),
+      return await apiClient.get(`/categories/${categoryId}/documents?${params}`, {
+        
+        
       });
-      return await handleResponse(response);
+      
     } catch (error) {
       throw new Error(error.message || 'Failed to fetch category documents');
     }
@@ -165,12 +128,12 @@ export const categoriesApi = {
    */
   async moveCategory(categoryId, newParentId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/move`, {
+      return await apiClient.get(`/categories/${categoryId}/move`, {
         method: 'PUT',
-        headers: createHeaders(),
+        
         body: JSON.stringify({ parentId: newParentId })
       });
-      return await handleResponse(response);
+      
     } catch (error) {
       throw new Error(error.message || 'Failed to move category');
     }
@@ -181,16 +144,16 @@ export const categoriesApi = {
    */
   async bulkOperation(operation, categoryIds, data = {}) {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/bulk`, {
+      return await apiClient.get(`/categories/bulk`, {
         method: 'POST',
-        headers: createHeaders(),
+        
         body: JSON.stringify({
           operation,
           categoryIds,
           ...data
         })
       });
-      return await handleResponse(response);
+      
     } catch (error) {
       throw new Error(error.message || `Failed to perform bulk ${operation}`);
     }
@@ -201,11 +164,11 @@ export const categoriesApi = {
    */
   async getStatistics() {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/statistics`, {
-        method: 'GET',
-        headers: createHeaders(),
+      return await apiClient.get(`/categories/statistics`, {
+        
+        
       });
-      return await handleResponse(response);
+      
     } catch (error) {
       throw new Error(error.message || 'Failed to fetch category statistics');
     }
@@ -225,11 +188,11 @@ export const categoriesApi = {
         }
       });
 
-      const response = await fetch(`${API_BASE_URL}/categories/search?${params}`, {
-        method: 'GET',
-        headers: createHeaders(),
+      return await apiClient.get(`/categories/search?${params}`, {
+        
+        
       });
-      return await handleResponse(response);
+      
     } catch (error) {
       throw new Error(error.message || 'Failed to search categories');
     }
