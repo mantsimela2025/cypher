@@ -10,11 +10,11 @@ export const ENV = {
   TEST: 'test'
 };
 
-export const currentEnv = process.env.NODE_ENV || ENV.DEVELOPMENT;
+export const currentEnv = import.meta.env.MODE || ENV.DEVELOPMENT;
 
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api/v1',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1',
   TIMEOUT: 30000, // 30 seconds
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000 // 1 second
@@ -22,11 +22,11 @@ export const API_CONFIG = {
 
 // Application Configuration
 export const APP_CONFIG = {
-  NAME: process.env.REACT_APP_NAME || 'CYPHER',
-  VERSION: process.env.REACT_APP_VERSION || '1.0.0',
-  ENABLE_DEV_TOOLS: process.env.REACT_APP_ENABLE_DEV_TOOLS === 'true',
-  ENABLE_CONSOLE_LOGS: process.env.REACT_APP_ENABLE_CONSOLE_LOGS === 'true',
-  ENABLE_MOCK_DATA: process.env.REACT_APP_ENABLE_MOCK_DATA === 'true'
+  NAME: import.meta.env.VITE_APP_NAME || 'CYPHER',
+  VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
+  ENABLE_DEV_TOOLS: import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true',
+  ENABLE_CONSOLE_LOGS: import.meta.env.VITE_ENABLE_CONSOLE_LOGS === 'true',
+  ENABLE_MOCK_DATA: import.meta.env.VITE_ENABLE_MOCK_DATA === 'true'
 };
 
 // Cache Configuration
@@ -56,7 +56,7 @@ const ENVIRONMENT_CONFIGS = {
   },
   [ENV.PRODUCTION]: {
     api: {
-      baseUrl: process.env.REACT_APP_API_BASE_URL || 'https://api.your-domain.com/api/v1',
+      baseUrl: import.meta.env.VITE_API_BASE_URL || 'https://api.your-domain.com/api/v1',
       timeout: 30000,
       enableLogs: false
     },
