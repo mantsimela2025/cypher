@@ -25,38 +25,32 @@ export const AuthProvider = ({ children }) => {
         // First check if AUTH_BYPASS is enabled on the backend
         try {
           log.info('🔍 Checking AUTH_BYPASS status...');
-          const bypassResponse = await apiClient.get('/health');
+          const healthData = await apiClient.get('/health');
 
-          console.log('📡 Health endpoint response status:', bypassResponse.status);
+          log.info('📊 Health data:', healthData);
 
-          if (bypassResponse.ok) {
-            const healthData = await bypassResponse.json();
-            console.log('📊 Health data:', healthData);
-
-            // Check if AUTH_BYPASS is enabled (indicated in health response)
-            // Only bypass if explicitly enabled in backend, not just because it's development
-            if (healthData.authBypass === true) {
-              console.log('🔓 AUTH_BYPASS mode detected - skipping authentication');
-              setIsAuthenticated(true);
-              setUser({
-                id: 1,
-                email: 'dev@local',
-                username: 'dev',
-                role: 'admin',
+          // Check if AUTH_BYPASS is enabled (indicated in health response)
+          // Only bypass if explicitly enabled in backend, not just because it's development
+          if (healthData && healthData.authBypass === true) {
+            log.info('🔓 AUTH_BYPASS mode detected - skipping authentication');
+            setIsAuthenticated(true);
+            setUser({
+              id: 1,
+              email: 'dev@local',
+              username: 'dev',
+              role: 'admin',
                 status: 'active',
                 isBypass: true
               });
               setIsLoading(false);
               return;
             } else {
-              console.log('🔐 AUTH_BYPASS is disabled - authentication required');
+              log.info('🔐 AUTH_BYPASS is disabled - authentication required');
             }
-          } else {
-            console.warn('⚠️ Health endpoint returned status:', bypassResponse.status);
-          }
         } catch (bypassError) {
-          console.warn('⚠️ Could not check AUTH_BYPASS status:', bypassError);
-          console.log('Proceeding with normal authentication flow');
+          log.warn('⚠️ Could not check AUTH_BYPASS status:', bypassError.message);
+          log.info('Proceeding with normal authentication flow');
+          // If health endpoint fails, we'll continue with normal auth flow
         }
 
         // Clear any existing bypass auth data to force fresh login
@@ -66,7 +60,7 @@ export const AuthProvider = ({ children }) => {
           try {
             const user = JSON.parse(userData);
             if (user.isBypass) {
-              console.log('🧹 Clearing bypass authentication data');
+              log.info('🧹 Clearing bypass authentication data');
               localStorage.removeItem('accessToken');
               localStorage.removeItem('refreshToken');
               localStorage.removeItem('user');
@@ -76,7 +70,7 @@ export const AuthProvider = ({ children }) => {
               return;
             }
           } catch (error) {
-            console.log('Error parsing user data, clearing auth state');
+            log.error('Error parsing user data, clearing auth state');
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
@@ -94,28 +88,16 @@ export const AuthProvider = ({ children }) => {
           // Validate token with server
           try {
             log.info('🔍 Validating existing token...');
-            const response = await apiClient.get('/auth/validate');
+            const validationData = await apiClient.get('/auth/validate');
 
-            console.log('📡 Token validation response status:', response.status);
-
-            if (response.ok) {
-              // Token is valid
-              console.log('✅ Token is valid, user authenticated');
-              setIsAuthenticated(true);
-              setUser(JSON.parse(storedUserData));
-            } else {
-              // Token is invalid, clear storage
-              console.log('❌ Token is invalid, clearing auth data');
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('refreshToken');
-              localStorage.removeItem('user');
-              setIsAuthenticated(false);
-              setUser(null);
-            }
+            // Token is valid
+            log.info('✅ Token is valid, user authenticated');
+            setIsAuthenticated(true);
+            setUser(JSON.parse(storedUserData));
           } catch (error) {
-            // Network error or server error, clear storage to be safe
-            console.error('❌ Token validation failed:', error);
-            console.log('🧹 Clearing auth data due to validation error');
+            // Token is invalid or network error, clear storage to be safe
+            log.error('❌ Token validation failed:', error.message);
+            log.info('🧹 Clearing auth data due to validation error');
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
@@ -127,7 +109,7 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
         }
       } catch (error) {
-        console.error('Error checking auth status:', error);
+        log.error('Error checking auth status:', error.message);
         setIsAuthenticated(false);
         setUser(null);
       } finally {
@@ -149,15 +131,15 @@ export const AuthProvider = ({ children }) => {
 
       // Initialize timeout management after successful login
       sessionUtils.init();
-      console.log('✅ Login successful, timeout management initialized');
+      log.info('✅ Login successful, timeout management initialized');
     } catch (error) {
-      console.error('Error during login:', error);
+      log.error('Error during login:', error.message);
     }
   };
 
   const logout = () => {
     try {
-      console.log('🔓 Logging out user...');
+      log.info('🔓 Logging out user...');
 
       // Destroy timeout management
       sessionUtils.destroy();
@@ -171,9 +153,9 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
 
-      console.log('✅ Logout successful - user state cleared');
+      log.info('✅ Logout successful - user state cleared');
     } catch (error) {
-      console.error('❌ Error during logout:', error);
+      log.error('❌ Error during logout:', error.message);
     }
   };
 
