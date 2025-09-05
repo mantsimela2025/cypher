@@ -13,6 +13,8 @@ import {
 } from "@/components/Component";
 import SimpleBar from "simplebar-react";
 import classNames from "classnames";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const EditUserPanel = ({ isOpen, onClose, userId, onUserUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -72,19 +74,9 @@ const EditUserPanel = ({ isOpen, onClose, userId, onUserUpdated }) => {
   const fetchUserData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:3001/api/v1/users/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      log.api('Fetching user data for editing:', userId);
+      const result = await apiClient.get(`/users/${userId}`);
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch user data');
-      }
-
-      const result = await response.json();
       if (result.success) {
         setUserData(result.data);
 
@@ -104,9 +96,10 @@ const EditUserPanel = ({ isOpen, onClose, userId, onUserUpdated }) => {
           authMethod: result.data.authMethod,
           certificateSubject: result.data.certificateSubject || '',
         });
+        log.info('User data loaded for editing:', result.data.email);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      log.error('Error fetching user data:', error.message);
       // You might want to show a toast notification here
     } finally {
       setLoading(false);
@@ -116,8 +109,6 @@ const EditUserPanel = ({ isOpen, onClose, userId, onUserUpdated }) => {
   const onFormSubmit = async (formData) => {
     setUpdating(true);
     try {
-      const token = localStorage.getItem('accessToken');
-      
       // Prepare update data (exclude password if empty)
       const updateData = {
         email: formData.email,
@@ -139,30 +130,20 @@ const EditUserPanel = ({ isOpen, onClose, userId, onUserUpdated }) => {
         updateData.password = formData.password;
       }
 
-      const response = await fetch(`http://localhost:3001/api/v1/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData),
-      });
+      log.api('Updating user:', userId, updateData.email);
+      const result = await apiClient.put(`/users/${userId}`, updateData);
 
-      if (!response.ok) {
-        throw new Error('Failed to update user');
-      }
-
-      const result = await response.json();
       if (result.success) {
         // Call the callback to refresh the user list
         if (onUserUpdated) {
           onUserUpdated();
         }
         onClose();
+        log.info('User updated successfully:', updateData.email);
         // You might want to show a success toast notification here
       }
     } catch (error) {
-      console.error('Error updating user:', error);
+      log.error('Error updating user:', error.message);
       // You might want to show an error toast notification here
     } finally {
       setUpdating(false);

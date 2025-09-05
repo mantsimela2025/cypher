@@ -16,6 +16,8 @@ import {
 } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Icon } from "@/components/Component";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const AddUserPanel = ({ isOpen, onClose, onUserAdded }) => {
   const [loading, setLoading] = useState(false);
@@ -72,7 +74,7 @@ const AddUserPanel = ({ isOpen, onClose, onUserAdded }) => {
 
       setRoles(staticRoles);
     } catch (error) {
-      console.error('Error loading roles:', error);
+      log.error('Error loading roles:', error.message);
       // Fallback roles
       setRoles([
         { id: 1, name: 'user', description: 'Regular user' },
@@ -105,31 +107,19 @@ const AddUserPanel = ({ isOpen, onClose, onUserAdded }) => {
         status: data.status,
       };
 
-      const response = await fetch("http://localhost:3001/api/v1/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      log.api('Creating new user:', payload.email);
+      const result = await apiClient.post('/users', payload);
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        // try to surface server error message
-        throw new Error(result?.message || `HTTP error! status: ${response.status}`);
-      }
-      
       if (result.success) {
         onUserAdded(result.data);
         reset();
         onClose();
+        log.info('User created successfully:', payload.email);
       } else {
         throw new Error(result.message || "Failed to create user");
       }
     } catch (error) {
-      console.error("Error creating user:", error);
+      log.error("Error creating user:", error.message);
       setError(error.message);
     } finally {
       setLoading(false);

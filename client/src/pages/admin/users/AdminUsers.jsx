@@ -35,6 +35,8 @@ import { Link } from "react-router-dom";
 import { bulkActionOptions } from "@/utils/Utils";
 import EditUserPanel from "./EditUserPanel";
 import AddUserPanel from "./AddUserPanel";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const AdminUsers = () => {
   const [data, setData] = useState([]);
@@ -97,22 +99,9 @@ const AdminUsers = () => {
       if (role) params.append('role', role);
       if (status) params.append('status', status);
 
-      const response = await fetch(
-        `http://localhost:3001/api/v1/users?${params.toString()}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      log.api('Fetching users with filters:', { search, role, status, currentPage, itemPerPage });
+      const result = await apiClient.get(`/users?${params.toString()}`);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      
       if (result.success) {
         // Transform API data to match the table format
         const transformedData = result.data.users.map(user => {
@@ -132,11 +121,12 @@ const AdminUsers = () => {
         });
         setData(transformedData);
         setTotalUsers(result.data.total);
+        log.info('Users loaded successfully:', transformedData.length, 'users');
       } else {
         throw new Error(result.message || 'Failed to fetch users');
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      log.error('Error fetching users:', error.message);
       setError(error.message);
     } finally {
       setLoading(false);

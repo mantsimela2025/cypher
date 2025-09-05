@@ -69,22 +69,21 @@ const Templates = () => {
     setLoading(true);
     try {
       // Try to load from API first
-      const response = await fetch(`/api/v1/scanner/templates?search=${searchTerm}&category=${filterCategory === 'all' ? '' : filterCategory}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const searchParam = searchTerm || '';
+      const categoryParam = filterCategory === 'all' ? '' : filterCategory;
+      const endpoint = `/scanner/templates?search=${searchParam}&category=${categoryParam}`;
 
-      if (response.ok) {
-        const data = await response.json();
-        setTemplates(data.data.templates);
-        setLoading(false);
-        return;
-      }
+      log.api('Loading scan templates with filters:', { searchTerm, filterCategory });
+      const data = await apiClient.get(endpoint);
+      setTemplates(data.data.templates);
+      log.info('Scan templates loaded successfully:', data.data.templates.length, 'templates');
+      setLoading(false);
+      return;
 
+    } catch (error) {
       // Fallback to predefined templates if API fails
-      console.warn('API failed, using fallback templates');
+      log.error('Error loading templates:', error.message);
+      log.warn('API failed, using fallback templates');
       const predefinedTemplates = [
         {
           id: 1,
@@ -318,7 +317,7 @@ const Templates = () => {
 
       setTemplates(predefinedTemplates);
     } catch (error) {
-      console.error('Error loading templates:', error);
+      log.error('Error loading templates:', error.message);
     } finally {
       setLoading(false);
     }
@@ -363,19 +362,12 @@ const Templates = () => {
         enabled: formData.enabled
       };
 
-      const response = await fetch('/api/v1/scanner/templates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(templateData)
-      });
+      log.api('Creating new scan template:', templateData.name);
+      const result = await apiClient.post('/scanner/templates', templateData);
 
-      if (response.ok) {
-        await response.json();
-        // Reload templates to get updated list
-        await loadTemplates();
+      // Reload templates to get updated list
+      await loadTemplates();
+      log.info('Scan template created successfully');
 
         setFormData({
           name: '',
@@ -396,13 +388,8 @@ const Templates = () => {
           enabled: true
         });
         toggleModal();
-      } else {
-        const errorData = await response.json();
-        console.error('Error creating template:', errorData);
-        alert('Failed to create template: ' + (errorData.message || 'Unknown error'));
-      }
     } catch (error) {
-      console.error('Error creating template:', error);
+      log.error('Error creating template:', error.message);
       alert('Failed to create template: ' + error.message);
     }
   };
@@ -424,19 +411,12 @@ const Templates = () => {
         enabled: formData.enabled
       };
 
-      const response = await fetch(`/api/v1/scanner/templates/${formData.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(templateData)
-      });
+      log.api('Updating scan template:', formData.id, formData.name);
+      const result = await apiClient.put(`/scanner/templates/${formData.id}`, templateData);
 
-      if (response.ok) {
-        await response.json();
-        // Reload templates to get updated list
-        await loadTemplates();
+      // Reload templates to get updated list
+      await loadTemplates();
+      log.info('Scan template updated successfully');
 
         setFormData({
           name: '',
@@ -457,13 +437,8 @@ const Templates = () => {
           enabled: true
         });
         toggleEditModal();
-      } else {
-        const errorData = await response.json();
-        console.error('Error updating template:', errorData);
-        alert('Failed to update template: ' + (errorData.message || 'Unknown error'));
-      }
     } catch (error) {
-      console.error('Error updating template:', error);
+      log.error('Error updating template:', error.message);
       alert('Failed to update template: ' + error.message);
     }
   };
@@ -486,22 +461,12 @@ const Templates = () => {
   const handleDelete = async (templateId) => {
     if (window.confirm('Are you sure you want to delete this template?')) {
       try {
-        const response = await fetch(`/api/v1/scanner/templates/${templateId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-
-        if (response.ok) {
-          await loadTemplates(); // Reload templates
-        } else {
-          const errorData = await response.json();
-          console.error('Error deleting template:', errorData);
-          alert('Failed to delete template: ' + (errorData.message || 'Unknown error'));
-        }
+        log.api('Deleting scan template:', templateId);
+        await apiClient.delete(`/scanner/templates/${templateId}`);
+        await loadTemplates(); // Reload templates
+        log.info('Scan template deleted successfully');
       } catch (error) {
-        console.error('Error deleting template:', error);
+        log.error('Error deleting template:', error.message);
         alert('Failed to delete template: ' + error.message);
       }
     }
