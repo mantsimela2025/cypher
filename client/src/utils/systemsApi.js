@@ -96,17 +96,17 @@ export const systemsApi = {
    * Get systems statistics
    */
   async getSystemsStats() {
-    const response = await fetch(`${API_BASE_URL}/stats`);
-    return handleResponse(response);
+    console.log('🌐 Getting systems statistics');
+    return await apiClient.get('/systems/stats');
   },
 
   /**
    * Get system by ID
    */
   async getSystemById(id, include = '') {
-    const url = include ? `${API_BASE_URL}/${id}?include=${include}` : `${API_BASE_URL}/${id}`;
-    const response = await fetch(url);
-    return handleResponse(response);
+    const endpoint = include ? `/systems/${id}?include=${include}` : `/systems/${id}`;
+    console.log('🌐 Getting system by ID:', id);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -114,12 +114,12 @@ export const systemsApi = {
    */
   async getSystemAssets(id, params = {}) {
     const queryString = buildQueryString(params);
-    const url = queryString 
-      ? `${API_BASE_URL}/${id}/assets?${queryString}` 
-      : `${API_BASE_URL}/${id}/assets`;
-    
-    const response = await fetch(url);
-    return handleResponse(response);
+    const endpoint = queryString
+      ? `/systems/${id}/assets?${queryString}`
+      : `/systems/${id}/assets`;
+
+    console.log('🌐 Getting assets for system:', id);
+    return await apiClient.get(endpoint);
   },
 
   /**
@@ -127,101 +127,75 @@ export const systemsApi = {
    */
   async getSystemVulnerabilities(id, params = {}) {
     const queryString = buildQueryString(params);
-    const url = queryString 
-      ? `${API_BASE_URL}/${id}/vulnerabilities?${queryString}` 
-      : `${API_BASE_URL}/${id}/vulnerabilities`;
-    
-    const response = await fetch(url);
-    return handleResponse(response);
+    const endpoint = queryString
+      ? `/systems/${id}/vulnerabilities?${queryString}`
+      : `/systems/${id}/vulnerabilities`;
+
+    console.log('🌐 Getting vulnerabilities for system:', id);
+    return await apiClient.get(endpoint);
   },
 
   /**
    * Get compliance status for a system
    */
   async getSystemCompliance(id) {
-    const response = await fetch(`${API_BASE_URL}/${id}/compliance`);
-    return handleResponse(response);
+    console.log('🌐 Getting compliance for system:', id);
+    return await apiClient.get(`/systems/${id}/compliance`);
   },
 
   /**
    * Get analytics for a system
    */
   async getSystemAnalytics(id, timeRange = '30d') {
-    const response = await fetch(`${API_BASE_URL}/${id}/analytics?timeRange=${timeRange}`);
-    return handleResponse(response);
+    console.log('🌐 Getting analytics for system:', id, 'timeRange:', timeRange);
+    return await apiClient.get(`/systems/${id}/analytics?timeRange=${timeRange}`);
   },
 
   /**
    * Create new system
    */
   async createSystem(systemData) {
-    const response = await fetch(API_BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(systemData),
-    });
-    return handleResponse(response);
+    console.log('🌐 Creating new system');
+    return await apiClient.post('/systems', systemData);
   },
 
   /**
    * Update system
    */
   async updateSystem(id, systemData) {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(systemData),
-    });
-    return handleResponse(response);
+    console.log('🌐 Updating system:', id);
+    return await apiClient.put(`/systems/${id}`, systemData);
   },
 
   /**
    * Delete system
    */
   async deleteSystem(id) {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: 'DELETE',
-    });
-    return handleResponse(response);
+    console.log('🌐 Deleting system:', id);
+    return await apiClient.delete(`/systems/${id}`);
   },
 
   /**
    * Bulk operations on systems
    */
   async bulkOperations(operation, systemIds, data = {}) {
-    const response = await fetch(`${API_BASE_URL}/bulk`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        operation,
-        systemIds,
-        data,
-      }),
+    console.log('🌐 Performing bulk operation:', operation, 'on', systemIds.length, 'systems');
+    return await apiClient.post('/systems/bulk', {
+      operation,
+      systemIds,
+      data,
     });
-    return handleResponse(response);
   },
 
   /**
    * Sync systems from external sources
    */
   async syncSystems(source = 'xacta', filters = {}) {
-    const response = await fetch(`${API_BASE_URL}/sync`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        source,
-        filters,
-      }),
+    console.log('🌐 Syncing systems from source:', source);
+    return await apiClient.post('/systems/sync', {
+      source,
+      filters,
     });
-    return handleResponse(response);
   },
 
   /**
@@ -229,16 +203,19 @@ export const systemsApi = {
    */
   async exportSystems(format = 'csv', filters = {}) {
     const queryString = buildQueryString({ format, ...filters });
-    const url = queryString ? `${API_BASE_URL}/export?${queryString}` : `${API_BASE_URL}/export`;
-    
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`Export failed: ${response.status}`);
+    const endpoint = queryString ? `/systems/export?${queryString}` : '/systems/export';
+
+    console.log('🌐 Exporting systems data in format:', format);
+
+    // For file downloads, we need to use a different approach with apiClient
+    // This will need to be handled specially for blob responses
+    try {
+      const response = await apiClient.get(endpoint, { responseType: 'blob' });
+      return response;
+    } catch (error) {
+      console.error('Export failed:', error);
+      throw new Error(`Export failed: ${error.message}`);
     }
-    
-    // For file downloads, return the blob
-    return response.blob();
   },
 
   /**

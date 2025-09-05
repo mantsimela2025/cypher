@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import timeoutManager, { sessionUtils } from '@/utils/timeoutManager';
+import { apiClient } from '@/utils/apiClient';
+import { API_CONFIG, log } from '@/utils/config';
 
 const AuthContext = createContext();
 
@@ -22,13 +24,8 @@ export const AuthProvider = ({ children }) => {
       try {
         // First check if AUTH_BYPASS is enabled on the backend
         try {
-          console.log('🔍 Checking AUTH_BYPASS status...');
-          const bypassResponse = await fetch('http://localhost:3001/health', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+          log.info('🔍 Checking AUTH_BYPASS status...');
+          const bypassResponse = await apiClient.get('/health');
 
           console.log('📡 Health endpoint response status:', bypassResponse.status);
 
@@ -96,14 +93,8 @@ export const AuthProvider = ({ children }) => {
         if (token && storedUserData) {
           // Validate token with server
           try {
-            console.log('🔍 Validating existing token...');
-            const response = await fetch('http://localhost:3001/api/v1/auth/validate', {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            });
+            log.info('🔍 Validating existing token...');
+            const response = await apiClient.get('/auth/validate');
 
             console.log('📡 Token validation response status:', response.status);
 

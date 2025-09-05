@@ -1,39 +1,5 @@
-const API_BASE_URL = 'http://localhost:3001/api/v1/asset-management';
-
-// Get auth token from localStorage
-const getAuthToken = () => {
-  const token = localStorage.getItem('accessToken');
-  console.log('🔑 Token exists:', !!token);
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const isExpired = payload.exp * 1000 < Date.now();
-      console.log('🕒 Token expired:', isExpired);
-      console.log('🕒 Token expires at:', new Date(payload.exp * 1000));
-    } catch (e) {
-      console.log('⚠️ Could not parse token');
-    }
-  }
-  return token;
-};
-
-// Create headers with auth token
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Handle API response
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-  }
-  return response.json();
-};
+import { apiClient } from './apiClient';
+import { log } from './config';
 
 export const assetManagementApi = {
   // ==================== ASSET LIFECYCLE ====================

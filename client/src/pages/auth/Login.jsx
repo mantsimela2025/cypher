@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Head from "@/layout/head/Head";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 import "./Login.css";
 import backgroundImage from "@/assets/images/grayTechyBkgrd.jpg";
 
@@ -30,18 +32,11 @@ const Login = () => {
     setError("");
     
     try {
-      const response = await fetch('http://localhost:3001/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+      log.info('🔐 Attempting login for user:', formData.email);
+      const data = await apiClient.post('/auth/login', {
+        email: formData.email,
+        password: formData.password,
       });
-
-      const data = await response.json();
 
       if (response.ok && data.success) {
         // Use the auth context to handle login
