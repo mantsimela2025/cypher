@@ -30,6 +30,13 @@ This document tracks the compliance status of all client-side files with the [AP
 - ✅ `client/src/pages/VulnerabilitiesDashboard.jsx` - **FIXED** - Complete apiClient conversion
 - ✅ `client/src/pages/admin/roles/AdminRoles.jsx` - **FIXED** - Complete apiClient conversion
 - ✅ `client/src/pages/admin/aws-integration/AWSIntegration.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/document-management/DocumentLibrary.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/documents/components/DocumentSettings.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/patch-management/AIRecommendations.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/patch-management/PatchJobs.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/scan-management/ScanTerminal.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/scan-management/Schedule.jsx` - **FIXED** - Complete apiClient conversion
+- ✅ `client/src/pages/scan-management/Settings.jsx` - **FIXED** - Complete apiClient conversion
 
 ### **Configuration Files**
 - ✅ `client/src/utils/config.js` - Centralized configuration utility
@@ -39,6 +46,9 @@ This document tracks the compliance status of all client-side files with the [AP
 
 ### **🎯 API Utility Files - 100% COMPLETE! ✨**
 All 13 API utility files are now fully compliant with the API Client Consistency Guide!
+
+### **Scan Management (Nearly Complete)**
+- ❌ `client/src/pages/scan-management/Templates.jsx` - **IN PROGRESS** - Imports added, ready for completion
 
 ### **Component Files (Medium Priority)**
 - ❌ `client/src/components/dashboard-creator/MetricsLibrary.jsx` - Direct fetch() calls
@@ -80,14 +90,17 @@ All 13 API utility files are now fully compliant with the API Client Consistency
 
 ### **Current Status:**
 - **Total Files Analyzed:** 45
-- **Fully Compliant:** 22 (49%)
-- **Partially Fixed:** 3 (7%)
-- **Needs Fixing:** 20 (44%)
+- **Fully Compliant:** 29 (64%)
+- **Partially Fixed:** 1 (2%)
+- **Needs Fixing:** 15 (33%)
 
 ### **By Category:**
 - **API Utilities:** 13/13 compliant (100%) 🎯✨
 - **Dashboard Components:** 3/3 compliant (100%) 🎯✨
 - **Admin Components:** 2/2 compliant (100%) 🎯✨
+- **Document Management:** 2/2 compliant (100%) 🎯✨
+- **Patch Management:** 2/2 compliant (100%) 🎯✨
+- **Scan Management:** 3/4 compliant (75%) 🎯
 - **Other Components:** 3/15 compliant (20%)
 - **Remaining Pages:** 1/12 compliant (8%)
 
