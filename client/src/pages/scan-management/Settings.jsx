@@ -32,6 +32,8 @@ import {
   UncontrolledTooltip
 } from "reactstrap";
 import classnames from "classnames";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -79,41 +81,30 @@ const Settings = () => {
   const loadSettings = async () => {
     setLoading(true);
     try {
-      // Try to load scanner-specific settings
-      const response = await fetch('/api/v1/settings?category=scanner', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+      log.api('Loading scanner settings');
+      const data = await apiClient.get('/settings?category=scanner');
+      const settingsMap = {};
+
+      data.data.settings.forEach(setting => {
+        // Convert string values to appropriate types
+        let value = setting.value;
+        if (setting.dataType === 'boolean') {
+          value = value === 'true' || value === true;
+        } else if (setting.dataType === 'number') {
+          value = parseInt(value);
         }
+        settingsMap[setting.key] = value;
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const settingsMap = {};
+      setSettingsData(prev => ({
+        ...prev,
+        ...settingsMap
+      }));
 
-        data.data.settings.forEach(setting => {
-          // Convert string values to appropriate types
-          let value = setting.value;
-          if (setting.dataType === 'boolean') {
-            value = value === 'true' || value === true;
-          } else if (setting.dataType === 'number') {
-            value = parseInt(value);
-          }
-          settingsMap[setting.key] = value;
-        });
-
-        setSettingsData(prev => ({
-          ...prev,
-          ...settingsMap
-        }));
-
-        console.log('Settings loaded successfully:', settingsMap);
-      } else {
-        console.warn('Failed to load settings from API, using defaults');
-        showAlert('warning', 'Using default settings - could not load from server');
-      }
+      log.info('Scanner settings loaded successfully:', Object.keys(settingsMap).length, 'settings');
     } catch (error) {
-      console.error('Error loading settings:', error);
+      log.error('Error loading settings:', error.message);
+      log.warn('Using default settings - server connection failed');
       showAlert('warning', 'Using default settings - server connection failed');
     } finally {
       setLoading(false);
@@ -147,29 +138,16 @@ const Settings = () => {
         }
       });
 
-      console.log('Saving settings:', settingsToUpdate);
+      log.api('Saving scanner settings:', Object.keys(settingsToUpdate).length, 'settings');
 
-      const response = await fetch('/api/v1/settings/bulk-update', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(settingsToUpdate)
-      });
+      const result = await apiClient.put('/settings/bulk-update', settingsToUpdate);
 
-      if (response.ok) {
-        setHasChanges(false);
-        showAlert('success', 'Settings saved successfully');
-      } else {
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
-        // For demo purposes, still mark as saved even if API fails
-        setHasChanges(false);
-        showAlert('warning', 'Settings saved locally (API connection failed)');
-      }
+      setHasChanges(false);
+      showAlert('success', 'Settings saved successfully');
+      log.info('Scanner settings saved successfully');
+
     } catch (error) {
-      console.error('Error saving settings:', error);
+      log.error('Error saving settings:', error.message);
       // For demo purposes, still mark as saved even if API fails
       setHasChanges(false);
       showAlert('warning', 'Settings saved locally (server connection failed)');

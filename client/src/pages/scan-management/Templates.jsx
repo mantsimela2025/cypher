@@ -30,6 +30,8 @@ import {
   DropdownItem
 } from "reactstrap";
 import "./Templates.css";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const Templates = () => {
   const [templates, setTemplates] = useState([]);

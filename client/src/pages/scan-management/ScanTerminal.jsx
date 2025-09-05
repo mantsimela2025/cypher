@@ -15,6 +15,8 @@ import {
   Icon,
 } from "@/components/Component";
 import { Card, Badge, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const ScanTerminal = () => {
   const [terminalOutput, setTerminalOutput] = useState([
@@ -47,36 +49,25 @@ const ScanTerminal = () => {
     addToTerminal(`scanner@terminal:~$ ${currentCommand}`, 'command');
 
     try {
-      const response = await fetch('/api/v1/scanner/terminal/execute', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          command: currentCommand,
-          saveOutput: saveToFile,
-          outputFilename: saveToFile ? outputFilename : undefined
-        })
+      log.api('Executing scan terminal command:', currentCommand);
+      const data = await apiClient.post('/scanner/terminal/execute', {
+        command: currentCommand,
+        saveOutput: saveToFile,
+        outputFilename: saveToFile ? outputFilename : undefined
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Add the output from the API response
-        if (data.data && data.data.output) {
-          data.data.output.forEach(line => {
-            if (line.type !== 'command') { // Skip command echo since we already added it
-              addToTerminal(line.text, line.type);
-            }
-          });
-        }
-      } else {
-        addToTerminal(`Error: ${data.error || 'Command execution failed'}`, 'error');
+      // Add the output from the API response
+      if (data.data && data.data.output) {
+        data.data.output.forEach(line => {
+          if (line.type !== 'command') { // Skip command echo since we already added it
+            addToTerminal(line.text, line.type);
+          }
+        });
+        log.info('Scan command executed successfully');
       }
     } catch (error) {
-      console.error('Error executing command:', error);
-      addToTerminal('Error: Failed to execute command', 'error');
+      log.error('Error executing command:', error.message);
+      addToTerminal(`Error: ${error.message || 'Command execution failed'}`, 'error');
     } finally {
       setScanRunning(false);
       setCurrentCommand('');

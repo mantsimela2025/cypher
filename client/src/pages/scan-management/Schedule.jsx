@@ -40,6 +40,8 @@ import {
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const Schedule = () => {
   const [schedules, setSchedules] = useState([]);
@@ -76,50 +78,28 @@ const Schedule = () => {
   const loadSchedules = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/scanner/schedules', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      log.api('Loading scan schedules');
+      const data = await apiClient.get('/scanner/schedules');
 
-      if (response.ok) {
-        const data = await response.json();
-        const formattedSchedules = data.data.schedules.map(schedule => ({
-          id: schedule.id,
-          name: schedule.name,
-          scanType: schedule.scanType,
-          frequency: schedule.frequency,
-          nextRun: schedule.nextRunFormatted,
-          target: schedule.target,
-          template: schedule.configuration?.template || 'Default Template',
-          status: schedule.enabled ? 'active' : 'paused',
-          enabled: schedule.enabled,
-          lastRun: schedule.lastRunFormatted,
-          actions: ['pause', 'edit', 'delete']
-        }));
-        setSchedules(formattedSchedules);
-      } else {
-        console.error('Failed to load schedules');
-        // Fallback to sample data
-        setSchedules([
-          {
-            id: 1,
-            name: 'Weekly Security Scan',
-            scanType: 'vulnerability',
-            frequency: 'Weekly',
-            nextRun: 'Apr 10, 2025 - 05:00 AM',
-            target: 'Web Servers',
-            template: 'Quick Vulnerability Scan',
-            status: 'active',
-            enabled: true,
-            lastRun: 'Apr 03, 2025 - 05:00 AM',
-            actions: ['pause', 'edit', 'delete']
-          }
-        ]);
-      }
+      const formattedSchedules = data.data.schedules.map(schedule => ({
+        id: schedule.id,
+        name: schedule.name,
+        scanType: schedule.scanType,
+        frequency: schedule.frequency,
+        nextRun: schedule.nextRunFormatted,
+        target: schedule.target,
+        template: schedule.configuration?.template || 'Default Template',
+        status: schedule.enabled ? 'active' : 'paused',
+        enabled: schedule.enabled,
+        lastRun: schedule.lastRunFormatted,
+        actions: ['pause', 'edit', 'delete']
+      }));
+      setSchedules(formattedSchedules);
+      log.info('Scan schedules loaded successfully:', formattedSchedules.length, 'schedules');
+
     } catch (error) {
-      console.error('Error loading schedules:', error);
+      log.error('Error loading schedules:', error.message);
+      log.warn('Falling back to sample data');
       // Fallback to sample data
       setSchedules([
         {
@@ -175,43 +155,32 @@ const Schedule = () => {
         enabled: formData.enabled
       };
 
-      const response = await fetch('/api/v1/scanner/schedules', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(scheduleData)
+      log.api('Creating new scan schedule:', scheduleData.name);
+      const result = await apiClient.post('/scanner/schedules', scheduleData);
+
+      // Reload schedules to get updated list
+      await loadSchedules();
+
+      setFormData({
+        name: '',
+        scanType: 'vulnerability',
+        target: '',
+        frequency: 'weekly',
+        time: '02:00',
+        timezone: 'UTC',
+        enabled: true,
+        template: '',
+        targetGroup: '',
+        notifications: true,
+        maintenanceWindow: false,
+        maintenanceStart: '',
+        maintenanceEnd: ''
       });
+      toggleModal();
+      log.info('Scan schedule created successfully');
 
-      if (response.ok) {
-        await response.json();
-        // Reload schedules to get updated list
-        await loadSchedules();
-
-        setFormData({
-          name: '',
-          scanType: 'vulnerability',
-          target: '',
-          frequency: 'weekly',
-          time: '02:00',
-          timezone: 'UTC',
-          enabled: true,
-          template: '',
-          targetGroup: '',
-          notifications: true,
-          maintenanceWindow: false,
-          maintenanceStart: '',
-          maintenanceEnd: ''
-        });
-        toggleModal();
-      } else {
-        const errorData = await response.json();
-        console.error('Error creating schedule:', errorData);
-        alert('Failed to create schedule: ' + (errorData.message || 'Unknown error'));
-      }
     } catch (error) {
-      console.error('Error creating schedule:', error);
+      log.error('Error creating schedule:', error.message);
       alert('Failed to create schedule: ' + error.message);
     }
   };
@@ -256,22 +225,12 @@ const Schedule = () => {
   const handleDelete = async (scheduleId) => {
     if (window.confirm('Are you sure you want to delete this schedule?')) {
       try {
-        const response = await fetch(`/api/v1/scanner/schedules/${scheduleId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-
-        if (response.ok) {
-          setSchedules(prev => prev.filter(s => s.id !== scheduleId));
-        } else {
-          const errorData = await response.json();
-          console.error('Error deleting schedule:', errorData);
-          alert('Failed to delete schedule: ' + (errorData.message || 'Unknown error'));
-        }
+        log.api('Deleting scan schedule:', scheduleId);
+        await apiClient.delete(`/scanner/schedules/${scheduleId}`);
+        setSchedules(prev => prev.filter(s => s.id !== scheduleId));
+        log.info('Scan schedule deleted successfully');
       } catch (error) {
-        console.error('Error deleting schedule:', error);
+        log.error('Error deleting schedule:', error.message);
         alert('Failed to delete schedule: ' + error.message);
       }
     }
@@ -280,30 +239,21 @@ const Schedule = () => {
   const handleToggleStatus = async (scheduleId) => {
     try {
       const schedule = schedules.find(s => s.id === scheduleId);
-      const response = await fetch(`/api/v1/scanner/schedules/${scheduleId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          enabled: !schedule.enabled
-        })
+      log.api('Toggling schedule status:', scheduleId, 'to', !schedule.enabled);
+
+      await apiClient.put(`/scanner/schedules/${scheduleId}`, {
+        enabled: !schedule.enabled
       });
 
-      if (response.ok) {
-        setSchedules(prev => prev.map(s =>
-          s.id === scheduleId
-            ? { ...s, enabled: !s.enabled, status: s.enabled ? 'paused' : 'active' }
-            : s
-        ));
-      } else {
-        const errorData = await response.json();
-        console.error('Error toggling schedule status:', errorData);
-        alert('Failed to update schedule: ' + (errorData.message || 'Unknown error'));
-      }
+      setSchedules(prev => prev.map(s =>
+        s.id === scheduleId
+          ? { ...s, enabled: !s.enabled, status: s.enabled ? 'paused' : 'active' }
+          : s
+      ));
+      log.info('Schedule status toggled successfully');
+
     } catch (error) {
-      console.error('Error toggling schedule status:', error);
+      log.error('Error toggling schedule status:', error.message);
       alert('Failed to update schedule: ' + error.message);
     }
   };
