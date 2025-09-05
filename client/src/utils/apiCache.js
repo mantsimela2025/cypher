@@ -204,7 +204,7 @@ export const cachedFetch = async (url, options = {}) => {
  * Note: Consider using apiClient instead for consistency
  */
 export const apiRequest = async (endpoint, options = {}) => {
-  const baseURL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api/v1';
+  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1';
   const url = `${baseURL}${endpoint}`;
 
   const token = localStorage.getItem('accessToken');
