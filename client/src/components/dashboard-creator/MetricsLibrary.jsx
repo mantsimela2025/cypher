@@ -12,6 +12,8 @@ import {
   DropdownItem,
   UncontrolledDropdown,
 } from "reactstrap";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const MetricsLibrary = ({ onMetricSelect }) => {
   const [metrics, setMetrics] = useState([]);
@@ -37,23 +39,13 @@ const MetricsLibrary = ({ onMetricSelect }) => {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/v1/metrics/dashboard-creator', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setMetrics(data.data.metrics || []);
-          setFilteredMetrics(data.data.metrics || []);
-        } else {
-          console.error('Failed to fetch metrics');
-        }
+        log.api('Fetching metrics for dashboard creator');
+        const data = await apiClient.get('/metrics/dashboard-creator');
+        setMetrics(data.data.metrics || []);
+        setFilteredMetrics(data.data.metrics || []);
+        log.info('Metrics loaded for dashboard creator:', data.data.metrics?.length || 0, 'metrics');
       } catch (error) {
-        console.error('Error fetching metrics:', error);
+        log.error('Error fetching metrics:', error.message);
       } finally {
         setLoading(false);
       }

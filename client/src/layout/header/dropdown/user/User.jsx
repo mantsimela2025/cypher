@@ -6,6 +6,8 @@ import UserAvatar from "@/components/user/UserAvatar";
 import { useTheme, useThemeUpdate } from "@/layout/provider/Theme";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const User = () => {
   const theme = useTheme();
@@ -20,7 +22,7 @@ const User = () => {
   };
 
   const handleSignOut = async () => {
-    console.log('🔄 Starting logout process...');
+    log.info('Starting logout process');
 
     try {
       // Get the refresh token for logout API call
@@ -28,28 +30,22 @@ const User = () => {
 
       // Call logout API endpoint
       if (refreshToken) {
-        console.log('📡 Calling logout API...');
-        await fetch('http://localhost:3001/api/v1/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ refreshToken }),
-        });
-        console.log('✅ Logout API call successful');
+        log.api('Calling logout API');
+        await apiClient.post('/auth/logout', { refreshToken });
+        log.info('Logout API call successful');
       } else {
-        console.log('⚠️ No refresh token found, skipping API call');
+        log.warn('No refresh token found, skipping API call');
       }
     } catch (error) {
-      console.error('❌ Logout API call failed:', error);
+      log.error('Logout API call failed:', error.message);
       // Continue with logout even if API call fails
     } finally {
-      console.log('🔓 Calling AuthContext logout...');
+      log.info('Calling AuthContext logout');
 
       // Use AuthContext logout method to properly update state
       logout();
 
-      console.log('🔄 Navigating to login page...');
+      log.info('Navigating to login page');
       // Redirect to login page
       navigate('/auth-login');
     }

@@ -15,6 +15,8 @@ import {
 import { Icon } from "@/components/Component";
 import SlideOutPanel from "@/components/partials/SlideOutPanel";
 import "./AssetSlideOutPanels.css";
+import { apiClient } from "@/utils/apiClient";
+import { log } from "@/utils/config";
 
 const AssetCostManagementPanel = ({
   isOpen,
@@ -75,21 +77,12 @@ const AssetCostManagementPanel = ({
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:3001/api/v1/asset-management/costs?assetUuid=${assetUuid}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCostData(data.data || []);
-      } else {
-        throw new Error(`Failed to fetch cost data: ${response.status}`);
-      }
+      log.api('Fetching asset cost data:', assetUuid);
+      const data = await apiClient.get(`/asset-management/costs?assetUuid=${assetUuid}`);
+      setCostData(data.data || []);
+      log.info('Asset cost data loaded:', data.data?.length || 0, 'records');
     } catch (err) {
-      console.error('❌ Fetch error:', err);
+      log.error('Error fetching cost data:', err.message);
       setError(`Failed to load cost data: ${err.message}`);
       setCostData([]);
     } finally {
@@ -140,35 +133,27 @@ const AssetCostManagementPanel = ({
   const handleSave = async () => {
     setLoading(true);
     try {
-      const url = editingRecord 
-        ? `/api/v1/asset-management/costs/${editingRecord.id}`
-        : '/api/v1/asset-management/costs';
-      
-      const method = editingRecord ? 'PUT' : 'POST';
-      
       const payload = {
         ...formData,
         assetUuid: assetUuid,
         amount: parseFloat(formData.amount)
       };
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (response.ok) {
-        await fetchCostData();
-        setIsEditing(false);
-        setEditingRecord(null);
+      if (editingRecord) {
+        log.api('Updating asset cost record:', editingRecord.id);
+        await apiClient.put(`/asset-management/costs/${editingRecord.id}`, payload);
       } else {
-        throw new Error('Failed to save cost record');
+        log.api('Creating new asset cost record for:', assetUuid);
+        await apiClient.post('/asset-management/costs', payload);
       }
+
+      await fetchCostData();
+      setIsEditing(false);
+      setEditingRecord(null);
+      log.info('Asset cost record saved successfully');
+
     } catch (err) {
+      log.error('Error saving cost record:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -182,19 +167,12 @@ const AssetCostManagementPanel = ({
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/asset-management/costs/${recordId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-
-      if (response.ok) {
-        await fetchCostData();
-      } else {
-        throw new Error('Failed to delete cost record');
-      }
+      log.api('Deleting asset cost record:', recordId);
+      await apiClient.delete(`/asset-management/costs/${recordId}`);
+      await fetchCostData();
+      log.info('Asset cost record deleted successfully');
     } catch (err) {
+      log.error('Error deleting cost record:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
