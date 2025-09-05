@@ -1,5 +1,11 @@
 # Scanner Enhancement TODO
 
+## 🚀 GitLab CI/CD Pipeline Testing
+- [x] Created Windows EC2 deployment pipeline
+- [ ] Test pipeline execution
+- [ ] Verify S3 deployment artifacts
+- [ ] Validate Windows server deployment
+
 ## Phase 1: Cloud Security Enhancement
 - [ ] Add AWS Cloud Scanner Module
 - [ ] Add Container Security Module

@@ -10,7 +10,7 @@ stages:
 variables:
   NODE_VERSION: "18"
   EC2_INSTANCE_ID: "i-04a41343a3f51559a"  # Your Windows Server 2019 instance
-  EC2_HOST: "18.207.177.239"  # Replace with your actual EC2 public IP
+  EC2_HOST: "18.207.177.239"  # Your current Windows Server 2019 EC2 public IP
   EC2_USERNAME: "Administrator"
   AWS_DEFAULT_REGION: "us-east-1"
   S3_BUCKET: "rasdash-deployments"
@@ -36,6 +36,7 @@ test:
     - cd api && npm run test
     - echo "🏗️ Building client..."
     - cd ../client && npm run build
+    - echo "✅ Tests and build completed successfully"
   artifacts:
     paths:
       - client/dist/
