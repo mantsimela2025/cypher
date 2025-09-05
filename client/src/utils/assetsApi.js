@@ -1,8 +1,6 @@
 import { apiClient } from './apiClient';
 import { cacheUtils } from './apiCache';
 
-const API_BASE_URL = 'http://localhost:3001/api/v1';
-
 // Enhanced API request with automatic token refresh and cache management
 const makeApiRequest = async (endpoint, options = {}) => {
   try {

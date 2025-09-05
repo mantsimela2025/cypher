@@ -1,6 +1,11 @@
 import { toast } from "react-toastify";
+import { API_CONFIG, log } from "./config";
 
-const API_BASE_URL = 'http://localhost:3001/api/v1';
+// Use centralized configuration
+const API_BASE_URL = API_CONFIG.BASE_URL;
+
+// Log the API base URL in development
+log.info('API Base URL:', API_BASE_URL);
 
 // Helper to get access token from localStorage
 const getAccessToken = () => {

@@ -1,122 +1,71 @@
-const API_BASE_URL = 'http://localhost:3001/api/v1';
-
-// Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('accessToken');
-};
-
-// Create headers with auth token
-const createHeaders = () => {
-  const token = getAuthToken();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
-
-// Handle API response
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-  }
-  return response.json();
-};
+import { apiClient } from "./apiClient";
 
 export const vulnerabilitiesApi = {
   // Get vulnerabilities with pagination and filtering
   async getVulnerabilities(params = {}) {
     const queryParams = new URLSearchParams(params);
+    const endpoint = queryParams.toString() ? `/vulnerabilities?${queryParams}` : '/vulnerabilities';
 
-    // Use the proper vulnerabilities endpoint
-    const url = `${API_BASE_URL}/vulnerabilities?${queryParams}`;
-    console.log('🌐 Making API call to:', url);
+    console.log('🌐 Making vulnerabilities API call to:', endpoint);
 
-    const response = await fetch(url, {
-      headers: createHeaders(),
-    });
-
-    console.log('📡 Response status:', response.status);
-    console.log('📡 Response ok:', response.ok);
-
-    return handleResponse(response);
+    return await apiClient.get(endpoint);
   },
 
   // Get vulnerability details by ID
   async getVulnerabilityDetails(id) {
-    const response = await fetch(`${API_BASE_URL}/vulnerabilities/${id}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    console.log('🌐 Getting vulnerability details for ID:', id);
+    return await apiClient.get(`/vulnerabilities/${id}`);
   },
 
   // Get vulnerability CVEs
   async getVulnerabilityCVEs(id) {
-    const response = await fetch(`${API_BASE_URL}/vulnerabilities/${id}/cves`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    console.log('🌐 Getting CVEs for vulnerability ID:', id);
+    return await apiClient.get(`/vulnerabilities/${id}/cves`);
   },
 
   // Get vulnerability patches
   async getVulnerabilityPatches(id) {
-    const response = await fetch(`${API_BASE_URL}/vulnerabilities/${id}/patches`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    console.log('🌐 Getting patches for vulnerability ID:', id);
+    return await apiClient.get(`/vulnerabilities/${id}/patches`);
   },
 
   // Get vulnerability assets
   async getVulnerabilityAssets(id, params = {}) {
     const queryParams = new URLSearchParams(params);
-    const response = await fetch(`${API_BASE_URL}/vulnerabilities/${id}/assets?${queryParams}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = queryParams.toString() ? `/vulnerabilities/${id}/assets?${queryParams}` : `/vulnerabilities/${id}/assets`;
+    console.log('🌐 Getting assets for vulnerability ID:', id);
+    return await apiClient.get(endpoint);
   },
 
   // Get vulnerability analytics
   async getVulnerabilityAnalytics(params = {}) {
     const queryParams = new URLSearchParams(params);
-    const response = await fetch(`${API_BASE_URL}/vulnerability-analytics/summary?${queryParams}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    const endpoint = queryParams.toString() ? `/vulnerability-analytics/summary?${queryParams}` : '/vulnerability-analytics/summary';
+    console.log('🌐 Getting vulnerability analytics');
+    return await apiClient.get(endpoint);
   },
 
   // Get vulnerability cost analysis
   async getVulnerabilityCostAnalysis(id) {
-    const response = await fetch(`${API_BASE_URL}/vulnerability-analytics/cost-analysis/${id}`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    console.log('🌐 Getting cost analysis for vulnerability ID:', id);
+    return await apiClient.get(`/vulnerability-analytics/cost-analysis/${id}`);
   },
 
   // Update vulnerability status
   async updateVulnerabilityStatus(id, status) {
-    const response = await fetch(`${API_BASE_URL}/vulnerabilities/${id}/status`, {
-      method: 'PUT',
-      headers: createHeaders(),
-      body: JSON.stringify({ status }),
-    });
-    return handleResponse(response);
+    console.log('🌐 Updating vulnerability status for ID:', id, 'to:', status);
+    return await apiClient.put(`/vulnerabilities/${id}/status`, { status });
   },
 
   // Create vulnerability note
   async createVulnerabilityNote(id, note) {
-    const response = await fetch(`${API_BASE_URL}/vulnerabilities/${id}/notes`, {
-      method: 'POST',
-      headers: createHeaders(),
-      body: JSON.stringify({ note }),
-    });
-    return handleResponse(response);
+    console.log('🌐 Creating note for vulnerability ID:', id);
+    return await apiClient.post(`/vulnerabilities/${id}/notes`, { note });
   },
 
   // Get vulnerability summary statistics
   async getVulnerabilitySummary() {
-    const response = await fetch(`${API_BASE_URL}/vulnerabilities/summary`, {
-      headers: createHeaders(),
-    });
-    return handleResponse(response);
+    console.log('🌐 Getting vulnerability summary statistics');
+    return await apiClient.get('/vulnerabilities/summary');
   }
 };

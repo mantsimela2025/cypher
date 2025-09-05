@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Head from "@/layout/head/Head";
 import Content from "@/layout/content/Content";
+import { apiClient } from "@/utils/apiClient";
 import {
   Card,
   DropdownItem,
@@ -54,18 +55,12 @@ const PatchLibrary = () => {
   useEffect(() => {
     const fetchPatches = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/v1/patches?limit=100', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        console.log('🌐 Fetching patches from API...');
+        const response = await apiClient.get('/patches?limit=100');
 
-        if (response.ok) {
-          const data = await response.json();
-          setPatches(data.data || []);
-          setFilteredPatches(data.data || []);
+        if (response && response.data) {
+          setPatches(response.data);
+          setFilteredPatches(response.data);
         } else {
           // Fallback mock data
           setPatches(mockPatches);
