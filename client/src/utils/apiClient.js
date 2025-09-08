@@ -1,6 +1,8 @@
 import { toast } from "react-toastify";
 import { API_CONFIG, log } from "./config";
 
+
+
 // Use centralized configuration
 const API_BASE_URL = API_CONFIG.BASE_URL;
 
@@ -73,34 +75,61 @@ const refreshAccessToken = async () => {
 
 // Internal fetch wrapper with token refresh logic
 const makeRequest = async (url, options = {}) => {
-  let accessToken = getAccessToken();
+  // Define endpoints that don't require authentication
+  const unauthenticatedEndpoints = ['/auth/login', '/auth/register', '/auth/refresh-token'];
+  const isUnauthenticatedEndpoint = unauthenticatedEndpoints.some(endpoint => url.includes(endpoint));
 
-  // Check if token expired, try to refresh
-  if (isTokenExpired(accessToken)) {
-    accessToken = await refreshAccessToken();
-    if (!accessToken) {
-      toast.error('Session expired. Please log in again.');
-      logoutAndRedirect();
-      return Promise.reject(new Error('Session expired'));
+  let accessToken = null;
+
+  // Only check/refresh tokens for authenticated endpoints
+  if (!isUnauthenticatedEndpoint) {
+    accessToken = getAccessToken();
+
+    // Check if token expired, try to refresh
+    if (isTokenExpired(accessToken)) {
+      accessToken = await refreshAccessToken();
+      if (!accessToken) {
+        toast.error('Session expired. Please log in again.');
+        logoutAndRedirect();
+        return Promise.reject(new Error('Session expired'));
+      }
     }
   }
 
   // Ensure URL starts with API_BASE_URL if it's a relative path
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
 
-  // Add Authorization header
+  // Debug logging
+  log.info('🌐 makeRequest Debug:', {
+    inputUrl: url,
+    API_BASE_URL,
+    fullUrl,
+    method: options.method,
+    isUnauthenticatedEndpoint
+  });
+
+  // Add Authorization header only for authenticated endpoints
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers,
-    'Authorization': `Bearer ${accessToken}`,
   };
+
+  // Only add Authorization header if we have a token and it's not an unauthenticated endpoint
+  if (accessToken && !isUnauthenticatedEndpoint) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
 
   const fetchOptions = {
     ...options,
     headers,
   };
 
-  const response = await fetch(fullUrl, fetchOptions);
+  let response;
+  try {
+    response = await fetch(fullUrl, fetchOptions);
+  } catch (fetchError) {
+    throw fetchError;
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -121,7 +150,7 @@ export const apiClient = {
   get: (url, options = {}) => {
     return makeRequest(url, { ...options, method: 'GET' });
   },
-  
+
   post: (url, data, options = {}) => {
     return makeRequest(url, {
       ...options,

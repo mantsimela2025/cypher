@@ -227,7 +227,7 @@ const Register = React.lazy(() => import("@/pages/auth/Register"));
 const ForgotPassword = React.lazy(() => import("@/pages/auth/ForgotPassword"));
 const Success = React.lazy(() => import("@/pages/auth/Success"));
 
-// RMF (Risk Management Framework) Pages
+// RMF (Risk Management Framework) Pages - Enhanced with AI Integration
 const RMFDashboard = React.lazy(() => import("@/pages/rmf/RMFDashboard"));
 const RMFProjects = React.lazy(() => import("@/pages/rmf/RMFProjects"));
 const RMFNewProject = React.lazy(() => import("@/pages/rmf/RMFNewProject"));
@@ -236,6 +236,9 @@ const RMFWizardDemo = React.lazy(() => import("@/pages/rmf/RMFWizardDemo"));
 const RMFCategorizeStep = React.lazy(() => import("@/pages/rmf/steps/RMFCategorizeStep"));
 const RMFSelectStep = React.lazy(() => import("@/pages/rmf/steps/RMFSelectStep"));
 const RMFImplementStep = React.lazy(() => import("@/pages/rmf/steps/RMFImplementStep"));
+
+// Enhanced RMF Components
+const ComplianceHeatmapPage = React.lazy(() => import("@/pages/rmf/ComplianceHeatmapPage"));
 
 
 const ScrollToTop = (props) => {
@@ -325,7 +328,7 @@ const Pages = () => {
 
               {/*Document Management*/}
               <Route path="documents" element={<Suspense fallback={<PageLoader />}><DocumentManager /></Suspense>}></Route>
-{/*RMF (Risk Management Framework)*/}
+{/*RMF (Risk Management Framework) - Enhanced with AI Integration*/}
 <Route path="rmf" element={<Suspense fallback={<PageLoader />}><RMFDashboard /></Suspense>}></Route>
 <Route path="rmf/dashboard" element={<Suspense fallback={<PageLoader />}><RMFDashboard /></Suspense>}></Route>
 <Route path="rmf/projects" element={<Suspense fallback={<PageLoader />}><RMFProjects /></Suspense>}></Route>
@@ -335,6 +338,10 @@ const Pages = () => {
 <Route path="rmf/projects/:projectId/step/categorize" element={<Suspense fallback={<PageLoader />}><RMFCategorizeStep /></Suspense>}></Route>
 <Route path="rmf/projects/:projectId/step/select" element={<Suspense fallback={<PageLoader />}><RMFSelectStep /></Suspense>}></Route>
 <Route path="rmf/projects/:projectId/step/implement" element={<Suspense fallback={<PageLoader />}><RMFImplementStep /></Suspense>}></Route>
+
+{/*Enhanced RMF Features*/}
+<Route path="rmf/compliance" element={<Suspense fallback={<PageLoader />}><ComplianceHeatmapPage /></Suspense>}></Route>
+<Route path="rmf/compliance/heatmap" element={<Suspense fallback={<PageLoader />}><ComplianceHeatmapPage /></Suspense>}></Route>
 
 
               {/*Scan Management*/}
@@ -355,6 +362,7 @@ const Pages = () => {
               <Route path="document-management/library" element={<Suspense fallback={<PageLoader />}><DocumentLibrary /></Suspense>}></Route>
               <Route path="document-management/upload" element={<Suspense fallback={<PageLoader />}><UploadDocument /></Suspense>}></Route>
               <Route path="document-management/template" element={<Suspense fallback={<PageLoader />}><DocumentTemplate /></Suspense>}></Route>
+              <Route path="document-management/templates" element={<Suspense fallback={<PageLoader />}><DocumentTemplate /></Suspense>}></Route>
               <Route path="document-management/categories" element={<Suspense fallback={<PageLoader />}><Categories /></Suspense>}></Route>
               <Route path="document-management/tags" element={<Suspense fallback={<PageLoader />}><Tags /></Suspense>}></Route>
               <Route path="document-management/settings" element={<Suspense fallback={<PageLoader />}><DocumentSettings /></Suspense>}></Route>

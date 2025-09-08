@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Head from "@/layout/head/Head";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
-import { apiClient } from "@/utils/apiClient";
-import { log } from "@/utils/config";
+import { apiClient } from "../../utils/apiClient";
+import { log, API_CONFIG } from "@/utils/config";
 import "./Login.css";
 import backgroundImage from "@/assets/images/grayTechyBkgrd.jpg";
 
@@ -27,12 +27,15 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate, location]);
 
-  const onFormSubmit = async (formData) => {
+  const onFormSubmit = async (formData, event) => {
+    event?.preventDefault(); // Ensure form doesn't submit normally
     setLoading(true);
     setError("");
-    
+
     try {
       log.info('🔐 Attempting login for user:', formData.email);
+      log.info('🌐 API Base URL:', API_CONFIG.BASE_URL); // Debug log
+
       const data = await apiClient.post('/auth/login', {
         email: formData.email,
         password: formData.password,
@@ -59,6 +62,8 @@ const Login = () => {
   };
 
   const { register, handleSubmit, formState: { errors } } = useForm();
+
+
 
   return (
     <div className="login-page-wrapper">
@@ -179,6 +184,8 @@ const Login = () => {
                       "Login with Password"
                     )}
                   </button>
+
+
                 </form>
               )}
 

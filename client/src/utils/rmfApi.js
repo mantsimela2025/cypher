@@ -10,34 +10,42 @@
  */
 
 import { apiClient } from './apiClient';
+import { log } from './config';
 
 // Enhanced API client following CYPHER standards
 const rmfApiClient = {
   async get(endpoint) {
-    console.log(`🌐 RMF API GET: ${endpoint}`);
+    log.api(`🌐 RMF API GET: ${endpoint}`);
     const response = await apiClient.get(`/rmf${endpoint}`);
-    console.log(`✅ RMF API Response:`, response);
+    log.api(`✅ RMF API Response:`, response);
     return response;
   },
 
   async post(endpoint, data) {
-    console.log(`🌐 RMF API POST: ${endpoint}`, data);
+    log.api(`🌐 RMF API POST: ${endpoint}`, data);
     const response = await apiClient.post(`/rmf${endpoint}`, data);
-    console.log(`✅ RMF API Response:`, response);
+    log.api(`✅ RMF API Response:`, response);
     return response;
   },
 
   async put(endpoint, data) {
-    console.log(`🌐 RMF API PUT: ${endpoint}`, data);
+    log.api(`🌐 RMF API PUT: ${endpoint}`, data);
     const response = await apiClient.put(`/rmf${endpoint}`, data);
-    console.log(`✅ RMF API Response:`, response);
+    log.api(`✅ RMF API Response:`, response);
+    return response;
+  },
+
+  async patch(endpoint, data) {
+    log.api(`🌐 RMF API PATCH: ${endpoint}`, data);
+    const response = await apiClient.patch(`/rmf${endpoint}`, data);
+    log.api(`✅ RMF API Response:`, response);
     return response;
   },
 
   async delete(endpoint) {
-    console.log(`🌐 RMF API DELETE: ${endpoint}`);
+    log.api(`🌐 RMF API DELETE: ${endpoint}`);
     const response = await apiClient.delete(`/rmf${endpoint}`);
-    console.log(`✅ RMF API Response:`, response);
+    log.api(`✅ RMF API Response:`, response);
     return response;
   }
 };
@@ -216,16 +224,46 @@ export const rmfAIApi = {
    */
   async selectSecurityControls(systemData) {
     try {
-      console.log('🤖 Requesting AI control selection for:', systemData.name);
+      log.api('🤖 Requesting AI control selection for:', systemData.name);
 
-      const response = await rmfApiClient.post('/ai/select-controls', systemData);
+      const response = await rmfApiClient.post('/ai/control-selection', systemData);
 
-      console.log('✅ AI control selection completed:', response);
+      log.api('✅ AI control selection completed:', response);
       return response;
 
     } catch (error) {
-      console.error('❌ AI control selection failed:', error);
+      log.error('❌ AI control selection failed:', error);
       throw new Error(error.response?.data?.message || 'AI control selection failed');
+    }
+  },
+
+  /**
+   * Generate POA&M with AI
+   */
+  async generatePOAM(poamData) {
+    try {
+      log.api('🤖 RMF AI API - Generating POA&M for system:', poamData.systemName);
+      const response = await rmfApiClient.post('/ai/generate-poam', poamData);
+      log.api('✅ RMF AI API - POA&M generated with', response.data?.items?.length || 0, 'items');
+      return response;
+    } catch (error) {
+      log.error('❌ RMF AI API - POA&M generation failed:', error.message);
+      throw new Error(error.response?.data?.message || 'POA&M generation failed');
+    }
+  },
+
+  /**
+   * Test AI service
+   */
+  async testAI() {
+    try {
+      log.api('🤖 RMF AI API - Testing AI service');
+      const response = await rmfApiClient.post('/ai/test', {});
+      log.api('✅ RMF AI API - Test completed');
+      return response;
+    } catch (error) {
+      log.error('❌ RMF AI API - Test failed:', error.message);
+      throw new Error(error.response?.data?.message || 'AI test failed');
     }
   },
 
@@ -243,7 +281,160 @@ export const rmfAIApi = {
   }
 };
 
+/**
+ * RMF Steps API
+ */
+export const rmfStepsApi = {
+  /**
+   * Get steps for a project
+   */
+  async getProjectSteps(projectId) {
+    try {
+      log.api('🌐 RMF Steps API - Getting steps for project:', projectId);
+      const response = await rmfApiClient.get(`/projects/${projectId}/steps`);
+      log.api('✅ RMF Steps API - Steps retrieved:', response.data?.length || 0);
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Steps API - Get project steps failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to fetch project steps');
+    }
+  },
+
+  /**
+   * Update step status
+   */
+  async updateStep(projectId, stepName, updateData) {
+    try {
+      log.api('🌐 RMF Steps API - Updating step:', stepName, 'for project:', projectId);
+      const response = await rmfApiClient.patch(`/projects/${projectId}/steps/${stepName}`, updateData);
+      log.api('✅ RMF Steps API - Step updated:', stepName);
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Steps API - Update step failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to update step');
+    }
+  },
+
+  /**
+   * Approve step
+   */
+  async approveStep(projectId, stepName, approvalData) {
+    try {
+      log.api('🌐 RMF Steps API - Approving step:', stepName, 'for project:', projectId);
+      const response = await rmfApiClient.post(`/projects/${projectId}/steps/${stepName}/approve`, approvalData);
+      log.api('✅ RMF Steps API - Step approved:', stepName);
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Steps API - Approve step failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to approve step');
+    }
+  }
+};
+
+/**
+ * RMF Categorization API
+ */
+export const rmfCategorizationApi = {
+  /**
+   * Get system categorization
+   */
+  async getCategorization(projectId) {
+    try {
+      log.api('🌐 RMF Categorization API - Getting categorization for project:', projectId);
+      const response = await rmfApiClient.get(`/projects/${projectId}/categorization`);
+      log.api('✅ RMF Categorization API - Categorization retrieved');
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Categorization API - Get categorization failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to get categorization');
+    }
+  },
+
+  /**
+   * Set system categorization
+   */
+  async setCategorization(projectId, categorizationData) {
+    try {
+      log.api('🌐 RMF Categorization API - Setting categorization for project:', projectId);
+      const response = await rmfApiClient.put(`/projects/${projectId}/categorization`, categorizationData);
+      log.api('✅ RMF Categorization API - Categorization set');
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Categorization API - Set categorization failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to set categorization');
+    }
+  },
+
+  /**
+   * Get system information types
+   */
+  async getSystemInfoTypes(projectId) {
+    try {
+      log.api('🌐 RMF Categorization API - Getting info types for project:', projectId);
+      const response = await rmfApiClient.get(`/projects/${projectId}/system-info-types`);
+      log.api('✅ RMF Categorization API - Info types retrieved:', response.data?.length || 0);
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Categorization API - Get info types failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to get system info types');
+    }
+  },
+
+  /**
+   * Add system information type
+   */
+  async addSystemInfoType(projectId, infoTypeData) {
+    try {
+      log.api('🌐 RMF Categorization API - Adding info type to project:', projectId);
+      const response = await rmfApiClient.post(`/projects/${projectId}/system-info-types`, infoTypeData);
+      log.api('✅ RMF Categorization API - Info type added:', response.data?.id);
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Categorization API - Add info type failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to add system info type');
+    }
+  }
+};
+
+/**
+ * RMF Control Selection API
+ */
+export const rmfControlSelectionApi = {
+  /**
+   * Get control selection for project
+   */
+  async getControlSelection(projectId) {
+    try {
+      log.api('🌐 RMF Control Selection API - Getting selection for project:', projectId);
+      const response = await rmfApiClient.get(`/projects/${projectId}/control-selection`);
+      log.api('✅ RMF Control Selection API - Selection retrieved');
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Control Selection API - Get selection failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to get control selection');
+    }
+  },
+
+  /**
+   * Set control selection for project
+   */
+  async setControlSelection(projectId, selectionData) {
+    try {
+      log.api('🌐 RMF Control Selection API - Setting selection for project:', projectId);
+      const response = await rmfApiClient.put(`/projects/${projectId}/control-selection`, selectionData);
+      log.api('✅ RMF Control Selection API - Selection set');
+      return response;
+    } catch (error) {
+      log.error('❌ RMF Control Selection API - Set selection failed:', error.message);
+      throw new Error(error.response?.data?.message || 'Failed to set control selection');
+    }
+  }
+};
+
 export default {
   projects: rmfProjectsApi,
+  steps: rmfStepsApi,
+  categorization: rmfCategorizationApi,
+  controlSelection: rmfControlSelectionApi,
   ai: rmfAIApi
 };

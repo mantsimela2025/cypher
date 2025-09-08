@@ -193,7 +193,28 @@ const menu = [
   {
     icon: "shield-check",
     text: "Risk Mgmt Framework",
-    link: "/rmf",
+    subMenu: [
+      {
+        text: "Dashboard",
+        link: "/rmf/dashboard",
+        icon: "dashboard",
+      },
+      {
+        text: "Projects",
+        link: "/rmf/projects",
+        icon: "folder",
+      },
+      {
+        text: "Compliance Heatmap",
+        link: "/rmf/compliance",
+        icon: "grid-alt",
+      },
+      {
+        text: "New Project",
+        link: "/rmf/projects/new",
+        icon: "plus-circle",
+      },
+    ],
   },
   {
     heading: "Policy Management",

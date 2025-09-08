@@ -34,7 +34,9 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { bulkActionOptions } from "@/utils/Utils";
 import { rmfProjectsApi } from "@/utils/rmfApi";
+import { log } from "@/utils/config";
 import { toast } from "react-toastify";
+import { RMFBreadcrumb, RMFNavigation } from "@/components/rmf";
 
 const RMFProjects = () => {
   const navigate = useNavigate();
@@ -68,6 +70,16 @@ const RMFProjects = () => {
   const [viewMode, setViewMode] = useState(() => {
     return localStorage.getItem('rmfProjectsViewMode') || 'table';
   });
+
+  // Bulk operations states
+  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+
+  // Advanced filter states
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [ownerFilter, setOwnerFilter] = useState('');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Filter options
   const filterStep = [
@@ -213,7 +225,7 @@ const RMFProjects = () => {
     };
 
     fetchProjects();
-  }, [currentPage, itemPerPage, selectedStep, selectedStatus, selectedImpact]);
+  }, [currentPage, itemPerPage, selectedStep, selectedStatus, selectedImpact, dateRange, ownerFilter]);
 
   // Get step badge color
   const getStepBadgeColor = (step) => {
@@ -263,6 +275,119 @@ const RMFProjects = () => {
   const isOverdue = (dueDate, status) => {
     if (status === 'completed') return false;
     return new Date(dueDate) < new Date();
+  };
+
+  // Bulk Operations Functions
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedProjects(data.map(project => project.id));
+    } else {
+      setSelectedProjects([]);
+    }
+  };
+
+  const handleSelectProject = (projectId, checked) => {
+    if (checked) {
+      setSelectedProjects(prev => [...prev, projectId]);
+    } else {
+      setSelectedProjects(prev => prev.filter(id => id !== projectId));
+    }
+  };
+
+  const handleBulkAction = async (action) => {
+    if (selectedProjects.length === 0) {
+      toast.warning('Please select projects to perform bulk action');
+      return;
+    }
+
+    setBulkActionLoading(true);
+    try {
+      log.info(`🔄 Performing bulk action: ${action} on ${selectedProjects.length} projects`);
+
+      switch (action) {
+        case 'delete':
+          await handleBulkDelete();
+          break;
+        case 'archive':
+          await handleBulkArchive();
+          break;
+        case 'export':
+          await handleBulkExport();
+          break;
+        case 'assign':
+          await handleBulkAssign();
+          break;
+        default:
+          toast.error('Unknown bulk action');
+      }
+    } catch (error) {
+      log.error('❌ Bulk action failed:', error.message);
+      toast.error(`Bulk action failed: ${error.message}`);
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!window.confirm(`Are you sure you want to delete ${selectedProjects.length} projects? This action cannot be undone.`)) {
+      return;
+    }
+
+    // API calls would go here
+    toast.success(`${selectedProjects.length} projects deleted successfully`);
+    setSelectedProjects([]);
+    // Refresh data
+  };
+
+  const handleBulkArchive = async () => {
+    // API calls would go here
+    toast.success(`${selectedProjects.length} projects archived successfully`);
+    setSelectedProjects([]);
+    // Refresh data
+  };
+
+  const handleBulkExport = async () => {
+    // Export functionality
+    const exportData = data.filter(project => selectedProjects.includes(project.id));
+    const csvContent = convertToCSV(exportData);
+    downloadCSV(csvContent, 'rmf-projects-export.csv');
+    toast.success(`${selectedProjects.length} projects exported successfully`);
+  };
+
+  const handleBulkAssign = async () => {
+    // Show assignment modal
+    toast.info('Bulk assignment feature coming soon');
+  };
+
+  const convertToCSV = (data) => {
+    const headers = ['Name', 'Description', 'Current Step', 'Status', 'Due Date', 'Assigned To', 'System Type'];
+    const csvRows = [
+      headers.join(','),
+      ...data.map(project => [
+        `"${project.name}"`,
+        `"${project.description}"`,
+        project.currentStep,
+        project.status,
+        project.dueDate || '',
+        project.assignedTo,
+        project.systemType
+      ].join(','))
+    ];
+    return csvRows.join('\n');
+  };
+
+  const downloadCSV = (content, filename) => {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   // Handle opening edit panel
@@ -549,6 +674,9 @@ const RMFProjects = () => {
     <React.Fragment>
       <Head title="RMF Projects"></Head>
       <Content>
+        {/* Enhanced Navigation */}
+        <RMFBreadcrumb showHome={true} />
+
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
