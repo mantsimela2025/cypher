@@ -65,7 +65,7 @@ export const useNavigationLazyLoad = (fetchFunction, options = {}) => {
     if (!shouldTriggerLoad()) {
       hasTriggeredRef.current = false;
     }
-  }, [location.pathname]);
+  }, [location.pathname, shouldTriggerLoad]);
 
   return {
     ...lazyData,

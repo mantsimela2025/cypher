@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import PropTypes from "prop-types";
 import Icon from "./icon/Icon";
 
 // Bootstrap v5 classes are used for all styling
@@ -135,6 +136,11 @@ const ChatWidget = () => {
       )}
     </>
   );
+};
+
+// PropTypes validation
+ChatWidget.propTypes = {
+  // No props currently used, but adding for future extensibility
 };
 
 export default ChatWidget;

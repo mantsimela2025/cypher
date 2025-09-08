@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Spinner, Button } from 'reactstrap';
 import { Icon } from '@/components/Component';
 
@@ -163,6 +164,33 @@ export const LazyCard = ({
       </div>
     </div>
   );
+};
+
+// PropTypes validation
+LazyDataLoader.propTypes = {
+  data: PropTypes.any,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  hasLoaded: PropTypes.bool,
+  loadData: PropTypes.func,
+  reload: PropTypes.func,
+  children: PropTypes.node,
+  loadingMessage: PropTypes.string,
+  errorMessage: PropTypes.string,
+  emptyMessage: PropTypes.string,
+  showLoadButton: PropTypes.bool,
+  loadButtonText: PropTypes.string,
+  className: PropTypes.string,
+  minHeight: PropTypes.string
+};
+
+// Card wrapper PropTypes
+LazyDataLoader.Card.propTypes = {
+  title: PropTypes.string,
+  subtitle: PropTypes.string,
+  actions: PropTypes.node,
+  className: PropTypes.string,
+  children: PropTypes.node
 };
 
 export default LazyDataLoader;
