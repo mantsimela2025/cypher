@@ -106,8 +106,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test-and-build, security-scan]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    environment: production
+    environment:
+      name: production
     
     steps:
     - name: 🔄 Checkout code
@@ -152,30 +152,30 @@ jobs:
     - name: 🚀 Deploy to EC2
       run: |
         # Create deployment script
-        cat > deploy.sh << 'EOF'
+        cat > deploy.sh << EOF
         #!/bin/bash
         set -e
-        
+
         echo "🚀 Starting CYPHER deployment to EC2..."
-        
+
         # Set deployment variables
         DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
-        BACKUP_PATH="/c/deployments/backups/$(date +%Y%m%d_%H%M%S)"
+        BACKUP_PATH="/c/deployments/backups/\$(date +%Y%m%d_%H%M%S)"
         
         # Create directories
-        mkdir -p "$DEPLOY_PATH"
+        mkdir -p "\$DEPLOY_PATH"
         mkdir -p "/c/deployments/backups"
         mkdir -p "/c/deployments/logs"
-        
+
         # Backup current deployment if it exists
-        if [ -d "$DEPLOY_PATH/api" ]; then
+        if [ -d "\$DEPLOY_PATH/api" ]; then
           echo "📦 Creating backup..."
-          cp -r "$DEPLOY_PATH" "$BACKUP_PATH"
-          echo "✅ Backup created at $BACKUP_PATH"
+          cp -r "\$DEPLOY_PATH" "\$BACKUP_PATH"
+          echo "✅ Backup created at \$BACKUP_PATH"
         fi
-        
+
         # Navigate to deployment directory
-        cd "$DEPLOY_PATH"
+        cd "\$DEPLOY_PATH"
         
         # Pull latest code
         echo "📥 Pulling latest code..."
