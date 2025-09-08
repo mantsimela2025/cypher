@@ -7,7 +7,7 @@ module.exports = {
   apps: [
     {
       name: 'cypher-api',
-      script: './api/src/server.js',
+      script: './api/server.js',
       cwd: process.cwd(),
       env: {
         NODE_ENV: 'production',

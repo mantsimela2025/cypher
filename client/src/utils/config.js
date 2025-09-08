@@ -12,9 +12,9 @@ export const ENV = {
 
 export const currentEnv = import.meta.env.MODE || ENV.DEVELOPMENT;
 
-// API Configuration
+// API Configuration - Now uses environment-aware configuration
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:3001/api/v1', // Temporarily hardcoded for debugging
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1',
   TIMEOUT: 30000, // 30 seconds
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000 // 1 second

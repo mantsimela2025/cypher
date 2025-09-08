@@ -1,10 +1,6 @@
 const app = require('./src/app');
-const config = require('./src/config');
+const { startup } = require('./src/startup');
 const { testConnection } = require('./src/db');
-
-// Development optimizations
-const isDevelopment = config.NODE_ENV === 'development';
-const devConfig = isDevelopment ? require('./src/config/development') : {};
 
 // Import systems management services
 const systemDiscoveryService = require('./src/services/systems/systemDiscoveryService');
@@ -12,11 +8,19 @@ const securityPostureService = require('./src/services/systems/securityPostureSe
 const riskScoringService = require('./src/services/systems/riskScoringService');
 const configurationDriftService = require('./src/services/systems/configurationDriftService');
 
-const PORT = config.PORT || 3000;
-
 // Fast server startup with background service initialization
 const startServer = async () => {
   try {
+    // Initialize application with secrets loading
+    console.log('🔄 Initializing application with secrets...');
+    const config = await startup();
+
+    // Development optimizations
+    const isDevelopment = config.NODE_ENV === 'development';
+    const devConfig = isDevelopment ? require('./src/config/development') : {};
+
+    const PORT = config.PORT || 3000;
+
     console.log('🔄 Testing database connection...');
     await testConnection();
 
@@ -29,7 +33,7 @@ const startServer = async () => {
       console.log('🔐 Authentication is REQUIRED for all requests. Login screen will be shown on startup.');
 
       // Initialize heavy services in background after server starts
-      initializeBackgroundServices();
+      initializeBackgroundServices(config);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
@@ -38,7 +42,11 @@ const startServer = async () => {
 };
 
 // Background service initialization (non-blocking)
-const initializeBackgroundServices = async () => {
+const initializeBackgroundServices = async (config) => {
+  // Development optimizations
+  const isDevelopment = config.NODE_ENV === 'development';
+  const devConfig = isDevelopment ? require('./src/config/development') : {};
+
   // Skip heavy services in development if configured
   if (isDevelopment && devConfig.SKIP_HEAVY_SERVICES) {
     console.log('⚡ Skipping heavy services for fast development startup');

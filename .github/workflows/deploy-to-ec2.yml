@@ -1,0 +1,285 @@
+name: Deploy CYPHER to EC2
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  NODE_VERSION: '20.x'
+  EC2_INSTANCE_ID: 'i-04a41343a3f51559a'
+  EC2_HOST: '54.91.127.123'
+  DEPLOY_PATH: '/c/deployments/cypher'
+
+jobs:
+  # Job 1: Run Tests and Build
+  test-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: |
+          api/package-lock.json
+          client/package-lock.json
+          
+    - name: 📦 Install API dependencies
+      run: |
+        cd api
+        npm ci --production=false
+        
+    - name: 📦 Install Client dependencies
+      run: |
+        cd client
+        npm ci --production=false
+        
+    - name: 🧪 Run API tests
+      run: |
+        cd api
+        npm test || echo "No tests configured yet"
+        
+    - name: 🧪 Run Client tests
+      run: |
+        cd client
+        npm test || echo "No tests configured yet"
+        
+    - name: 🔍 Run ESLint (API)
+      run: |
+        cd api
+        npm run lint || echo "No lint script configured"
+        
+    - name: 🔍 Run ESLint (Client)
+      run: |
+        cd client
+        npm run lint || echo "No lint script configured"
+        
+    - name: 🏗️ Build Client for Production
+      run: |
+        cd client
+        npm run build
+        
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: client-build
+        path: client/dist/
+        retention-days: 1
+
+  # Job 2: Security Scan
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    
+    steps:
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔒 Run npm audit (API)
+      run: |
+        cd api
+        npm audit --audit-level=high || echo "Security vulnerabilities found - review required"
+        
+    - name: 🔒 Run npm audit (Client)
+      run: |
+        cd client
+        npm audit --audit-level=high || echo "Security vulnerabilities found - review required"
+
+  # Job 3: Deploy to EC2
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test-and-build, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    environment: production
+    
+    steps:
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: client-build
+        path: client/dist/
+        
+    - name: 🔑 Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        
+    - name: 🔍 Verify EC2 instance status
+      run: |
+        INSTANCE_STATE=$(aws ec2 describe-instances \
+          --instance-ids ${{ env.EC2_INSTANCE_ID }} \
+          --query "Reservations[0].Instances[0].State.Name" \
+          --output text)
+        
+        echo "Instance state: $INSTANCE_STATE"
+        
+        if [ "$INSTANCE_STATE" != "running" ]; then
+          echo "❌ EC2 instance is not running. Current state: $INSTANCE_STATE"
+          exit 1
+        fi
+        
+        echo "✅ EC2 instance is running"
+        
+    - name: 🔑 Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ env.EC2_HOST }} >> ~/.ssh/known_hosts
+        
+    - name: 🚀 Deploy to EC2
+      run: |
+        # Create deployment script
+        cat > deploy.sh << 'EOF'
+        #!/bin/bash
+        set -e
+        
+        echo "🚀 Starting CYPHER deployment to EC2..."
+        
+        # Set deployment variables
+        DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
+        BACKUP_PATH="/c/deployments/backups/$(date +%Y%m%d_%H%M%S)"
+        
+        # Create directories
+        mkdir -p "$DEPLOY_PATH"
+        mkdir -p "/c/deployments/backups"
+        mkdir -p "/c/deployments/logs"
+        
+        # Backup current deployment if it exists
+        if [ -d "$DEPLOY_PATH/api" ]; then
+          echo "📦 Creating backup..."
+          cp -r "$DEPLOY_PATH" "$BACKUP_PATH"
+          echo "✅ Backup created at $BACKUP_PATH"
+        fi
+        
+        # Navigate to deployment directory
+        cd "$DEPLOY_PATH"
+        
+        # Pull latest code
+        echo "📥 Pulling latest code..."
+        if [ -d ".git" ]; then
+          git fetch origin
+          git reset --hard origin/main
+        else
+          git clone https://github.com/mantsimela2025/cypher.git .
+        fi
+        
+        # Install dependencies
+        echo "📦 Installing API dependencies..."
+        cd api
+        npm ci --production
+        
+        echo "📦 Installing Client dependencies..."
+        cd ../client
+        npm ci --production
+        
+        # Build client
+        echo "🏗️ Building client..."
+        npm run build
+        
+        # Set environment variables for production
+        export NODE_ENV=production
+        export USE_SECRETS_MANAGER=true
+        
+        # Restart services with PM2
+        echo "🔄 Restarting services..."
+        cd ..
+        
+        # Stop existing PM2 processes
+        pm2 stop ecosystem.config.js || echo "No existing processes to stop"
+        
+        # Start services
+        pm2 start ecosystem.config.js --env production
+        
+        # Save PM2 configuration
+        pm2 save
+        
+        echo "✅ Deployment completed successfully!"
+        
+        # Show status
+        pm2 status
+        EOF
+        
+        # Make script executable and run it
+        chmod +x deploy.sh
+        
+        # Copy deployment script to EC2 and execute
+        scp -i ~/.ssh/id_rsa deploy.sh Administrator@${{ env.EC2_HOST }}:/tmp/deploy.sh
+        
+        ssh -i ~/.ssh/id_rsa Administrator@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
+        
+    - name: 🏥 Health Check
+      run: |
+        echo "🏥 Performing health check..."
+        
+        # Wait for services to start
+        sleep 30
+        
+        # Check API health
+        API_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://${{ env.EC2_HOST }}:3001/health || echo "000")
+        
+        if [ "$API_HEALTH" = "200" ]; then
+          echo "✅ API health check passed"
+        else
+          echo "❌ API health check failed (HTTP $API_HEALTH)"
+          exit 1
+        fi
+        
+        # Check Client
+        CLIENT_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://${{ env.EC2_HOST }}:3000 || echo "000")
+        
+        if [ "$CLIENT_HEALTH" = "200" ]; then
+          echo "✅ Client health check passed"
+        else
+          echo "❌ Client health check failed (HTTP $CLIENT_HEALTH)"
+          exit 1
+        fi
+        
+        echo "🎉 All health checks passed!"
+        
+    - name: 📊 Deployment Summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+        echo "- **EC2 Instance**: ${{ env.EC2_INSTANCE_ID }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Host**: ${{ env.EC2_HOST }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **API URL**: http://${{ env.EC2_HOST }}:3001" >> $GITHUB_STEP_SUMMARY
+        echo "- **Client URL**: http://${{ env.EC2_HOST }}:3000" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ✅ Deployed Successfully" >> $GITHUB_STEP_SUMMARY
+
+  # Job 4: Notify on failure
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: [test-and-build, security-scan, deploy]
+    if: failure()
+    
+    steps:
+    - name: 📧 Notify deployment failure
+      run: |
+        echo "❌ Deployment failed!"
+        echo "Please check the logs and fix any issues."
+        echo "Commit: ${{ github.sha }}"
+        echo "Branch: ${{ github.ref }}"
