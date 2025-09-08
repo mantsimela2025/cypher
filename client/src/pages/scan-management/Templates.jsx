@@ -316,8 +316,6 @@ const Templates = () => {
       ];
 
       setTemplates(predefinedTemplates);
-    } catch (error) {
-      log.error('Error loading templates:', error.message);
     } finally {
       setLoading(false);
     }
