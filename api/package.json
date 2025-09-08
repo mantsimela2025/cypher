@@ -73,6 +73,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.883.0",
     "@aws-sdk/client-ses": "^3.864.0",
     "@mermaid-js/mermaid-cli": "^11.9.0",
     "aws-sdk": "^2.1692.0",
