@@ -77,8 +77,6 @@ const Templates = () => {
       const data = await apiClient.get(endpoint);
       setTemplates(data.data.templates);
       log.info('Scan templates loaded successfully:', data.data.templates.length, 'templates');
-      setLoading(false);
-      return;
 
     } catch (error) {
       // Fallback to predefined templates if API fails
