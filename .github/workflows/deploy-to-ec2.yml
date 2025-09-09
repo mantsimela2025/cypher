@@ -226,13 +226,29 @@ jobs:
         chmod +x deploy.sh
         
         # Copy deployment script to EC2 and execute
-        scp -i ~/.ssh/id_rsa deploy.sh Administrator@${{ env.EC2_HOST }}:/tmp/deploy.sh
-        
-        ssh -i ~/.ssh/id_rsa Administrator@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
+        # Try different users for Windows EC2
+        echo "Attempting deployment with different user accounts..."
+
+        # Try ec2-user first (common for Amazon Linux)
+        if scp -o ConnectTimeout=10 -i ~/.ssh/id_rsa deploy.sh ec2-user@${{ env.EC2_HOST }}:/tmp/deploy.sh 2>/dev/null; then
+          echo "✅ Connected as ec2-user"
+          ssh -i ~/.ssh/id_rsa ec2-user@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
+        # Try Administrator (Windows default)
+        elif scp -o ConnectTimeout=10 -i ~/.ssh/id_rsa deploy.sh Administrator@${{ env.EC2_HOST }}:/tmp/deploy.sh 2>/dev/null; then
+          echo "✅ Connected as Administrator"
+          ssh -i ~/.ssh/id_rsa Administrator@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
+        # Try ubuntu (Ubuntu instances)
+        elif scp -o ConnectTimeout=10 -i ~/.ssh/id_rsa deploy.sh ubuntu@${{ env.EC2_HOST }}:/tmp/deploy.sh 2>/dev/null; then
+          echo "✅ Connected as ubuntu"
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
+        else
+          echo "❌ Failed to connect with any user account"
+          exit 1
+        fi
         
     - name: 🏥 Health Check
       run: |
-        echo "🏥 Performing health check..."
+        echo "🏥 Performing health check with new SSH key..."
         
         # Wait for services to start
         sleep 30
