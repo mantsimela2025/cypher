@@ -18,7 +18,7 @@ on:
 
 env:
   NODE_VERSION: '20.x'
-  EC2_INSTANCE_ID: 'i-04a41343a3f51559a'
+  EC2_INSTANCE_ID: 'i-0403b69b66141f5aa'
   EC2_HOST: '54.91.127.123'
   DEPLOY_PATH: '/c/deployments/cypher'
 
