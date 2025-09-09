@@ -142,109 +142,117 @@ jobs:
         
         echo "✅ EC2 instance is running"
         
-    - name: 🔑 Setup SSH key
+    - name: 🔑 Setup Windows Deployment
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ env.EC2_HOST }} >> ~/.ssh/known_hosts
-        
-    - name: 🚀 Deploy to EC2
-      run: |
-        # Create deployment script
-        cat > deploy.sh << EOF
-        #!/bin/bash
-        set -e
+        echo "Setting up deployment for Windows Server 2019 EC2..."
+        echo "Using AWS Systems Manager (SSM) for Windows deployment"
 
-        echo "🚀 Starting CYPHER deployment to EC2..."
+        # Check if SSM agent is running on the instance
+        aws ssm describe-instance-information --filters "Key=InstanceIds,Values=${{ env.EC2_INSTANCE_ID }}" --region us-east-1
+        
+    - name: 🚀 Deploy to Windows EC2 via SSM
+      run: |
+        echo "🚀 Starting deployment to Windows Server 2019 via AWS SSM..."
+
+        # Create PowerShell deployment script for Windows
+        cat > deploy-windows.ps1 << 'EOF'
+        # PowerShell script for Windows Server 2019 deployment
+        Write-Host "🚀 Starting CYPHER deployment on Windows Server 2019..."
 
         # Set deployment variables
-        DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
-        BACKUP_PATH="/c/deployments/backups/\$(date +%Y%m%d_%H%M%S)"
-        
+        $deployPath = "C:\deployments\cypher"
+        $backupPath = "C:\deployments\backups\$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+
         # Create directories
-        mkdir -p "\$DEPLOY_PATH"
-        mkdir -p "/c/deployments/backups"
-        mkdir -p "/c/deployments/logs"
+        New-Item -ItemType Directory -Path $deployPath -Force | Out-Null
+        New-Item -ItemType Directory -Path "C:\deployments\backups" -Force | Out-Null
+        New-Item -ItemType Directory -Path "C:\deployments\logs" -Force | Out-Null
 
         # Backup current deployment if it exists
-        if [ -d "\$DEPLOY_PATH/api" ]; then
-          echo "📦 Creating backup..."
-          cp -r "\$DEPLOY_PATH" "\$BACKUP_PATH"
-          echo "✅ Backup created at \$BACKUP_PATH"
-        fi
+        if (Test-Path "$deployPath\api") {
+            Write-Host "📦 Creating backup..."
+            Copy-Item -Path $deployPath -Destination $backupPath -Recurse -Force
+            Write-Host "✅ Backup created at $backupPath"
+        }
 
         # Navigate to deployment directory
-        cd "\$DEPLOY_PATH"
-        
+        Set-Location $deployPath
+
         # Pull latest code
-        echo "📥 Pulling latest code..."
-        if [ -d ".git" ]; then
-          git fetch origin
-          git reset --hard origin/main
-        else
-          git clone https://github.com/mantsimela2025/cypher.git .
-        fi
-        
-        # Install dependencies
-        echo "📦 Installing API dependencies..."
-        cd api
+        Write-Host "📥 Pulling latest code..."
+        if (Test-Path ".git") {
+            git fetch origin
+            git reset --hard origin/main
+        } else {
+            git clone https://github.com/mantsimela2025/cypher.git .
+        }
+
+        # Install API dependencies
+        Write-Host "📦 Installing API dependencies..."
+        Set-Location "api"
         npm ci --production
-        
-        echo "📦 Installing Client dependencies..."
-        cd ../client
+
+        # Install Client dependencies
+        Write-Host "📦 Installing Client dependencies..."
+        Set-Location "..\client"
         npm ci --production
-        
+
         # Build client
-        echo "🏗️ Building client..."
+        Write-Host "🏗️ Building client..."
         npm run build
-        
-        # Set environment variables for production
-        export NODE_ENV=production
-        export USE_SECRETS_MANAGER=true
-        
+
+        # Set environment variables
+        $env:NODE_ENV = "production"
+        $env:USE_SECRETS_MANAGER = "true"
+
         # Restart services with PM2
-        echo "🔄 Restarting services..."
-        cd ..
-        
+        Write-Host "🔄 Restarting services..."
+        Set-Location ".."
+
         # Stop existing PM2 processes
-        pm2 stop ecosystem.config.js || echo "No existing processes to stop"
-        
+        try {
+            pm2 stop ecosystem.config.js
+        } catch {
+            Write-Host "No existing processes to stop"
+        }
+
         # Start services
         pm2 start ecosystem.config.js --env production
-        
+
         # Save PM2 configuration
         pm2 save
-        
-        echo "✅ Deployment completed successfully!"
-        
+
+        Write-Host "✅ Deployment completed successfully!"
+
         # Show status
         pm2 status
         EOF
-        
-        # Make script executable and run it
-        chmod +x deploy.sh
-        
-        # Copy deployment script to EC2 and execute
-        # Try different users for Windows EC2
-        echo "Attempting deployment with different user accounts..."
 
-        # Try ec2-user first (common for Amazon Linux)
-        if scp -o ConnectTimeout=10 -i ~/.ssh/id_rsa deploy.sh ec2-user@${{ env.EC2_HOST }}:/tmp/deploy.sh 2>/dev/null; then
-          echo "✅ Connected as ec2-user"
-          ssh -i ~/.ssh/id_rsa ec2-user@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
-        # Try Administrator (Windows default)
-        elif scp -o ConnectTimeout=10 -i ~/.ssh/id_rsa deploy.sh Administrator@${{ env.EC2_HOST }}:/tmp/deploy.sh 2>/dev/null; then
-          echo "✅ Connected as Administrator"
-          ssh -i ~/.ssh/id_rsa Administrator@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
-        # Try ubuntu (Ubuntu instances)
-        elif scp -o ConnectTimeout=10 -i ~/.ssh/id_rsa deploy.sh ubuntu@${{ env.EC2_HOST }}:/tmp/deploy.sh 2>/dev/null; then
-          echo "✅ Connected as ubuntu"
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ env.EC2_HOST }} "bash /tmp/deploy.sh"
-        else
-          echo "❌ Failed to connect with any user account"
-          exit 1
-        fi
+        # Use AWS SSM to execute the PowerShell script on Windows EC2
+        echo "📤 Uploading deployment script to S3..."
+        aws s3 cp deploy-windows.ps1 s3://cypher-deployment-scripts-1757379746/scripts/deploy-windows.ps1
+
+        echo "🚀 Executing deployment via AWS SSM..."
+        COMMAND_ID=$(aws ssm send-command \
+          --instance-ids ${{ env.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunPowerShellScript" \
+          --parameters 'commands=["# Download and execute deployment script","$script = (New-Object System.Net.WebClient).DownloadString(\"https://cypher-deployment-scripts-1757379746.s3.amazonaws.com/scripts/deploy-windows.ps1\")","Invoke-Expression $script"]' \
+          --region us-east-1 \
+          --query 'Command.CommandId' \
+          --output text)
+
+        echo "⏳ Waiting for deployment to complete..."
+        aws ssm wait command-executed \
+          --command-id $COMMAND_ID \
+          --instance-id ${{ env.EC2_INSTANCE_ID }} \
+          --region us-east-1
+
+        echo "📋 Getting deployment results..."
+        aws ssm get-command-invocation \
+          --command-id $COMMAND_ID \
+          --instance-id ${{ env.EC2_INSTANCE_ID }} \
+          --region us-east-1
+
         
     - name: 🏥 Health Check
       run: |
