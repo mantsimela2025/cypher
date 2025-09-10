@@ -1,0 +1,186 @@
+name: Deploy to Windows EC2
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  NODE_VERSION: '18'
+  EC2_INSTANCE_ID: 'i-0403b69b66141f5aa'
+  EC2_HOST: '18.233.35.219'
+  EC2_USERNAME: 'Administrator'
+  EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd api && npm ci
+        cd ../client && npm ci
+    
+    - name: Run API tests
+      run: |
+        cd api
+        npm run test
+    
+    - name: Build client
+      run: |
+        cd client
+        npm run build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install dependencies and build
+      run: |
+        npm ci
+        cd api && npm ci
+        cd ../client && npm ci && npm run build
+    
+    - name: Create deployment package
+      run: |
+        mkdir -p deployment
+        cp -r api deployment/
+        cp -r client/dist deployment/client
+        cp package.json deployment/
+        cd deployment && zip -r ../ras-dashboard-deployment.zip .
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+    
+    - name: Upload to S3 CYPHER-DEPLOYMENT folder
+      run: |
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        aws s3 cp ras-dashboard-deployment.zip s3://rasdash-deployments/CYPHER-DEPLOYMENT/releases/ras-dashboard-${TIMESTAMP}.zip
+        aws s3 cp ras-dashboard-deployment.zip s3://rasdash-deployments/CYPHER-DEPLOYMENT/latest/ras-dashboard-latest.zip
+        echo "Deployment uploaded to CYPHER-DEPLOYMENT folder with timestamp: ${TIMESTAMP}"
+    
+    - name: Start EC2 instance if stopped
+      run: |
+        # Check instance state and start if needed
+        INSTANCE_STATE=$(aws ec2 describe-instances \
+          --instance-ids ${{ env.EC2_INSTANCE_ID }} \
+          --query 'Reservations[0].Instances[0].State.Name' \
+          --output text)
+        
+        echo "Current instance state: $INSTANCE_STATE"
+        
+        if [ "$INSTANCE_STATE" = "stopped" ]; then
+          echo "🚀 Starting EC2 instance..."
+          aws ec2 start-instances --instance-ids ${{ env.EC2_INSTANCE_ID }}
+          
+          echo "⏳ Waiting for instance to be running..."
+          aws ec2 wait instance-running --instance-ids ${{ env.EC2_INSTANCE_ID }}
+          
+          echo "✅ Instance started successfully"
+          echo "⏳ Waiting additional 60 seconds for services to initialize..."
+          sleep 60
+        else
+          echo "✅ Instance is already running"
+        fi
+
+    - name: Deploy to EC2 using optimized script
+      run: |
+        # Create optimized deployment script that uses the enhanced deploy.ps1
+        cat > deploy-orchestrator.ps1 << 'EOF'
+        # Optimized deployment orchestrator for CI/CD
+        $ErrorActionPreference = "Stop"
+        
+        # Set paths
+        $TempPath = "C:\deployments\temp"
+        $BackupPath = "C:\deployments\backups\$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+        $SourcePath = "C:\deployments\source"
+        
+        Write-Host "🚀 Starting optimized CI/CD deployment..." -ForegroundColor Cyan
+        
+        # Create directories
+        New-Item -ItemType Directory -Force -Path $TempPath, $BackupPath, $SourcePath
+        
+        # Download and extract latest deployment
+        Write-Host "📦 Downloading latest deployment from S3..." -ForegroundColor Yellow
+        aws s3 cp s3://rasdash-deployments/CYPHER-DEPLOYMENT/latest/ras-dashboard-latest.zip $TempPath\ras-dashboard-latest.zip
+        
+        Write-Host "📂 Extracting deployment package..." -ForegroundColor Yellow
+        Expand-Archive -Path $TempPath\ras-dashboard-latest.zip -DestinationPath $SourcePath -Force
+        
+        # Create backup if deployment exists
+        $deploymentPath = "C:\inetpub\wwwroot\ras-dashboard"
+        if (Test-Path $deploymentPath) {
+            Write-Host "💾 Creating backup..." -ForegroundColor Yellow
+            Copy-Item -Path $deploymentPath -Destination $BackupPath -Recurse -Force
+            Write-Host "✅ Backup created at $BackupPath" -ForegroundColor Green
+        }
+        
+        # Run the optimized deployment script
+        Write-Host "🔧 Running optimized deployment script..." -ForegroundColor Cyan
+        Set-Location $SourcePath
+        
+        # Use the optimized deploy.ps1 with CI/CD parameters
+        .\deployment\windows\deploy.ps1 `
+            -SiteName "RAS-Dashboard" `
+            -Port 80 `
+            -DeploymentPath "C:\inetpub\wwwroot\ras-dashboard" `
+            -ApiPath "C:\inetpub\wwwroot\ras-dashboard-api" `
+            -SourcePath $SourcePath
+        
+        # Cleanup temp files
+        Write-Host "🧹 Cleaning up temporary files..." -ForegroundColor Yellow
+        Remove-Item -Path $TempPath -Recurse -Force
+        
+        Write-Host "🎉 Optimized deployment completed successfully!" -ForegroundColor Green
+        EOF
+        
+        # Copy optimized script to EC2 and execute
+        echo "${{ secrets.EC2_PRIVATE_KEY }}" > ec2-key.pem
+        chmod 600 ec2-key.pem
+        
+        # Upload orchestrator and execute optimized deployment
+        scp -i ec2-key.pem -o StrictHostKeyChecking=no deploy-orchestrator.ps1 ${{ env.EC2_USERNAME }}@${{ env.EC2_HOST }}:C:/deployments/
+        ssh -i ec2-key.pem -o StrictHostKeyChecking=no ${{ env.EC2_USERNAME }}@${{ env.EC2_HOST }} "powershell -ExecutionPolicy Bypass -File C:/deployments/deploy-orchestrator.ps1"
+        
+        # Cleanup
+        rm -f ec2-key.pem deploy-orchestrator.ps1
+
+  health-check:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Wait for deployment
+      run: sleep 30
+      
+    - name: Health check
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://${{ env.EC2_HOST }}/health || echo "000")
+        if [ "$response" != "200" ]; then
+          echo "Health check failed with status: $response"
+          exit 1
+        fi
+        echo "Health check passed"
